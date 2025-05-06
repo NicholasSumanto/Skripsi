@@ -60,10 +60,6 @@
                         daysOutside: false,
                     },
                 },
-                styles: {
-                    arrowPrev: 'arrow-smile',
-                    arrowNext: 'arrow-smile-next',
-                },
             };
 
             const calendar = new VanillaCalendar('#calendar', options);
@@ -76,22 +72,31 @@
     <script>
         let tokenClient;
 
-        window.onload = function() {
-            // Inisialisasi GIS
-            google.accounts.id.initialize({
+        function initGoogle() {
+            if (typeof google === 'undefined' || !google.accounts) {
+                setTimeout(initGoogle, 100);
+                return;
+            }
+
+            tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: '1075024781552-t0m1uel41jr9h4tq4r5tg7ps6e0j0i8v.apps.googleusercontent.com',
+                scope: 'email profile openid',
                 callback: handleCredentialResponse,
                 hosted_domain: 'students.ukdw.ac.id'
             });
 
-            // Pasang event ke tombol
             $('#custom-google-button').on('click', function() {
-                google.accounts.id.prompt(); // Munculkan popup
+                tokenClient.requestAccessToken();
+                console.log('Requesting access token...');
             });
         }
 
+        $(document).ready(function() {
+            initGoogle();
+        });
+
         function handleCredentialResponse(response) {
-            const token = response.credential;
+            const token = response.access_token;
 
             // Kirim ke server Laravel pakai jQuery
             $.ajax({

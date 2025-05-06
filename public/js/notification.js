@@ -7,8 +7,4 @@ var alert = Swal.mixin({
     timer: 3500,
     allowEscapeKey: true,
     timerProgressBar: true,
-    didOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer)
-    toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
 });
