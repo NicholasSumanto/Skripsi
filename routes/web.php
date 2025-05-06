@@ -10,4 +10,5 @@ Route::get('/', function () {
 
 
 // API
-Route::get('auth/google/callback', [AccountController::class, 'handleProvidersCallback'])->name('google.callback');
+// Route::get('auth/google/callback', [AccountController::class, 'handleProvidersCallback'])->name('google.callback');
+Route::post('/auth/google/callback', [AccountController::class, 'googleLogin'])->name('google.callback');

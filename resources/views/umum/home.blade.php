@@ -9,14 +9,15 @@
     <main class="container mx-auto px-4 sm:px-2 py-16 flex-grow">
         <div class="flex flex-col md:flex-row gap-12 max-w-10xl mx-auto w-full items-stretch">
 
-            <!-- Left Section -->
+            <!-- Bagian Kiri -->
             <div class="basis-1/3 bg-white p-8 sm:p-2 flex">
                 <div class="flex flex-col justify-center h-full w-full">
                     <h2 class="text-3xl font-bold text-[#1a237e] mb-6 text-center md:text-left">Ada Kegiatan apa kali
                         ini ?</h2>
-                    <button id="g-signin"
+
+                    <button id="custom-google-button"
                         class="flex items-center space-x-2 border rounded-lg px-6 py-3 my-20 hover:bg-gray-50 shadow-sm w-full justify-center bg-white transition-colors">
-                        <img src="{{ asset('img/g-logo.png') }}" alt="Google" class="h-5 w-5" data-onsuccess="onSignIn">
+                        <img src="{{ asset('img/g-logo.png') }}" alt="Google" class="h-5 w-5">
                         <span class="text-gray-700 font-medium">Sign in with Google</span>
                     </button>
 
@@ -27,7 +28,7 @@
                 </div>
             </div>
 
-            <!-- Calendar Section -->
+            <!-- Bagian Calendar -->
             <div class="basis-2/3 bg-white p-8 sm:p-2 flex flex-col justify-center">
                 <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e] text-center md:text-right">Agenda
                     Publikasi</h1>
@@ -45,6 +46,9 @@
 @section('script')
     <!-- JS Addon -->
     <script src="{{ asset('js/calendar.js') }}"></script>
+    <script src="{{ asset('js/alphine.js') }}" defer></script>
+    <script src="{{ asset('js/swal.js') }}" defer></script>
+    <script src="{{ asset('js/notification.js') }}" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const options = {
@@ -68,35 +72,48 @@
     </script>
 
     <!-- Google Sign-In -->
-    <script src="https://apis.google.com/js/api:client.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
-        var googleUser = {};
-        var startApp = function() {
-            gapi.load('auth2', function() {
-                // Retrieve the singleton for the GoogleAuth library and set up the client.
-                auth2 = gapi.auth2.init({
-                    client_id: '
-                    1075024781552 - t0m1uel41jr9h4tq4r5tg7ps6e0j0i8v.apps.googleusercontent.com ',
-                    cookiepolicy: 'single_host_origin',
-                    // scope: 'additional_scope'
-                });
-                attachSignin(document.getElementById('g-signin'));
-            });
-        };
+        let tokenClient;
 
-        function attachSignin(element) {
-            console.log(element.id);
-            auth2.attachClickHandler(element, {},
-                function(googleUser) {
-                    document.getElementById('name').innerText = "Signed in: " +
-                        googleUser.getBasicProfile().getName();
-                },
-                function(error) {
-                    alert(JSON.stringify(error, undefined, 2));
-                });
+        window.onload = function() {
+            // Inisialisasi GIS
+            google.accounts.id.initialize({
+                client_id: '1075024781552-t0m1uel41jr9h4tq4r5tg7ps6e0j0i8v.apps.googleusercontent.com',
+                callback: handleCredentialResponse,
+                hosted_domain: 'students.ukdw.ac.id'
+            });
+
+            // Pasang event ke tombol
+            $('#custom-google-button').on('click', function() {
+                google.accounts.id.prompt(); // Munculkan popup
+            });
         }
-    </script>
-    <script>
-        startApp();
+
+        function handleCredentialResponse(response) {
+            const token = response.credential;
+
+            // Kirim ke server Laravel pakai jQuery
+            $.ajax({
+                url: "{{ route('google.callback') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    credential: token
+                },
+                success: function(res) {
+                    alert.fire({
+                        icon: 'success',
+                        title: "Selamat datang, " + res.name,
+                    });
+                },
+                error: function(err) {
+                    alert.fire({
+                        icon: 'error',
+                        title: err.responseJSON.error,
+                    });
+                }
+            });
+        }
     </script>
 @endsection
