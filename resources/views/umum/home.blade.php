@@ -40,6 +40,9 @@
                 </p>
             </div>
         </div>
+        @if (isset($success) && $success)
+            {{ $success }}
+        @endif
     </main>
 @endsection
 
@@ -95,29 +98,40 @@
         });
 
         function handleCredentialResponse(response) {
-            const token = response.access_token;
+            const googleToken = response.access_token;
 
-            // Kirim ke server Laravel pakai jQuery
             $.ajax({
                 url: "{{ route('google.callback') }}",
                 method: "POST",
                 data: {
-                    _token: "{{ csrf_token() }}",
-                    credential: token
+                    _token: '{{ csrf_token() }}',
+                    credential: googleToken,
                 },
                 success: function(res) {
-                    alert.fire({
-                        icon: 'success',
-                        title: "Selamat datang, " + res.name,
-                    });
+                    localStorage.setItem('user_name', res.name);
+                    window.location.href = res.redirect_to;
                 },
                 error: function(err) {
                     alert.fire({
                         icon: 'error',
-                        title: err.responseJSON.error,
+                        title: err.responseJSON.error ?? err.responseJSON.message,
                     });
                 }
             });
         }
     </script>
+
+    <script>
+        $(document).ready(function() {
+            const logout_message = localStorage.getItem('logout_message');
+            if (logout_message) {
+                alert.fire({
+                    icon: 'success',
+                    title: logout_message,
+                });
+                localStorage.removeItem('logout_message');
+            }
+        });
+    </script>
+
 @endsection

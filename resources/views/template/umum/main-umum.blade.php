@@ -26,6 +26,6 @@
 <!-- script -->
 <script src="{{ asset('js/jQuery.js') }}"></script>
 <script src="{{ asset('js/alphine.js') }}" defer></script>
-
 @yield('script')
+
 </html>

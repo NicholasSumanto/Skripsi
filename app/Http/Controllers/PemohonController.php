@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class UmumController extends Controller
+class PemohonController extends Controller
 {
     public function home()
     {
-        return view('umum.home');
+        return view('pemohon.home');
     }
 }

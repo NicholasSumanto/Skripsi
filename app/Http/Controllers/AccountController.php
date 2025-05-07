@@ -2,32 +2,77 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pengguna;
 use Http;
 use Illuminate\Http\Request;
+use Google\Client as Google_Client;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
-    public function googleLogin(Request $request)
+    public function callback(Request $request)
     {
-        $credential = $request->input('credential');
+        $accessToken = $request->credential;
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $credential,
+            'Authorization' => 'Bearer ' . $accessToken,
         ])->get('https://www.googleapis.com/oauth2/v3/userinfo');
 
         if ($response->ok()) {
             $data = $response->json();
 
             if (isset($data['hd']) && $data['hd'] === 'students.ukdw.ac.id') {
-                return response()->json([
-                    'name' => $data['name'],
-                    'email' => $data['email'],
-                ]);
+                // Cek user
+                $user = Pengguna::where('google_id', $data['sub'])->orWhere('email', $data['email'])->first();
+
+                if (!$user) {
+                    $user = Pengguna::create([
+                        'google_id' => $data['sub'],
+                        'email' => $data['email'],
+                        'name' => $data['name'],
+                        'avatar' => $data['picture'] ?? null,
+                        'email_verified_at' => now(),
+                        'role' => 'pemohon',
+                        'token' => $accessToken,
+                    ]);
+                }
+
+                if ($user) {
+                    try {
+                        Auth::login($user, true);
+
+                        $redirect = $user->role === 'pemohon' ? route('pemohon.home') : route('staff.home');
+
+                        return response()->json([
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'redirect_to' => $redirect,
+                        ]);
+                    } catch (\Exception $e) {
+                        return response()->json(['error' => 'Gagal login: ' . $e->getMessage()], 500);
+                    }
+                } else {
+                    return response()->json(['error' => 'Gagal membuat pengguna.'], 500);
+                }
             } else {
-                return response()->json(['error' => 'Domain email harus ukdw.ac.id'], 401);
+                return response()->json(['error' => 'Domain email harus students.ukdw.ac.id'], 401);
             }
         } else {
-            return response()->json(['error' => 'Invalid token'], 400);
+            return response()->json(['error' => 'Token tidak valid.'], 400);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'message' => 'Anda telah berhasil logout',
+            'redirect_to' => route('umum.home'),
+        ]);
     }
 }
