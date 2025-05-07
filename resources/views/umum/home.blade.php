@@ -1,4 +1,4 @@
-@extends('template.main')
+@extends('template.umum.main-umum')
 @section('title', 'Home')
 @section('custom-header')
     <link rel="stylesheet" href="{{ asset('css/calendar.css') }}">
@@ -46,7 +46,6 @@
 @section('script')
     <!-- JS Addon -->
     <script src="{{ asset('js/calendar.js') }}"></script>
-    <script src="{{ asset('js/alphine.js') }}" defer></script>
     <script src="{{ asset('js/swal.js') }}" defer></script>
     <script src="{{ asset('js/notification.js') }}" defer></script>
     <script>

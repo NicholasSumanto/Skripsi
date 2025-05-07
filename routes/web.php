@@ -1,12 +1,17 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\UmumController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    // return view('welcome');
-    return view('umum.home');
-});
+// Web Routes
+// Umum Start
+Route::get('/', [UmumController::class, 'homepage'])->name('homepage');
+// Umum End
+
+// Mahasiswa Start
+Route::get('/mahasiswa', [MahasiswaController::class, 'home'])->name('mahasiswa.home');
 
 
 // API

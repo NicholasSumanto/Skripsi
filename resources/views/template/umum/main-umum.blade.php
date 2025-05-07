@@ -14,7 +14,7 @@
 
 <body class="font-['Inter'] h-full">
     <!-- Header -->
-    @include('template.header')
+    @include('template.umum.header-umum')
 
     <!-- Main Content -->
     @yield('content')
@@ -25,6 +25,7 @@
 
 <!-- script -->
 <script src="{{ asset('js/jQuery.js') }}"></script>
+<script src="{{ asset('js/alphine.js') }}" defer></script>
 
 @yield('script')
 </html>
