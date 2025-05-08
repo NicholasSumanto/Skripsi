@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengguna;
-use Http;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
-use Google\Client as Google_Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 

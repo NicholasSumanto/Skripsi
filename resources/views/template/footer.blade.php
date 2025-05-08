@@ -48,7 +48,7 @@
         </div>
 
         <div class="mt-8 pt-8 border-t border-white/20 text-center">
-            <p>&copy; Biro 4 UKDW - Kerja Sama dan Relasi Publik 2025</p>
+            <p>&copy; Biro 4 UKDW - Kerja Sama dan Relasi Publik {{ date('Y') }}</p>
         </div>
     </div>
 </footer>
