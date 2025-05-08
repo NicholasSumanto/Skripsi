@@ -8,8 +8,8 @@
 
         <!-- Desktop Menu -->
         <nav class="hidden md:flex items-center space-x-6">
-            <a href="#" class="text-white hover:text-gray-200">Beranda</a>
-            <a href="#" class="text-white hover:text-gray-200">Unduhan</a>
+            <a href="{{ route('umum.home') }}" class="text-white hover:text-gray-200">Beranda</a>
+            <a href="{{ route('umum.unduhan') }}" class="text-white hover:text-gray-200">Unduhan</a>
             <a href="#" class="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-600">Lacak</a>
         </nav>
 
@@ -28,8 +28,8 @@
             <!-- Mobile Menu Dropdown -->
             <div x-show="open" @click.away="open = false"
                 class="absolute top-16 right-4 bg-primary rounded-md shadow-lg flex flex-col items-start py-2 w-40 p-2">
-                <a href="#" class="w-full text-white hover:bg-primary-dark px-4 py-2">Beranda</a>
-                <a href="#" class="w-full text-white hover:bg-primary-dark px-4 py-2">Unduhan</a>
+                <a href="{{ route('umum.home') }}" class="w-full text-white hover:bg-primary-dark px-4 py-2">Beranda</a>
+                <a href="{{ route('umum.unduhan') }}" class="w-full text-white hover:bg-primary-dark px-4 py-2">Unduhan</a>
                 <a href="#"
                     class="w-full bg-yellow-500 text-black hover:bg-yellow-600 px-4 py-2 rounded-md">Lacak</a>
             </div>

@@ -8,8 +8,8 @@
 
         <!-- Desktop Menu -->
         <nav class="hidden md:flex items-center space-x-6">
-            <a href="#" class="text-white hover:text-gray-200">Publikasi</a>
-            <a href="#" class="text-white hover:text-gray-200">Agenda</a>
+            <a href="{{ route('pemohon.home') }}" class="text-white hover:text-gray-200">Publikasi</a>
+            <a href="{{ route('pemohon.agenda') }}" class="text-white hover:text-gray-200">Agenda</a>
             <a href="#" class="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-600">Lacak</a>
             <a href="" class="text-white hover:text-gray-200 logout-btn"><img class="w-8 h-8"
                     src="{{ asset('img/logout.png') }}" alt="Logout Icon"></a>
@@ -30,8 +30,8 @@
             <!-- Mobile Menu Dropdown -->
             <div x-show="open" @click.away="open = false"
                 class="absolute top-16 right-4 bg-primary rounded-md shadow-lg flex flex-col items-start py-2 w-40 p-2">
-                <a href="#" class="w-full text-white hover:bg-primary-dark px-4 py-2">Publikasi</a>
-                <a href="#" class="w-full text-white hover:bg-primary-dark px-4 py-2">Agenda</a>
+                <a href="{{ route('pemohon.home') }}" class="w-full text-white hover:bg-primary-dark px-4 py-2">Publikasi</a>
+                <a href="{{ route('pemohon.agenda') }}" class="w-full text-white hover:bg-primary-dark px-4 py-2">Agenda</a>
                 <a href="#"
                     class="w-full bg-yellow-500 text-black hover:bg-yellow-600 px-4 py-2 rounded-md mt-2">Lacak</a>
                 <a href="#"

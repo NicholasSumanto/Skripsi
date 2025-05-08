@@ -12,15 +12,23 @@ Route::middleware(['redirectIfAuthenticated', 'guest'])
     ->name('umum.')
     ->group(function () {
         Route::get('/', [UmumController::class, 'home'])->name('home');
+        Route::get('/unduhan', [UmumController::class, 'unduhan'])->name('unduhan');
     });
 // Umum End
 
 // Pemohon Start
-Route::middleware(['auth', 'role:pemohon'])
-    ->prefix('/pemohon')
+// Route::middleware(['auth', 'role:pemohon'])
+//     ->prefix('/pemohon')
+//     ->name('pemohon.')
+//     ->group(function () {
+//         Route::get('/home', [PemohonController::class, 'home'])->name('home');
+//     });
+
+Route::prefix('/pemohon')
     ->name('pemohon.')
     ->group(function () {
         Route::get('/home', [PemohonController::class, 'home'])->name('home');
+        Route::get('/agenda', [PemohonController::class, 'agenda'])->name('agenda');
     });
 // Pemohon End
 

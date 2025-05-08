@@ -12,15 +12,19 @@
     @yield('custom-header')
 </head>
 
-<body class="font-['Inter'] h-full">
+<body class="font-['Inter'] h-full flex flex-col min-h-screen">
+
     <!-- Header -->
     @include('template.umum.header-umum')
 
     <!-- Main Content -->
-    @yield('content')
+    <main class="flex-grow">
+        @yield('content')
+    </main>
 
     <!-- Footer -->
     @include('template.footer')
+
 </body>
 
 <!-- script -->

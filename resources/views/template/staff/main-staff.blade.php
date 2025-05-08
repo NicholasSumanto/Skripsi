@@ -12,7 +12,7 @@
     @yield('custom-header')
 </head>
 
-<body class="font-['Inter'] h-full">
+<body class="font-['Inter'] h-full flex flex-col min-h-screen">
     <!-- Header -->
     @include('template.staff.header-staff')
 

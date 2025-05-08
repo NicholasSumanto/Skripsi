@@ -30,13 +30,13 @@
 
             <!-- Bagian Calendar -->
             <div class="basis-2/3 bg-white p-8 sm:p-2 flex flex-col justify-center">
-                <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e] text-center md:text-right">Agenda
+                <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e] text-center md:text-center">Agenda
                     Publikasi</h1>
                 <div id="calendar" class="w-full min-h-[400px] p-0 mb-12"></div>
                 <p class="text-sm text-gray-600">
                     <span class="font-semibold">Catatan :</span> Untuk pengajuan permohonan liputan atau promosi event
                     silahkan membuat surat permohonan publikasi terlebih dahulu. Form permohonan publikasi terdapat di
-                    <a href="#" class="text-primary hover:underline font-medium">Unduhan</a>
+                    <a href="{{ route('umum.unduhan') }}" class="text-primary hover:underline font-medium">Unduhan</a>
                 </p>
             </div>
         </div>

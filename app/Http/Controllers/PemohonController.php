@@ -10,4 +10,8 @@ class PemohonController extends Controller
     {
         return view('pemohon.home');
     }
+    public function agenda()
+    {
+        return view('pemohon.agenda');
+    }
 }
