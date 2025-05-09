@@ -19,6 +19,10 @@ class RedirectIfAuthenticated
         if (Auth::check()) {
             switch (Auth::user()->role) {
                 case 'pemohon':
+                    if ($request->routeIs('umum.verifikasi')) {
+                        $token = $request->route('token');
+                        return redirect()->route('pemohon.verifikasi', ['token' => $token]);
+                    }
                     return redirect()->route('pemohon.home');
                 case 'staff':
                     return redirect()->route('staff.home');

@@ -9,27 +9,26 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VerifikasiPublikasiMail extends Mailable
+class KodeProsesPublikasiMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $namaPemohon;
     public $jenisPermohonan;
-    public $kodeVerifikasi;
+    public $id_proses_permohonan;
     public $urlLogo;
-    public $urlVerifikasi;
-    public $waktu;
+    public $urlLacak;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($namaPemohon, $jenisPermohonan, $tokenVerifikasi, $waktu)
+    public function __construct($namaPemohon, $jenisPermohonan, $id_proses_permohonan)
     {
         $this->namaPemohon = $namaPemohon;
         $this->jenisPermohonan = $jenisPermohonan;
+        $this->id_proses_permohonan = $id_proses_permohonan;
         $this->urlLogo = asset('img/Duta_Wacana.png');
-        $this->urlVerifikasi = route('umum.verifikasi', ['token' => $tokenVerifikasi]);
-        $this->waktu = $waktu;
+        $this->urlLacak = route('umum.lacak');
     }
 
     /**
@@ -38,7 +37,7 @@ class VerifikasiPublikasiMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Verifikasi Permohonan Publikasi Biro 4',
+            subject: 'Kode Proses Permohonan Publikasi Biro 4',
         );
     }
 
@@ -48,7 +47,7 @@ class VerifikasiPublikasiMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.verifikasi-publikasi',
+            view: 'email.kode-proses-permohonan',
         );
     }
 

@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Liputan;
 use App\Models\Promosi;
-use App\Models\VerifikasiPublikasi;
 use Illuminate\Console\Command;
 
 class HapusVerifikasiKedaluwarsa extends Command
@@ -14,7 +13,7 @@ class HapusVerifikasiKedaluwarsa extends Command
      *
      * @var string
      */
-    protected $signature = 'database:hapus-verifikasi-kedaluwarsa';
+    protected $signature = 'database:hapus-verifikasi-kadaluwarsa';
 
     /**
      * The console command description.
@@ -34,8 +33,6 @@ class HapusVerifikasiKedaluwarsa extends Command
             ->get();
 
         foreach ($liputan_invalid as $liputan) {
-            // Hapus data pada tabel verifikasi publikasi
-            VerifikasiPublikasi::where('id_verifikasi_publikasi', $liputan->id_verifikasi_publikasi)->delete();
             $liputan->delete();
         }
 
@@ -45,8 +42,6 @@ class HapusVerifikasiKedaluwarsa extends Command
             ->get();
 
         foreach ($promosi_invalid as $promosi) {
-            // Hapus data pada tabel verifikasi publikasi
-            VerifikasiPublikasi::where('id_verifikasi_publikasi', $promosi->id_verifikasi_publikasi)->delete();
             $promosi->delete();
         }
     }

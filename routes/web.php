@@ -16,7 +16,8 @@ Route::middleware(['redirectIfAuthenticated', 'guest'])
         Route::get('/unduhan', [UmumController::class, 'unduhan'])->name('unduhan');
         Route::get('/verifikasi/{token}', [UmumController::class, 'verifikasi'])->name('verifikasi');
         Route::get('/verifikasi-halaman', [UmumController::class, 'verifikasiHalaman'])->name('verifikasi-halaman');
-        Route::get('/check-session', [UmumController::class, 'checkSession'])->name('check-session'); // <-- Jangan Lupa Dimatikan kalau sudah mau di upload, HANYA UNTUK TESTING SESSION GOOGLE
+        Route::get('/lacak', [UmumController::class, 'home'])->name('lacak'); // <-- Untuk testing, belum ada frontend
+        Route::get('/check-session', [UmumController::class, 'checkSession'])->name('check-session'); // <-- Jangan lupa dihapus kalau sudah mau di upload, HANYA UNTUK TESTING SESSION GOOGLE
     });
 // Umum End
 
@@ -30,7 +31,6 @@ Route::middleware(['auth', 'role:pemohon'])
         Route::get('/verifikasi-test', [PemohonController::class, 'verifikasiTest'])->name('verifikasi-test');
         Route::get('/verifikasi/{token}', [PemohonController::class, 'verifikasi'])->name('verifikasi');
         Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('email.verifikasi-publikasi');
-
     });
 
 Route::prefix('umum/pemohon')
@@ -49,7 +49,6 @@ Route::middleware(['auth', 'role:staff'])
         Route::get('/home', [PemohonController::class, 'home'])->name('home');
     });
 // Pemohon End
-
 
 // API
 // Route::get('auth/google/callback', [AccountController::class, 'handleProvidersCallback'])->name('google.callback');

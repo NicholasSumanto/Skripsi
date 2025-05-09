@@ -16,7 +16,7 @@ class Liputan extends Model
         'id_sub_unit',
         'id_proses_permohonan',
         'id_verifikasi_publikasi',
-        'status',
+        'status_verifikasi',
         'nama_pemohon',
         'nomor_handphone',
         'email',

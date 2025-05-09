@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_sub_unit')->nullable();
             $table->string('id_proses_permohonan')->nullable();
             $table->char('id_verifikasi_publikasi', 60);
-            $table->enum('status', ['Tidak Terverifikasi', 'Terverifikasi']);
+            $table->enum('status_verifikasi', ['Tidak Terverifikasi', 'Terverifikasi']);
             $table->string('nama_pemohon');
             $table->string('nomor_handphone');
             $table->string('email')->nullable();

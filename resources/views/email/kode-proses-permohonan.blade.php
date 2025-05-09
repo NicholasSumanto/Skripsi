@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Permohonan</title>
+    <title>Kode Proses Permohonan</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,10 +64,6 @@
             text-decoration: none;
         }
 
-        .link-verifikasi-container:hover {
-            text-decoration: underline;
-        }
-
         .footer {
             margin-top: 20px;
             font-size: 0.9em;
@@ -96,16 +92,14 @@
         </div>
         <div class="text-container">
             <h2>Halo, {{ $namaPemohon }}</h2>
-            <p>Permohonan <strong>{{ $jenisPermohonan }}</strong> Anda dalam masa verifikasi.</p>
-            <p>Untuk melakukan verifikasi, buka tautan berikut :</p>
+            <p>Permohonan <strong>{{ $jenisPermohonan }}</strong> Anda sudah terverifikasi.</p>
+            <p>Anda dapat melakukan pelacakan permohonan dengan kode lacak permohonan :</p>
             <div class="link-verifikasi-container">
-                <a class="link-verifikasi" href="{{ $urlVerifikasi }}">{{ $urlVerifikasi }}</a>
+                <p class="link-verifikasi">{{ $id_proses_permohonan }}</p>
             </div>
-            <p>Silakan buka halaman verifikasi ini untuk proses selanjutnya.</p>
-            <div class="alert-container">
-                <p class="alert-text">Jika permohonan publikasi tidak diverifikasi dalam 15 menit terhitung dari <span class="alert-text-bolder">{{$waktu}} WIB</span> maka permohonan publikasi
-                    dianggap tidak sah dan akan dihapus!</p>
-            </div>
+            <p>Pantau proses publikasi Anda di menu
+                <a href="{{ $urlLacak }}" class="link-verifikasi">Lacak</a>.
+            </p>
         </div>
     </div>
     <div class="footer">
