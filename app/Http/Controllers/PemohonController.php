@@ -41,6 +41,17 @@ class PemohonController extends Controller
         return view('pemohon.agenda');
     }
 
+    public function liputan()
+    {
+        return view('pemohon.publikasi.liputan');
+    }
+
+    public function promosi()
+    {
+        return view('pemohon.publikasi.promosi');
+    }
+
+
     public function verifikasi($token)
     {
         // Cari apakah publikasi atau permohonan dengan token ini

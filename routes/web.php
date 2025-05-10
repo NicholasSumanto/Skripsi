@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PemohonController;
 use App\Http\Controllers\UmumController;
+use App\Http\Controllers\PublikasiController;
 use Illuminate\Support\Facades\Route;
 
 // Web Routes
@@ -28,6 +29,8 @@ Route::middleware(['auth', 'role:pemohon'])
     ->group(function () {
         Route::get('/home', [PemohonController::class, 'home'])->name('home');
         Route::get('/agenda', [PemohonController::class, 'agenda'])->name('agenda');
+        Route::get('/publikasi/liputan', [PublikasiController::class, 'liputan'])->name('publikasi.liputan');
+        Route::get('/publikasi/promosi', [PublikasiController::class, 'promosi'])->name('publikasi.promosi');
         Route::get('/verifikasi-test', [PemohonController::class, 'verifikasiTest'])->name('verifikasi-test');
         Route::get('/verifikasi/{token}', [PemohonController::class, 'verifikasi'])->name('verifikasi');
         Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('email.verifikasi-publikasi');
