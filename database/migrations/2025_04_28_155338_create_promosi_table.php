@@ -20,7 +20,6 @@ return new class extends Migration
             $table->enum('status_verifikasi', ['Tidak Terverifikasi', 'Terverifikasi']);
             $table->string('nama_pemohon');
             $table->string('nomor_handphone');
-            $table->string('email')->nullable();
             $table->text('tempat')->nullable();
             $table->date('tanggal')->nullable();
             $table->dateTime('waktu')->nullable();

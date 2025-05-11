@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Liputan;
 use App\Models\Promosi;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class HapusVerifikasiKedaluwarsa extends Command
 {
@@ -31,6 +32,13 @@ class HapusVerifikasiKedaluwarsa extends Command
         $liputan_invalid = Liputan::where('status_verifikasi', 'Tidak Terverifikasi')
             ->where('created_at', '<=', now()->subMinutes(15))
             ->get();
+
+        // Hapus File yang sudah kedaluwarsa
+        $liputan_invalid->each(function ($liputan) {
+            if ($liputan->file_liputan) {
+                Storage::disk('local')->deleteDirectory('liputan/' . $liputan->id_verifikasi_publikasi);
+            }
+        });
 
         foreach ($liputan_invalid as $liputan) {
             $liputan->delete();

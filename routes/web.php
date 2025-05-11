@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PemohonController;
 use App\Http\Controllers\UmumController;
@@ -33,7 +34,12 @@ Route::middleware(['auth', 'role:pemohon'])
         Route::get('/publikasi/promosi', [PublikasiController::class, 'promosi'])->name('publikasi.promosi');
         Route::get('/verifikasi-test', [PemohonController::class, 'verifikasiTest'])->name('verifikasi-test');
         Route::get('/verifikasi/{token}', [PemohonController::class, 'verifikasi'])->name('verifikasi');
-        Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('email.verifikasi-publikasi');
+
+        // API
+        Route::post('/api/get/sub-units', [ApiController::class, 'getSubUnits'])->name('api.get.sub-units');
+        Route::post('/api/post/publikasi/liputan', [ApiController::class, 'postLiputan'])->name('api.post.publikasi');
+        Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('api.email.verifikasi-publikasi');
+
     });
 
 Route::prefix('umum/pemohon')

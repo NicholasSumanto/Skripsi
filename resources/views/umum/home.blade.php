@@ -103,8 +103,10 @@
             $.ajax({
                 url: "{{ route('google.callback') }}",
                 method: "POST",
+                headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
                 data: {
-                    _token: '{{ csrf_token() }}',
                     credential: googleToken,
                 },
                 success: function(res) {

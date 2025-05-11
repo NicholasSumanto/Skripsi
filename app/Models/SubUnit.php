@@ -14,7 +14,7 @@ class SubUnit extends Model
     protected $fillable = [
         'id_unit',
         'nama_sub_unit',
-        'status'
+        'deskripsi'
     ];
 
     public function unit()

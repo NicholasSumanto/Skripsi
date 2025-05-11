@@ -47,8 +47,8 @@
                     $.ajax({
                         url: "{{ route('google.logout') }}",
                         method: "POST",
-                        data: {
-                            _token: '{{ csrf_token() }}',
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
                         },
                         success: function(res) {
                             localStorage.setItem('logout_message', res.message);

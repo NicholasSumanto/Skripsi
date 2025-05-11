@@ -26,6 +26,8 @@
 <!-- script -->
 <script src="{{ asset('js/jQuery.js') }}"></script>
 <script src="{{ asset('js/alphine.js') }}" defer></script>
+<script src="{{ asset('js/swal.js') }}" defer></script>
+<script src="{{ asset('js/notification.js') }}" defer></script>
 
 <!-- destroy session -->
 <script>
@@ -47,8 +49,8 @@
                     $.ajax({
                         url: "{{ route('google.logout') }}",
                         method: "POST",
-                        data: {
-                            _token: '{{ csrf_token() }}',
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
                         },
                         success: function(res) {
                             localStorage.setItem('logout_message', res.message);
@@ -66,6 +68,32 @@
             });
 
         });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        const userName = localStorage.getItem('user_name');
+        const liputan = localStorage.getItem('liputan_message');
+        const liputan_email = localStorage.getItem('liputan_email_message');
+
+        if (userName) {
+            alert.fire({
+                icon: 'success',
+                title: "Selamat datang, " + userName,
+            });
+            localStorage.removeItem('user_name');
+        }
+
+        if (liputan && liputan_email) {
+            alert.fire({
+                icon: 'success',
+                title: liputan,
+                text: liputan_email,
+            });
+            localStorage.removeItem('liputan_message');
+            localStorage.removeItem('liputan_email_message');
+        }
     });
 </script>
 
