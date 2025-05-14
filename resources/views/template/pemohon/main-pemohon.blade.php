@@ -17,7 +17,9 @@
     @include('template.pemohon.header-pemohon')
 
     <!-- Main Content -->
-    @yield('content')
+    <div class="flex-grow">
+        @yield('content')
+    </div>
 
     <!-- Footer -->
     @include('template.footer')
@@ -78,6 +80,7 @@
         const liputan_email = localStorage.getItem('liputan_email_message');
         const promosi = localStorage.getItem('promosi_message');
         const promosi_email = localStorage.getItem('promosi_email_message');
+        const batal_publikasi = localStorage.getItem('batalkan_message');
 
         if (userName) {
             alert.fire({
@@ -105,6 +108,14 @@
             });
             localStorage.removeItem('promosi_message');
             localStorage.removeItem('promosi_email_message');
+        }
+
+        if (batal_publikasi) {
+            alert.fire({
+                icon: 'success',
+                title: batal_publikasi,
+            });
+            localStorage.removeItem('batalkan_message');
         }
     });
 </script>

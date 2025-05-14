@@ -12,9 +12,7 @@
             <!-- Bagian Kiri -->
             <div class="basis-1/3 bg-white p-8 sm:p-2 flex">
                 <div class="flex flex-col justify-center h-full w-full">
-                    <h2 class="text-3xl font-bold text-[#1a237e] mb-6 text-center md:text-left">Ada Kegiatan apa kali
-                        ini ?</h2>
-
+                    <h2 class="text-3xl font-bold text-[#1a237e] mb-6 text-center md:text-left">Ada Kegiatan apa kali ini ?</h2>
                     <button id="custom-google-button"
                         class="flex items-center space-x-2 border rounded-lg px-6 py-3 my-20 hover:bg-gray-50 shadow-sm w-full justify-center bg-white transition-colors">
                         <img src="{{ asset('img/g-logo.png') }}" alt="Google" class="h-5 w-5">
@@ -84,7 +82,6 @@
                 client_id: '1075024781552-t0m1uel41jr9h4tq4r5tg7ps6e0j0i8v.apps.googleusercontent.com',
                 scope: 'email profile openid',
                 callback: handleCredentialResponse,
-                hosted_domain: 'students.ukdw.ac.id'
             });
 
             $('#custom-google-button').on('click', function() {

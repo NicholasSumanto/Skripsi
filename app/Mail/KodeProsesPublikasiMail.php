@@ -30,7 +30,7 @@ class KodeProsesPublikasiMail extends Mailable
         $this->judulPermohonan = $judulPermohonan;
         $this->id_proses_permohonan = $idProsesPermohonan;
         $this->urlLogo = asset('img/Duta_Wacana.png');
-        $this->urlLacak = route('umum.lacak');
+        $this->urlLacak = route('umum.lacak', ['kode_proses' => $idProsesPermohonan]);
     }
 
     /**

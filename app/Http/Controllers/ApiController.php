@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promosi;
+use App\Models\ProsesPermohonan;
 use App\Models\Unit;
+use Google\Service\BigtableAdmin\Split;
 use Illuminate\Http\Request;
 use App\Models\Liputan;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Http\Controllers\EmailController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
 
@@ -28,12 +32,12 @@ class ApiController extends Controller
     public function postLiputan(Request $request)
     {
         // Pastikan pengguna sudah terautentikasi
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
         }
 
         // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi (10)
-        $kuota = Liputan::where('google_id', auth()->user()->google_id)
+        $kuota = Liputan::where('google_id', Auth::user()->google_id)
             ->where('status_verifikasi', 'Tidak Terverifikasi')
             ->count();
         if ($kuota >= 10) {
@@ -46,7 +50,7 @@ class ApiController extends Controller
         }
 
         // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
-        $kuotaTerverifikasi = Liputan::where('google_id', auth()->user()->google_id)
+        $kuotaTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
             ->where('status_verifikasi', 'Terverifikasi')
             ->count();
         if ($kuotaTerverifikasi >= 4) {
@@ -106,7 +110,7 @@ class ApiController extends Controller
 
         try {
             $liputan = Liputan::create([
-                'google_id' => auth()->user()->google_id,
+                'google_id' => Auth::user()->google_id,
                 'id_verifikasi_publikasi' => $kode,
                 'status_verifikasi' => 'Tidak Terverifikasi',
                 'id_sub_unit' => $validatedData['id_sub_unit'],
@@ -157,12 +161,12 @@ class ApiController extends Controller
     public function postPromosi(Request $request)
     {
         // Pastikan pengguna sudah terautentikasi
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
         }
 
         // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi (10)
-        $kuota = Promosi::where('google_id', auth()->user()->google_id)
+        $kuota = Promosi::where('google_id', Auth::user()->google_id)
             ->where('status_verifikasi', 'Tidak Terverifikasi')
             ->count();
         if ($kuota >= 10) {
@@ -175,7 +179,7 @@ class ApiController extends Controller
         }
 
         // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
-        $kuotaTerverifikasi = Promosi::where('google_id', auth()->user()->google_id)
+        $kuotaTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
             ->where('status_verifikasi', 'Terverifikasi')
             ->count();
         if ($kuotaTerverifikasi >= 4) {
@@ -246,7 +250,7 @@ class ApiController extends Controller
         try {
             // Simpan entri promosi
             $promosi = Promosi::create([
-                'google_id' => auth()->user()->google_id,
+                'google_id' => Auth::user()->google_id,
                 'id_verifikasi_publikasi' => $kode,
                 'status_verifikasi' => 'Tidak Terverifikasi',
                 'id_sub_unit' => $validatedData['id_sub_unit'],
@@ -334,5 +338,82 @@ class ApiController extends Controller
         }
 
         return response()->json($subUnits);
+    }
+
+    public function deletePublikasi(Request $request)
+    {
+        // Pastikan pengguna sudah terautentikasi
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
+        }
+
+        // Validasi apakah pengguna yang membuat publikasi
+        $id_proses_permohonan = $request->validate(
+            [
+                'id_proses_permohonan' => [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) {
+                        $existsInPromosi = \DB::table('promosi')->where('id_proses_permohonan', $value)->exists();
+                        $existsInLiputan = \DB::table('liputan')->where('id_proses_permohonan', $value)->exists();
+
+                        if (!($existsInPromosi || $existsInLiputan)) {
+                            $fail('Kode proses publikasi tidak ditemukan.');
+                        }
+                    },
+                ],
+            ],
+            [
+                'id_proses_permohonan.required' => 'Kode proses publikasi wajib diisi.',
+                'id_proses_permohonan.string' => 'Kode proses publikasi harus berupa teks.',
+            ],
+        );
+
+        try {
+            $split = explode('-', $id_proses_permohonan['id_proses_permohonan']);
+            $tipe = $split[0];
+
+            if ($tipe == 'LIPUTAN') {
+                $batalkan_liputan = Liputan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+                if ($batalkan_liputan) {
+                    $batalkan_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                    if ($batalkan_liputan->file_liputan) {
+                        Storage::disk('local')->deleteDirectory('liputan/' . $batalkan_liputan->id_verifikasi_publikasi);
+                    }
+
+                    $batalkan_proses_permohonan->update([
+                        'status' => 'Batal',
+                        'tanggal_batal' => Carbon::now(),
+                    ]);
+
+                    return response()->json(['message' => 'Permohonan publikasi berhasil dibatalkan.']);
+                } else {
+                    return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+                }
+            } elseif ($tipe == 'PROMOSI') {
+                $batalkan_promosi = Promosi::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+                if ($batalkan_promosi) {
+                    $batalkan_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                    if ($batalkan_promosi->file_stories || $batalkan_promosi->file_poster || $batalkan_promosi->file_video) {
+                        Storage::disk('local')->deleteDirectory('promosi/' . $batalkan_promosi->id_verifikasi_publikasi);
+                    }
+
+                    $batalkan_proses_permohonan->update([
+                        'status' => 'Batal',
+                        'tanggal_batal' => Carbon::now(),
+                    ]);
+
+                    return response()->json(['message' => 'Permohonan publikasi berhasil dibatalkan.']);
+                } else {
+                    return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+                }
+            } else {
+                return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
     }
 }

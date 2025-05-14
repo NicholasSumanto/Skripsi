@@ -14,9 +14,11 @@ class ProsesPermohonan extends Model
     protected $fillable = [
         'id_proses_permohonan',
         'status',
+        'tanggal_diajukan',
         'tanggal_diterima',
         'tanggal_diproses',
         'tanggal_selesai',
+        'tanggal_batal', 
     ];
 
     public function prosesPermohonan()

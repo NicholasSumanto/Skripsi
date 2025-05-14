@@ -49,6 +49,13 @@ class HapusVerifikasiKedaluwarsa extends Command
             ->where('created_at', '<=', now()->subMinutes(15))
             ->get();
 
+        // Hapus File yang sudah kedaluwarsa
+        $promosi_invalid->each(function ($promosi) {
+            if ($promosi->file_stories || $promosi->file_poster || $promosi->file_video) {
+                Storage::disk('local')->deleteDirectory('promosi/' . $promosi->id_verifikasi_publikasi);
+            }
+        });
+
         foreach ($promosi_invalid as $promosi) {
             $promosi->delete();
         }

@@ -19,7 +19,7 @@ Route::middleware(['redirectIfAuthenticated', 'guest'])
         Route::get('/unduhan', [UmumController::class, 'unduhan'])->name('unduhan');
         Route::get('/verifikasi/{token}', [UmumController::class, 'verifikasi'])->name('verifikasi');
         Route::get('/verifikasi-halaman', [UmumController::class, 'verifikasiHalaman'])->name('verifikasi-halaman');
-        Route::get('/lacak', [UmumController::class, 'home'])->name('lacak'); // <-- Untuk testing, belum ada frontend
+        Route::get('/lacak', [UmumController::class, 'lacak'])->name('lacak');
         Route::get('/check-session', [UmumController::class, 'checkSession'])->name('check-session'); // <-- Jangan lupa dihapus kalau sudah mau di upload, HANYA UNTUK TESTING SESSION GOOGLE
     });
 // Umum End
@@ -31,7 +31,7 @@ Route::middleware(['auth', 'role:pemohon'])
     ->group(function () {
         Route::get('/home', [PemohonController::class, 'home'])->name('home');
         Route::get('/agenda', [PemohonController::class, 'agenda'])->name('agenda');
-        Route::get('/lacak/{lacak?}', [PemohonController::class, 'lacak'])->name('lacak');
+        Route::get('/lacak', [PemohonController::class, 'lacak'])->name('lacak');
         Route::get('/publikasi/liputan', [PemohonController::class, 'liputan'])->name('publikasi.liputan');
         Route::get('/publikasi/promosi', [PemohonController::class, 'promosi'])->name('publikasi.promosi');
         Route::get('/verifikasi-test', [PemohonController::class, 'verifikasiTest'])->name('verifikasi-test');
@@ -41,6 +41,7 @@ Route::middleware(['auth', 'role:pemohon'])
         Route::post('/api/get/sub-units', [ApiController::class, 'getSubUnits'])->name('api.get.sub-units');
         Route::post('/api/post/publikasi/liputan', [ApiController::class, 'postLiputan'])->name('api.post.publikasi');
         Route::post('/api/post/publikasi/promosi', [ApiController::class, 'postPromosi'])->name('api.post.promosi');
+        Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('api.email.verifikasi-publikasi');
 
     });

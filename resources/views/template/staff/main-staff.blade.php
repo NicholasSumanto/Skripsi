@@ -17,7 +17,9 @@
     @include('template.staff.header-staff')
 
     <!-- Main Content -->
-    @yield('content')
+    <div class="flex-grow">
+        @yield('content')
+    </div>
 
     <!-- Footer -->
     @include('template.footer')

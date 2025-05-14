@@ -23,6 +23,11 @@ class RedirectIfAuthenticated
                         $token = $request->route('token');
                         return redirect()->route('pemohon.verifikasi', ['token' => $token]);
                     }
+
+                    if ($request->routeIs('umum.lacak')) {
+                        $kode_proses = $request->input('kode_proses');
+                        return redirect()->route('pemohon.lacak', ['kode_proses' => $kode_proses]);
+                    }
                     return redirect()->route('pemohon.home');
                 case 'staff':
                     return redirect()->route('staff.home');
