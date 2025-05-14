@@ -17,12 +17,12 @@ return new class extends Migration
             $table->unsignedBigInteger('id_sub_unit')->nullable();
             $table->string('id_proses_permohonan')->nullable();
             $table->char('id_verifikasi_publikasi', 60);
+            $table->string('judul')->nullable();
             $table->enum('status_verifikasi', ['Tidak Terverifikasi', 'Terverifikasi']);
             $table->string('nama_pemohon');
             $table->string('nomor_handphone');
             $table->text('tempat')->nullable();
             $table->date('tanggal')->nullable();
-            $table->dateTime('waktu')->nullable();
             $table->string('output')->nullable();
             $table->string('file_stories')->nullable();
             $table->string('file_poster')->nullable();

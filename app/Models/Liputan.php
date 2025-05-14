@@ -20,7 +20,6 @@ class Liputan extends Model
         'status_verifikasi',
         'nama_pemohon',
         'nomor_handphone',
-        'email',
         'tempat',
         'tanggal',
         'waktu',

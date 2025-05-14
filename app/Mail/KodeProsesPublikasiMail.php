@@ -15,6 +15,7 @@ class KodeProsesPublikasiMail extends Mailable
 
     public $namaPemohon;
     public $jenisPermohonan;
+    public $judulPermohonan;
     public $id_proses_permohonan;
     public $urlLogo;
     public $urlLacak;
@@ -22,11 +23,12 @@ class KodeProsesPublikasiMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($namaPemohon, $jenisPermohonan, $id_proses_permohonan)
+    public function __construct($namaPemohon, $jenisPermohonan, $judulPermohonan, $idProsesPermohonan)
     {
         $this->namaPemohon = $namaPemohon;
         $this->jenisPermohonan = $jenisPermohonan;
-        $this->id_proses_permohonan = $id_proses_permohonan;
+        $this->judulPermohonan = $judulPermohonan;
+        $this->id_proses_permohonan = $idProsesPermohonan;
         $this->urlLogo = asset('img/Duta_Wacana.png');
         $this->urlLacak = route('umum.lacak');
     }

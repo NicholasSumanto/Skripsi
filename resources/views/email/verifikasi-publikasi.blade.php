@@ -96,14 +96,16 @@
         </div>
         <div class="text-container">
             <h2>Halo, {{ $namaPemohon }}</h2>
-            <p>Permohonan <strong>{{ $jenisPermohonan }}</strong> Anda dalam masa verifikasi.</p>
+            <p>Permohonan <strong>{{ $jenisPermohonan }} "{{ $judulPermohonan }}"</strong> Anda dalam masa verifikasi.
+            </p>
             <p>Untuk melakukan verifikasi, buka tautan berikut :</p>
             <div class="link-verifikasi-container">
                 <a class="link-verifikasi" href="{{ $urlVerifikasi }}">{{ $urlVerifikasi }}</a>
             </div>
             <p>Silakan buka halaman verifikasi ini untuk proses selanjutnya.</p>
             <div class="alert-container">
-                <p class="alert-text">Jika permohonan publikasi tidak diverifikasi dalam 15 menit terhitung dari <span class="alert-text-bolder">{{$waktu}} WIB</span> maka permohonan publikasi
+                <p class="alert-text">Jika permohonan publikasi tidak diverifikasi dalam 15 menit terhitung dari <span
+                        class="alert-text-bolder">{{ $waktu }} WIB</span> maka permohonan publikasi
                     dianggap tidak sah dan akan dihapus!</p>
             </div>
         </div>

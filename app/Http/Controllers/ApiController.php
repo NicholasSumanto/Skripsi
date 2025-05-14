@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Promosi;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Models\Liputan;
@@ -26,6 +27,37 @@ class ApiController extends Controller
     // Simpon Data Form
     public function postLiputan(Request $request)
     {
+        // Pastikan pengguna sudah terautentikasi
+        if (!auth()->check()) {
+            return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
+        }
+
+        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi (10)
+        $kuota = Liputan::where('google_id', auth()->user()->google_id)
+            ->where('status_verifikasi', 'Tidak Terverifikasi')
+            ->count();
+        if ($kuota >= 10) {
+            return response()->json(
+                [
+                    'error' => 'Kuota permohonan publikasi liputan tidak terverifikasi sudah mencapai batas maksimum (10).',
+                ],
+                400,
+            );
+        }
+
+        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
+        $kuotaTerverifikasi = Liputan::where('google_id', auth()->user()->google_id)
+            ->where('status_verifikasi', 'Terverifikasi')
+            ->count();
+        if ($kuotaTerverifikasi >= 4) {
+            return response()->json(
+                [
+                    'error' => 'Kuota permohonan publikasi liputan terverifikasi sudah mencapai batas maksimum (4). Tunggu hingga staff menyelesaikan verifikasi.',
+                ],
+                400,
+            );
+        }
+
         // Validasi data yang diterima dari form
         $validatedData = $request->validate(
             [
@@ -58,6 +90,7 @@ class ApiController extends Controller
                 'wartawan.in' => 'Pilihan wartawan tidak valid.',
                 'file_liputan.file' => 'File liputan harus berupa file.',
                 'file_liputan.mimes' => 'File liputan harus berupa file dengan format jpg, jpeg, png, atau pdf.',
+                'file_liputan.*.mimes' => 'File liputan harus berupa file dengan format jpg, jpeg, png, atau pdf.',
                 'file_liputan.*.max' => 'Setiap file tidak boleh lebih dari 15 MB.',
                 'output.required' => 'Output wajib diisi.',
                 'output.array' => 'Output harus berupa array.',
@@ -102,7 +135,7 @@ class ApiController extends Controller
             }
 
             $emailController = new EmailController();
-            $response = $emailController->verifikasiPublikasi('Liputan', $kode);
+            $response = $emailController->verifikasiPublikasi('Liputan', $validatedData['judul'], $kode);
 
             if ($response->getStatusCode() !== 200) {
                 return $response;
@@ -119,9 +152,164 @@ class ApiController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
-
     }
 
+    public function postPromosi(Request $request)
+    {
+        // Pastikan pengguna sudah terautentikasi
+        if (!auth()->check()) {
+            return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
+        }
+
+        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi (10)
+        $kuota = Promosi::where('google_id', auth()->user()->google_id)
+            ->where('status_verifikasi', 'Tidak Terverifikasi')
+            ->count();
+        if ($kuota >= 10) {
+            return response()->json(
+                [
+                    'error' => 'Kuota permohonan publikasi promosi tidak terverifikasi sudah mencapai batas maksimum (10).',
+                ],
+                400,
+            );
+        }
+
+        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
+        $kuotaTerverifikasi = Promosi::where('google_id', auth()->user()->google_id)
+            ->where('status_verifikasi', 'Terverifikasi')
+            ->count();
+        if ($kuotaTerverifikasi >= 4) {
+            return response()->json(
+                [
+                    'error' => 'Kuota permohonan publikasi promosi terverifikasi sudah mencapai batas maksimum (4). Tunggu hingga staff menyelesaikan verifikasi.',
+                ],
+                400,
+            );
+        }
+
+        // Validasi input
+        $validatedData = $request->validate(
+            [
+                'judul' => 'required|string|max:255',
+                'id_sub_unit' => 'required|integer|exists:sub_unit,id_sub_unit',
+                'nama_pemohon' => 'required|string|max:255',
+                'nomor_handphone' => 'required|string|max:255',
+                'tempat' => 'required|string|max:255',
+                'tanggal' => 'required|date',
+                'file_liputan' => 'nullable|array',
+                'file_stories.*' => 'file|mimes:jpg,jpeg,png,mp4|max:15360',
+                'file_poster' => 'nullable|array',
+                'file_poster.*' => 'file|mimes:jpg,jpeg,png,mp4|max:15360',
+                'file_video' => 'nullable|array',
+                'file_video.*' => 'file|mimes:mp4|max:15360',
+                'catatan' => 'nullable|string',
+            ],
+            [
+                'judul.required' => 'Judul wajib diisi.',
+                'judul.string' => 'Judul harus berupa teks.',
+                'id_sub_unit.integer' => 'ID Sub Unit harus berupa angka.',
+                'id_sub_unit.exists' => 'ID Sub Unit tidak ditemukan.',
+                'nama_pemohon.required' => 'Nama pemohon wajib diisi.',
+                'nama_pemohon.string' => 'Nama pemohon harus berupa teks.',
+                'nomor_handphone.required' => 'Nomor handphone wajib diisi.',
+                'nomor_handphone.string' => 'Nomor handphone harus berupa teks.',
+                'tempat.string' => 'Tempat harus berupa teks.',
+                'tanggal.date' => 'Tanggal tidak valid.',
+                'file_stories.mimes' => 'File liputan harus berupa file dengan format jpg, jpeg, png, atau mp4.',
+                'file_stories.*.mimes' => 'File liputan harus berupa file dengan format jpg, jpeg, png, atau mp4.',
+                'file_stories.max' => 'File Instagram Stories tidak boleh lebih dari 15MB.',
+                'file_poster.mimes' => 'File liputan harus berupa file dengan format jpg, jpeg, png, atau mp4.',
+                'file_poster.*.mimes' => 'File liputan harus berupa file dengan format jpg, jpeg, png, atau mp4.',
+                'file_poster.max' => 'File Instagram Post tidak boleh lebih dari 15MB.',
+                'file_video.mimes' => 'File liputan harus berupa file dengan format mp4.',
+                'file_video.*.mimes' => 'File liputan harus berupa file dengan format mp4.',
+                'file_video.max' => 'File Videotron tidak boleh lebih dari 15MB.',
+            ],
+        );
+
+        // Validasi minimal 1 file harus ada
+        if (!$request->hasFile('file_stories') && !$request->hasFile('file_poster') && !$request->hasFile('file_video')) {
+            return response()->json(
+                [
+                    'error' => 'Minimal satu materi promosi (stories, post, atau video) harus diunggah.',
+                ],
+                400,
+            );
+        }
+
+        $kode = $this->buatKodeVerifikasi('Promosi');
+
+        $storiesFiles = [];
+        $posterFiles = [];
+        $videoFiles = [];
+
+        try {
+            // Simpan entri promosi
+            $promosi = Promosi::create([
+                'google_id' => auth()->user()->google_id,
+                'id_verifikasi_publikasi' => $kode,
+                'status_verifikasi' => 'Tidak Terverifikasi',
+                'id_sub_unit' => $validatedData['id_sub_unit'],
+                'judul' => $validatedData['judul'],
+                'nama_pemohon' => $validatedData['nama_pemohon'],
+                'nomor_handphone' => $validatedData['nomor_handphone'],
+                'tempat' => $validatedData['tempat'],
+                'tanggal' => $validatedData['tanggal'],
+                'catatan' => $validatedData['catatan'],
+                'file_stories' => json_encode([]),
+                'file_poster' => json_encode([]),
+                'file_video' => json_encode([]),
+            ]);
+
+            if ($request->hasFile('file_stories')) {
+                foreach ($request->file('file_stories') as $file) {
+                    $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    Storage::putFileAs("promosi/{$kode}/file_stories", $file, $fileName);
+                    $storiesFiles[] = $fileName;
+                }
+            }
+
+            if ($request->hasFile('file_poster')) {
+                foreach ($request->file('file_poster') as $file) {
+                    $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    Storage::putFileAs("promosi/{$kode}/file_poster", $file, $fileName);
+                    $posterFiles[] = $fileName;
+                }
+            }
+
+            if ($request->hasFile('file_video')) {
+                foreach ($request->file('file_video') as $file) {
+                    $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    Storage::putFileAs("promosi/{$kode}/file_video", $file, $fileName);
+                    $videoFiles[] = $fileName;
+                }
+            }
+
+            $promosi->update([
+                'file_stories' => json_encode($storiesFiles),
+                'file_poster' => json_encode($posterFiles),
+                'file_video' => json_encode($videoFiles),
+            ]);
+
+            $emailController = new EmailController();
+            $response = $emailController->verifikasiPublikasi('Promosi', $validatedData['judul'], $kode);
+
+            if ($response->getStatusCode() !== 200) {
+                return $response;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil disimpan.',
+                'email_message' => $response->getData()->message,
+                'redirect_url' => route('pemohon.home'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // Ambil data unit dan sub-unit untuk dropdown
     public function getSubUnits(Request $request)
     {
         $id_unit = $request->input('id_unit');

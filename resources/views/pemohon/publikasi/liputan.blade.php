@@ -2,7 +2,7 @@
 @section('title', 'Form Liputan')
 @section('custom-header')
     <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
-
+    {{--
     <style>
         .chosen-container-single .chosen-single {
             height: 44px;
@@ -13,7 +13,7 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             font-size: 16px;
         }
-    </style>
+    </style> --}}
 @endsection
 
 @section('content')
@@ -37,7 +37,7 @@
                     <div>
                         <label class="font-semibold text-lg">Email :</label>
                         <input type="email" name="email" placeholder="Masukkan email"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-white"
                             value="{{ Auth::user()->email }}" readonly disabled>
                     </div>
 
@@ -138,11 +138,47 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('js/chosen.js') }}"></script>
+    <script src="{{ asset('js/chosen.js') }}" defer></script>
     <script>
         $(document).ready(function() {
             $('.chosen-select').chosen({
                 width: "100%"
+            });
+
+            const chosenClasses = [
+                'w-full',
+                'rounded-lg',
+                'p-3',
+                'border',
+                'border-gray-300',
+                'shadow-sm',
+                'focus:ring-2',
+                'focus:ring-[#FFCC29]',
+                'focus:outline-none',
+                'text-black'
+            ];
+
+            function applyChosenStylesById(id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add(...chosenClasses);
+                    return true;
+                }
+                return false;
+            }
+
+            // Observer untuk elemen yang dimunculkan chosen
+            const observer = new MutationObserver(function() {
+                const ready1 = applyChosenStylesById('id_sub_unit_chosen');
+                const ready2 = applyChosenStylesById('unit_chosen');
+                if (ready1 && ready2) {
+                    observer.disconnect();
+                }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
             });
 
             $('#unit').on('change', function() {
@@ -170,11 +206,16 @@
                                 );
                             });
                             $('#id_sub_unit').trigger("chosen:updated");
+
+                            // Tambahkan styling ulang
+                            setTimeout(() => {
+                                applyChosenStylesById('id_sub_unit_chosen');
+                            }, 100);
                         },
                         error: function() {
                             $('#id_sub_unit').empty().append(
-                                '<option value="">Gagal memuat Sub Unit</option>').trigger(
-                                "chosen:updated");
+                                '<option value="">Gagal memuat Sub Unit</option>'
+                            ).trigger("chosen:updated");
                         }
                     });
                 } else {
@@ -306,7 +347,8 @@
                         alert.fire({
                             icon: 'error',
                             title: 'Gagal',
-                            text: message
+                            text: message,
+                            timer: 7000,
                         });
                     }
                 });

@@ -15,7 +15,8 @@ class VerifikasiPublikasiMail extends Mailable
 
     public $namaPemohon;
     public $jenisPermohonan;
-    public $kodeVerifikasi;
+    public $tokenVerifikasi;
+    public $judulPermohonan;
     public $urlLogo;
     public $urlVerifikasi;
     public $waktu;
@@ -23,10 +24,11 @@ class VerifikasiPublikasiMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($namaPemohon, $jenisPermohonan, $tokenVerifikasi, $waktu)
+    public function __construct($namaPemohon, $jenisPermohonan, $judulPermohonan, $tokenVerifikasi, $waktu)
     {
         $this->namaPemohon = $namaPemohon;
         $this->jenisPermohonan = $jenisPermohonan;
+        $this->judulPermohonan = $judulPermohonan;
         $this->urlLogo = asset('img/Duta_Wacana.png');
         $this->urlVerifikasi = route('umum.verifikasi', ['token' => $tokenVerifikasi]);
         $this->waktu = $waktu;

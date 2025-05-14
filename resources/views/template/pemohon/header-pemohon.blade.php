@@ -10,7 +10,7 @@
         <nav class="hidden md:flex items-center space-x-6">
             <a href="{{ route('pemohon.home') }}" class="text-white hover:text-gray-200">Publikasi</a>
             <a href="{{ route('pemohon.agenda') }}" class="text-white hover:text-gray-200">Agenda</a>
-            <a href="#" class="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-600">Lacak</a>
+            <a href="{{ route('pemohon.lacak') }}" class="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-600">Lacak</a>
             <a href="" class="text-white hover:text-gray-200 logout-btn"><img class="w-8 h-8"
                     src="{{ asset('img/logout.png') }}" alt="Logout Icon"></a>
         </nav>

@@ -6,6 +6,7 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PemohonController;
 use App\Http\Controllers\UmumController;
 use App\Http\Controllers\PublikasiController;
+use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 
 // Web Routes
@@ -30,14 +31,16 @@ Route::middleware(['auth', 'role:pemohon'])
     ->group(function () {
         Route::get('/home', [PemohonController::class, 'home'])->name('home');
         Route::get('/agenda', [PemohonController::class, 'agenda'])->name('agenda');
-        Route::get('/publikasi/liputan', [PublikasiController::class, 'liputan'])->name('publikasi.liputan');
-        Route::get('/publikasi/promosi', [PublikasiController::class, 'promosi'])->name('publikasi.promosi');
+        Route::get('/lacak/{lacak?}', [PemohonController::class, 'lacak'])->name('lacak');
+        Route::get('/publikasi/liputan', [PemohonController::class, 'liputan'])->name('publikasi.liputan');
+        Route::get('/publikasi/promosi', [PemohonController::class, 'promosi'])->name('publikasi.promosi');
         Route::get('/verifikasi-test', [PemohonController::class, 'verifikasiTest'])->name('verifikasi-test');
         Route::get('/verifikasi/{token}', [PemohonController::class, 'verifikasi'])->name('verifikasi');
 
         // API
         Route::post('/api/get/sub-units', [ApiController::class, 'getSubUnits'])->name('api.get.sub-units');
         Route::post('/api/post/publikasi/liputan', [ApiController::class, 'postLiputan'])->name('api.post.publikasi');
+        Route::post('/api/post/publikasi/promosi', [ApiController::class, 'postPromosi'])->name('api.post.promosi');
         Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('api.email.verifikasi-publikasi');
 
     });
@@ -55,7 +58,7 @@ Route::middleware(['auth', 'role:staff'])
     ->prefix('/staff')
     ->name('staff.')
     ->group(function () {
-        Route::get('/home', [PemohonController::class, 'home'])->name('home');
+        Route::get('/home', [StaffController::class, 'home'])->name('home');
     });
 // Pemohon End
 

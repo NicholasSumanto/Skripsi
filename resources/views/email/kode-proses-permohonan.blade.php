@@ -92,7 +92,7 @@
         </div>
         <div class="text-container">
             <h2>Halo, {{ $namaPemohon }}</h2>
-            <p>Permohonan <strong>{{ $jenisPermohonan }}</strong> Anda sudah terverifikasi.</p>
+            <p>Permohonan <strong>{{ $jenisPermohonan }} "{{ $judulPermohonan }}"</strong> Anda sudah terverifikasi.</p>
             <p>Anda dapat melakukan pelacakan permohonan dengan kode lacak permohonan :</p>
             <div class="link-verifikasi-container">
                 <p class="link-verifikasi">{{ $id_proses_permohonan }}</p>

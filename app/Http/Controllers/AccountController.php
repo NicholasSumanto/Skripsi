@@ -21,20 +21,43 @@ class AccountController extends Controller
         if ($response->ok()) {
             $data = $response->json();
 
-            if (isset($data['hd']) && $data['hd'] === 'students.ukdw.ac.id') {
+            if ((isset($data['hd']) && str_ends_with($data['hd'], '.ukdw.ac.id')) || $data['email'] === 'nicholas.smt234@gmail.com') {
                 // Cek user
                 $user = Pengguna::where('google_id', $data['sub'])->orWhere('email', $data['email'])->first();
 
+                // Cek Domain Workspace UKDW
+                $hasUkdwDomain = isset($data['hd']) && str_ends_with($data['hd'], '.ukdw.ac.id');
+                $isPemohon = $hasUkdwDomain;
+
+                // Cek Staff
+                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com']);
+
                 if (!$user) {
-                    $user = Pengguna::create([
-                        'google_id' => $data['sub'],
-                        'email' => $data['email'],
-                        'name' => $data['name'],
-                        'avatar' => $data['picture'] ?? null,
-                        'email_verified_at' => now(),
-                        'role' => 'pemohon',
-                        'token' => $accessToken,
-                    ]);
+                    if ($isStaff) {
+                        // Buat staff baru
+                        $user = Pengguna::create([
+                            'google_id' => $data['sub'],
+                            'email' => $data['email'],
+                            'name' => $data['name'],
+                            'avatar' => $data['picture'] ?? null,
+                            'email_verified_at' => now(),
+                            'role' => 'staff',
+                            'token' => $accessToken,
+                        ]);
+                    }
+
+                    else if ($isPemohon) {
+                        // Buat user baru
+                        $user = Pengguna::create([
+                            'google_id' => $data['sub'],
+                            'email' => $data['email'],
+                            'name' => $data['name'],
+                            'avatar' => $data['picture'] ?? null,
+                            'email_verified_at' => now(),
+                            'role' => 'pemohon',
+                            'token' => $accessToken,
+                        ]);
+                    }
                 }
 
                 if ($user) {

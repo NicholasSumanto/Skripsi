@@ -1,5 +1,10 @@
 @extends('template.staff.main-staff')
-@section('title', 'Home')
+@section('title', 'Home Staff')
+
+@section('content')
+anjay staff
+@endsection
+
 @section('script')
     <script src="{{ asset('js/swal.js') }}" defer></script>
     <script src="{{ asset('js/notification.js') }}" defer></script>

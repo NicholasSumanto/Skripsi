@@ -2,34 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Liputan;
-use App\Models\VerifikasiPublikasi;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use App\Mail\VerifikasiPublikasiMail;
-use App\Models\Promosi;
+use App\Mail\KodeProsesPublikasiMail;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
 class EmailController extends Controller
 {
-    private function buatKodeVerifikasi(string $tipe_publikasi): string
-    {
-        $prefix = strtoupper(substr($tipe_publikasi, 0, 5));
-
-        $timestamp = now()->format('YmdHisv');
-        $uuid = (string) Str::uuid();
-
-        return $prefix . '-' . $timestamp . '-' . $uuid;
-    }
-
-    public function verifikasiPublikasi($permohonan, $id_verifikasi_publikasi)
+    public function verifikasiPublikasi($permohonan, $judulPermohonan, $id_verifikasi_publikasi)
     {
         try {
             // Kirim Email
-            Mail::to(Auth::user()->email)->send(new VerifikasiPublikasiMail(Auth::user()->name, "Publikasi $permohonan", $id_verifikasi_publikasi, Carbon::now()->translatedFormat('l, d F Y H:i:s')));
+            Mail::to(Auth::user()->email)->send(new VerifikasiPublikasiMail(Auth::user()->name, "Publikasi $permohonan", $judulPermohonan, $id_verifikasi_publikasi, Carbon::now()->translatedFormat('l, d F Y H:i:s')));
             return response()->json(['message' => 'Cek inbox atau folder spam email untuk verifikasi!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error Pada Backend : ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function kodeProsesPublikasi($permohonan, $judulPermohonan, $id_proses_permohonan)
+    {
+        try {
+            // Kirim Email
+            Mail::to(Auth::user()->email)->send(new KodeProsesPublikasiMail(Auth::user()->name, "Publikasi $permohonan", $judulPermohonan, $id_proses_permohonan));
+            return response()->json(['message' => 'Cek inbox atau folder spam email untuk kode proses!']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error Pada Backend : ' . $e->getMessage()], 500);
         }

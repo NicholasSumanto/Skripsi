@@ -25,9 +25,9 @@
 @endsection
 
 @section('content')
-    @if ($data['status'] == 'success')
-        <main class="container mx-auto px-4 sm:px-2 py-4 flex-grow">
-            <div class="flex items-center justify-center py-6 bg-white text-center px-4">
+    <main class="container mx-auto px-4 sm:px-2 py-4 flex-grow">
+        <div class="flex items-center justify-center py-6 bg-white text-center px-4">
+            @if ($data['status'] == 'success')
                 <div class="max-w-md border-4 border-solid p-4 rounded-lg">
                     <h1 class="text-xl font-semibold text-black mb-6">
                         Permohonan Publikasi {{ $data['publikasi'] }} Anda Berhasil Diajukan !
@@ -54,12 +54,7 @@
                         <a href="" class="underline font-medium text-black">Lacak</a>.
                     </p>
                 </div>
-
-            </div>
-        </main>
-    @elseif($data['status'] == 'error')
-        <main class="container mx-auto px-4 sm:px-2 py-4 flex-grow">
-            <div class="flex items-center justify-center py-6 bg-white text-center px-4">
+            @elseif($data['status'] == 'error')
                 <div class="max-w-md border-4 border-solid border-red-500 p-4 rounded-lg">
                     <h1 class="text-xl font-semibold text-black mb-6">
                         Permohonan Publikasi Tidak Dapat Diverifikasi
@@ -82,9 +77,9 @@
                         Silakan coba kembali atau hubungi staff Biro 4 jika masalah terus berlanjut.
                     </p>
                 </div>
-            </div>
-        </main>
-    @endif
+            @endif
+        </div>
+    </main>
 @endsection
 
 @section('script')

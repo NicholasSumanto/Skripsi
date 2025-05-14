@@ -76,6 +76,8 @@
         const userName = localStorage.getItem('user_name');
         const liputan = localStorage.getItem('liputan_message');
         const liputan_email = localStorage.getItem('liputan_email_message');
+        const promosi = localStorage.getItem('promosi_message');
+        const promosi_email = localStorage.getItem('promosi_email_message');
 
         if (userName) {
             alert.fire({
@@ -93,6 +95,16 @@
             });
             localStorage.removeItem('liputan_message');
             localStorage.removeItem('liputan_email_message');
+        }
+
+        if (promosi && promosi_email) {
+            alert.fire({
+                icon: 'success',
+                title: promosi,
+                text: promosi_email,
+            });
+            localStorage.removeItem('promosi_message');
+            localStorage.removeItem('promosi_email_message');
         }
     });
 </script>
