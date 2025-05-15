@@ -387,6 +387,13 @@ class ApiController extends Controller
                         'tanggal_batal' => Carbon::now(),
                     ]);
 
+                    $emailController = new EmailController();
+                    $response = $emailController->batalPublikasi('Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], 'Permohonan publikasi dibatalkan.');
+
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
+
                     return response()->json(['message' => 'Permohonan publikasi berhasil dibatalkan.']);
                 } else {
                     return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
@@ -404,6 +411,13 @@ class ApiController extends Controller
                         'status' => 'Batal',
                         'tanggal_batal' => Carbon::now(),
                     ]);
+
+                    $emailController = new EmailController();
+                    $response = $emailController->batalPublikasi('Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], 'Permohonan publikasi dibatalkan.');
+
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
 
                     return response()->json(['message' => 'Permohonan publikasi berhasil dibatalkan.']);
                 } else {

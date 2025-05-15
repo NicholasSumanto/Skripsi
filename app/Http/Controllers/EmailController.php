@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BatalPublikasi;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\VerifikasiPublikasiMail;
 use App\Mail\KodeProsesPublikasiMail;
@@ -27,6 +28,17 @@ class EmailController extends Controller
             // Kirim Email
             Mail::to(Auth::user()->email)->send(new KodeProsesPublikasiMail(Auth::user()->name, "Publikasi $permohonan", $judulPermohonan, $id_proses_permohonan));
             return response()->json(['message' => 'Cek inbox atau folder spam email untuk kode proses!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error Pada Backend : ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function batalPublikasi($permohonan, $judulPermohonan, $id_proses_permohonan, $batalMessage)
+    {
+        try {
+            // Kirim Email
+            Mail::to(Auth::user()->email)->send(new BatalPublikasi(Auth::user()->name, "Publikasi $permohonan", $judulPermohonan, $id_proses_permohonan, $batalMessage));
+            return response()->json(['message' => 'Cek inbox atau folder spam email untuk pembatalan!']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error Pada Backend : ' . $e->getMessage()], 500);
         }

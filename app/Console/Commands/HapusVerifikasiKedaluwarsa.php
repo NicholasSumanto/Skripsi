@@ -14,7 +14,7 @@ class HapusVerifikasiKedaluwarsa extends Command
      *
      * @var string
      */
-    protected $signature = 'database:hapus-verifikasi-kadaluwarsa';
+    protected $signature = 'db:hapus-verifikasi-kadaluwarsa';
 
     /**
      * The console command description.
