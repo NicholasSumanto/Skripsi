@@ -21,7 +21,7 @@ class AccountController extends Controller
         if ($response->ok()) {
             $data = $response->json();
 
-            if ((isset($data['hd']) && str_ends_with($data['hd'], '.ukdw.ac.id')) || $data['email'] === 'nicholas.smt234@gmail.com') {
+            if ((isset($data['hd']) && str_ends_with($data['hd'], '.ukdw.ac.id')) || $data['email'] === 'nicholas.smt234@gmail.com' || $data['email'] === 'barasatyaradi@gmail.com') {
                 // Cek user
                 $user = Pengguna::where('google_id', $data['sub'])->orWhere('email', $data['email'])->first();
 
@@ -30,7 +30,7 @@ class AccountController extends Controller
                 $isPemohon = $hasUkdwDomain;
 
                 // Cek Staff
-                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com']);
+                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com', 'barasatyaradi@gmail.com']);
 
                 if (!$user) {
                     if ($isStaff) {

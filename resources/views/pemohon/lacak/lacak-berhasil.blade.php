@@ -43,7 +43,7 @@
                                 <td class="pb-4 px-3">{{ $publikasi->judul }}</td>
                                 <td class="pb-4 px-3">
                                     {{ \Carbon\Carbon::parse($publikasi->tanggal)->format('d/m/Y') }}
-                                    {!! isset($publikasi->waktu) ? '<br>' . \Carbon\Carbon::parse($publikasi->waktu)->translatedFormat('H:i') : '' !!}
+                                    {!! isset($publikasi->waktu) ? '<br>' . \Carbon\Carbon::parse($publikasi->waktu)->Format('H:i') : '' !!}
                                 </td>
                                 <td class="pb-4 px-3">{{ $publikasi->nama_unit }}</td>
                                 <td class="pb-4 px-3">{{ $publikasi->nama_sub_unit }}</td>
@@ -192,11 +192,17 @@
                                 data: {
                                     id_proses_permohonan: id_proses_permohonan,
                                 },
+                                beforeSend: function() {
+                                    $('#btn-batalkan').text('Membatalkan...').attr(
+                                        'disabled', true);
+                                },
                                 success: function(res) {
                                     localStorage.setItem('batalkan_message', res.message);
                                     location.reload();
                                 },
                                 error: function(err) {
+                                    $('#btn-batalkan').text('Batalkan Publikasi').attr(
+                                        'disabled', false);
                                     alert.fire({
                                         icon: 'error',
                                         title: err.responseJSON.error ?? err

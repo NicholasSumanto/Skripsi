@@ -18,18 +18,16 @@ class BatalPublikasi extends Mailable
     public $id_proses_permohonan;
     public $judulPermohonan;
     public $urlLogo;
-    public $batalMessage;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($namaPemohon, $jenisPermohonan, $judulPermohonan, $idProsesPermohonan, $batalMessage)
+    public function __construct($namaPemohon, $jenisPermohonan, $judulPermohonan, $idProsesPermohonan)
     {
         $this->namaPemohon = $namaPemohon;
         $this->jenisPermohonan = $jenisPermohonan;
         $this->judulPermohonan = $judulPermohonan;
         $this->id_proses_permohonan = $idProsesPermohonan;
-        $this->batalMessage = $batalMessage;
         $this->urlLogo = asset('img/Duta_Wacana.png');
     }
 

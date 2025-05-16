@@ -34,14 +34,16 @@ class HapusVerifikasiKedaluwarsa extends Command
             ->get();
 
         // Hapus File yang sudah kedaluwarsa
-        $liputan_invalid->each(function ($liputan) {
-            if ($liputan->file_liputan) {
-                Storage::disk('local')->deleteDirectory('liputan/' . $liputan->id_verifikasi_publikasi);
-            }
-        });
+        if ($liputan_invalid->isNotEmpty()) {
+            $liputan_invalid->each(function ($liputan) {
+                if ($liputan->file_liputan) {
+                    Storage::disk('local')->deleteDirectory('liputan/' . $liputan->id_verifikasi_publikasi);
+                }
+            });
 
-        foreach ($liputan_invalid as $liputan) {
-            $liputan->delete();
+            foreach ($liputan_invalid as $liputan) {
+                $liputan->delete();
+            }
         }
 
         // Hapus data promosi invalid
@@ -50,14 +52,16 @@ class HapusVerifikasiKedaluwarsa extends Command
             ->get();
 
         // Hapus File yang sudah kedaluwarsa
-        $promosi_invalid->each(function ($promosi) {
-            if ($promosi->file_stories || $promosi->file_poster || $promosi->file_video) {
-                Storage::disk('local')->deleteDirectory('promosi/' . $promosi->id_verifikasi_publikasi);
-            }
-        });
+        if ($promosi_invalid->isNotEmpty()) {
+            $promosi_invalid->each(function ($promosi) {
+                if ($promosi->file_stories || $promosi->file_poster || $promosi->file_video) {
+                    Storage::disk('local')->deleteDirectory('promosi/' . $promosi->id_verifikasi_publikasi);
+                }
+            });
 
-        foreach ($promosi_invalid as $promosi) {
-            $promosi->delete();
+            foreach ($promosi_invalid as $promosi) {
+                $promosi->delete();
+            }
         }
     }
 }

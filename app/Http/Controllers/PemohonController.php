@@ -184,9 +184,8 @@ class PemohonController extends Controller
                         $key = $this->buatKodeprosesPermohonan($token);
                         ProsesPermohonan::create([
                             'id_proses_permohonan' => $key,
-                            'status' => 'Diterima',
+                            'status' => 'Diajukan',
                             'tanggal_diajukan' => $tanggalDiajukan->created_at,
-                            'tanggal_diterima' => Carbon::now(),
                         ]);
 
                         $promosi->update([
@@ -226,9 +225,8 @@ class PemohonController extends Controller
 
                         ProsesPermohonan::create([
                             'id_proses_permohonan' => $key,
-                            'status' => 'Diterima',
+                            'status' => 'Diajukan',
                             'tanggal_diajukan' => $tanggalDiajukan->created_at,
-                            'tanggal_diterima' => Carbon::now(),
                         ]);
 
                         $liputan->update([

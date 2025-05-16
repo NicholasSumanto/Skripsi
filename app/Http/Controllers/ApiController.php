@@ -354,8 +354,8 @@ class ApiController extends Controller
                     'required',
                     'string',
                     function ($attribute, $value, $fail) {
-                        $existsInPromosi = \DB::table('promosi')->where('id_proses_permohonan', $value)->exists();
-                        $existsInLiputan = \DB::table('liputan')->where('id_proses_permohonan', $value)->exists();
+                        $existsInPromosi = DB::table('promosi')->where('id_proses_permohonan', $value)->exists();
+                        $existsInLiputan = DB::table('liputan')->where('id_proses_permohonan', $value)->exists();
 
                         if (!($existsInPromosi || $existsInLiputan)) {
                             $fail('Kode proses publikasi tidak ditemukan.');
@@ -388,7 +388,7 @@ class ApiController extends Controller
                     ]);
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi('Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], 'Permohonan publikasi dibatalkan.');
+                    $response = $emailController->batalPublikasi('Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan']);
 
                     if ($response->getStatusCode() !== 200) {
                         return $response;
@@ -413,7 +413,7 @@ class ApiController extends Controller
                     ]);
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi('Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], 'Permohonan publikasi dibatalkan.');
+                    $response = $emailController->batalPublikasi('Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan']);
 
                     if ($response->getStatusCode() !== 200) {
                         return $response;

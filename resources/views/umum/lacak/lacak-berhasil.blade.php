@@ -43,7 +43,7 @@
                                 <td class="pb-4 px-3">{{ $publikasi->judul }}</td>
                                 <td class="pb-4 px-3">
                                     {{ \Carbon\Carbon::parse($publikasi->tanggal)->format('d/m/Y') }}
-                                    {!! isset($publikasi->waktu) ? '<br>' . \Carbon\Carbon::parse($publikasi->waktu)->translatedFormat('H:i') : '' !!}
+                                    {!! isset($publikasi->waktu) ? '<br>' . \Carbon\Carbon::parse($publikasi->waktu)->Format('H:i') : '' !!}
                                 </td>
                                 <td class="pb-4 px-3">{{ $publikasi->nama_unit }}</td>
                                 <td class="pb-4 px-3">{{ $publikasi->nama_sub_unit }}</td>

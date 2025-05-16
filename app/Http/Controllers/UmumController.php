@@ -45,68 +45,98 @@ class UmumController extends Controller
         // Cari apakah publikasi atau permohonan dengan token ini
         $split = explode('-', $token);
 
-        if ($split[0] === "PROMO") {
-            $promosi = Promosi::where('id_verifikasi_publikasi', $token)->first();
+        try {
+            if ($split[0] === 'PROMO') {
+                $promosi = Promosi::where('id_verifikasi_publikasi', $token)->first();
+                $tanggalDiajukan = Promosi::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
 
-            if ($promosi && $promosi->id_proses_permohonan) {
-                $data = [
-                    'status' => 'success',
-                    'publikasi' => 'Promosi',
-                    'id_proses_permohonan' => $promosi->id_proses_permohonan
-                ];
+                if ($promosi) {
+                    if ($promosi->id_proses_permohonan) {
+                        $data = [
+                            'status' => 'success',
+                            'publikasi' => 'Promosi',
+                            'id_proses_permohonan' => $promosi->id_proses_permohonan,
+                        ];
+                    } else {
+                        $key = $this->buatKodeprosesPermohonan($token);
+                        ProsesPermohonan::create([
+                            'id_proses_permohonan' => $key,
+                            'status' => 'Diajukan',
+                            'tanggal_diajukan' => $tanggalDiajukan->created_at,
+                        ]);
+
+                        $promosi->update([
+                            'status_verifikasi' => 'Terverifikasi',
+                            'id_proses_permohonan' => $key,
+                        ]);
+
+                        $data = [
+                            'status' => 'success',
+                            'publikasi' => 'Promosi',
+                            'id_proses_permohonan' => $key,
+                        ];
+                    }
+
+                    $emailController = new EmailController();
+                    $emailController->kodeProsesPublikasi('Promosi', $promosi->judul, $promosi->id_proses_permohonan ?? $key);
+                } else {
+                    $data = [
+                        'status' => 'error',
+                    ];
+                }
+
+                return view('umum.verifikasi')->with('data', $data);
+            } elseif ($split[0] === 'LIPUT') {
+                $liputan = Liputan::where('id_verifikasi_publikasi', $token)->first();
+                $tanggalDiajukan = Liputan::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
+
+                if ($liputan) {
+                    if ($liputan->id_proses_permohonan) {
+                        $data = [
+                            'status' => 'success',
+                            'publikasi' => 'Liputan',
+                            'id_proses_permohonan' => $liputan->id_proses_permohonan,
+                        ];
+                    } else {
+                        $key = $this->buatKodeprosesPermohonan($token);
+
+                        ProsesPermohonan::create([
+                            'id_proses_permohonan' => $key,
+                            'status' => 'Diajukan',
+                            'tanggal_diajukan' => $tanggalDiajukan->created_at,
+                        ]);
+
+                        $liputan->update([
+                            'status_verifikasi' => 'Terverifikasi',
+                            'id_proses_permohonan' => $key,
+                        ]);
+
+                        $data = [
+                            'status' => 'success',
+                            'publikasi' => 'Liputan',
+                            'id_proses_permohonan' => $key,
+                        ];
+                    }
+
+                    $emailController = new EmailController();
+                    $emailController->kodeProsesPublikasi('Liputan', $liputan->judul, $liputan->id_proses_permohonan ?? $key);
+                } else {
+                    $data = [
+                        'status' => 'error',
+                    ];
+                }
+
+                return view('umum.verifikasi')->with('data', $data);
             } else {
-                $key = $this->buatKodeprosesPermohonan($token);
-                ProsesPermohonan::create([
-                    'id_proses_permohonan' => $key,
-                    'status' => 'Diterima',
-                    'tanggal_diterima' => Carbon::now(),
-                ]);
-
-                $promosi->update([
-                    'status_verifikasi' => 'Terverifikasi',
-                    'id_proses_permohonan' => $key,
-                ]);
-
                 $data = [
-                    'status' => 'success',
-                    'publikasi' => 'Promosi',
-                    'id_proses_permohonan' => $key
+                    'status' => 'error',
                 ];
+                return view('umum.verifikasi')->with('data', $data);
             }
-            return view('umum.verifikasi')->with('data', $data);
-        } else if ($split[0] === "LIPUT") {
-            $liputan = Liputan::where('id_verifikasi_publikasi', $token)->first();
-
-            if ($liputan && $liputan->id_proses_permohonan) {
-                $data = [
-                    'status' => 'success',
-                    'publikasi' => 'Liputan',
-                    'id_proses_permohonan' => $liputan->id_proses_permohonan
-                ];
-            } else {
-                $key  = $this->buatKodeprosesPermohonan($token);
-
-                ProsesPermohonan::create([
-                    'id_proses_permohonan' => $key,
-                    'status' => 'Diterima',
-                    'tanggal_diterima' => Carbon::now(),
-                ]);
-
-                $liputan->update([
-                    'status_verifikasi' => 'Terverifikasi',
-                    'id_proses_permohonan' => $key,
-                ]);
-
-                $data = [
-                    'status' => 'success',
-                    'publikasi' => 'Liputan',
-                    'id_proses_permohonan' => $key
-                ];
-            }
-            return view('umum.verifikasi')->with('data', $data);
-        } else {
+        } catch (\Exception $e) {
             $data = [
                 'status' => 'error',
+                'message' => $e->getMessage(),
             ];
             return view('umum.verifikasi')->with('data', $data);
         }

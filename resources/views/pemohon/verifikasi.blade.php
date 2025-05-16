@@ -51,7 +51,7 @@
                     </p>
                     <p class="text-black text-base">
                         Pantau proses publikasi Anda di menu
-                        <a href="" class="underline font-medium text-black">Lacak</a>.
+                        <a href="{{ route('pemohon.lacak', ['kode_proses' => $data['id_proses_permohonan']]) }}" class="underline font-medium text-black">Lacak</a>.
                     </p>
                 </div>
 

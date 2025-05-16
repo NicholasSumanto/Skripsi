@@ -25,17 +25,15 @@ Route::middleware(['redirectIfAuthenticated', 'guest'])
 // Umum End
 
 // Pemohon Start
-Route::middleware(['auth', 'role:pemohon'])
+Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:pemohon'])
     ->prefix('/pemohon')
     ->name('pemohon.')
     ->group(function () {
         Route::get('/home', [PemohonController::class, 'home'])->name('home');
         Route::get('/agenda', [PemohonController::class, 'agenda'])->name('agenda');
-        Route::get('/lacak', [PemohonController::class, 'lacak'])->name('lacak');
         Route::get('/publikasi/liputan', [PemohonController::class, 'liputan'])->name('publikasi.liputan');
         Route::get('/publikasi/promosi', [PemohonController::class, 'promosi'])->name('publikasi.promosi');
         Route::get('/verifikasi-test', [PemohonController::class, 'verifikasiTest'])->name('verifikasi-test');
-        Route::get('/verifikasi/{token}', [PemohonController::class, 'verifikasi'])->name('verifikasi');
 
         // API
         Route::post('/api/get/sub-units', [ApiController::class, 'getSubUnits'])->name('api.get.sub-units');
@@ -44,6 +42,13 @@ Route::middleware(['auth', 'role:pemohon'])
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('api.email.verifikasi-publikasi');
 
+    });
+Route::middleware(['redirectIfNotAuthencicated', 'role:pemohon'])
+    ->prefix('/pemohon')
+    ->name('pemohon.')
+    ->group(function () {
+        Route::get('/lacak', [PemohonController::class, 'lacak'])->name('lacak');
+        Route::get('/verifikasi/{token}', [PemohonController::class, 'verifikasi'])->name('verifikasi');
     });
 
 Route::prefix('umum/pemohon')
