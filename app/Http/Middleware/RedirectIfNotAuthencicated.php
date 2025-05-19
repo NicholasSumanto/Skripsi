@@ -26,6 +26,8 @@ class RedirectIfNotAuthencicated
                 $kode_proses = $request->input('kode_proses');
                 return redirect()->route('umum.lacak', ['kode_proses' => $kode_proses]);
             }
+
+            return redirect()->route('umum.home');
         }
         return $next($request);
     }

@@ -28,6 +28,8 @@
 <!-- script -->
 <script src="{{ asset('js/jQuery.js') }}"></script>
 <script src="{{ asset('js/alphine.js') }}" defer></script>
+<script src="{{ asset('js/swal.js') }}" defer></script>
+<script src="{{ asset('js/notification.js') }}" defer></script>
 
 <!-- destroy session -->
 <script>
@@ -68,8 +70,46 @@
             });
 
         });
+
+        const userName = localStorage.getItem('user_name');
+        const batal_publikasi = localStorage.getItem('batalkan_message');
+        const terima_message = localStorage.getItem('terima_message');
+        const diproses_message = localStorage.getItem('diproses_message');
+
+        if (batal_publikasi) {
+            alert.fire({
+                icon: 'success',
+                title: batal_publikasi,
+            });
+            localStorage.removeItem('batalkan_message');
+        }
+
+        if (userName) {
+            alert.fire({
+                icon: 'success',
+                title: "Selamat datang, " + userName,
+            });
+            localStorage.removeItem('user_name');
+        }
+
+        if (terima_message) {
+            alert.fire({
+                icon: 'success',
+                title: terima_message,
+            });
+            localStorage.removeItem('terima_message');
+        }
+
+        if (diproses_message) {
+            alert.fire({
+                icon: 'success',
+                title: diproses_message,
+            });
+            localStorage.removeItem('diproses_message');
+        }
     });
 </script>
 
 @yield('script')
+
 </html>

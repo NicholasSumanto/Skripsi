@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->date('tanggal_diterima')->nullable();
             $table->date('tanggal_diproses')->nullable();
             $table->date('tanggal_selesai')->nullable();
-            $table->boolean('batal_is_pemohon')->default(true)->nullable();
+            $table->boolean('batal_is_pemohon')->nullable();
             $table->date('tanggal_batal')->nullable();
             $table->timestamps();
         });

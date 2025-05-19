@@ -21,6 +21,7 @@ Route::middleware(['redirectIfAuthenticated', 'guest'])
         Route::get('/verifikasi-halaman', [UmumController::class, 'verifikasiHalaman'])->name('verifikasi-halaman');
         Route::get('/lacak', [UmumController::class, 'lacak'])->name('lacak');
         Route::get('/check-session', [UmumController::class, 'checkSession'])->name('check-session'); // <-- Jangan lupa dihapus kalau sudah mau di upload, HANYA UNTUK TESTING SESSION GOOGLE
+        Route::get('/email-test', [EmailController::class, 'kirimEmailStatus'])->name('email-test');
     });
 // Umum End
 
@@ -60,14 +61,19 @@ Route::prefix('umum/pemohon')
 // Pemohon End
 
 // Staff Start
-Route::middleware(['auth', 'role:staff'])
+Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
     ->prefix('/staff')
     ->name('staff.')
     ->group(function () {
         Route::get('/home', [StaffController::class, 'home'])->name('home');
         Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
-        Route::get('/staff/detail/liputan/{id}', [StaffController::class, 'detailLiputan'])->name('staff.detail.detail-liputan');
-        Route::get('/staff/detail/promosi/{id}', [StaffController::class, 'detailPromosi'])->name('staff.detail.detail-promosi');
+        // Route::get('/detail/liputan/{id}', [StaffController::class, 'detailLiputan'])->name('staff.detail.detail-liputan');
+        // Route::get('/detail/promosi/{id}', [StaffController::class, 'detailPromosi'])->name('staff.detail.detail-promosi');
+        Route::get('/detail-publikasi/{id}', [StaffController::class, 'detailPublikasi'])->name('detail-publikasi');
+
+        // API
+        Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
+        Route::post('/api/update/status-publikasi/', [ApiController::class, 'updateStatusPublikasi'])->name('api.update.status-publikasi');
     });
 // Pemohon End
 

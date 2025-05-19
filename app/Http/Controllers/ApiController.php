@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pengguna;
 use App\Models\Promosi;
 use App\Models\ProsesPermohonan;
 use App\Models\Unit;
@@ -353,7 +354,7 @@ class ApiController extends Controller
                 'id_proses_permohonan' => [
                     'required',
                     'string',
-                    function ($value, $fail) {
+                    function ($attribute, $value, $fail) {
                         $existsInPromosi = DB::table('promosi')->where('id_proses_permohonan', $value)->exists();
                         $existsInLiputan = DB::table('liputan')->where('id_proses_permohonan', $value)->exists();
 
@@ -377,11 +378,13 @@ class ApiController extends Controller
             if ($tipe == 'LIPUTAN') {
                 $batalkan_liputan = Liputan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
                 if ($batalkan_liputan) {
-                    if (Auth::user()->google_id != $batalkan_liputan->google_id) {
+                    if (Auth::user()->google_id != $batalkan_liputan->google_id && Auth::user()->role != 'staff') {
                         return response()->json(['error' => 'Anda tidak memiliki izin untuk membatalkan publikasi ini.'], 403);
                     }
 
                     $batalkan_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+                    $liputean = Liputan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+                    $pemohon = Pengguna::where('google_id', $liputean->google_id)->first();
 
                     if ($batalkan_liputan->file_liputan) {
                         Storage::disk('local')->deleteDirectory('liputan/' . $batalkan_liputan->id_verifikasi_publikasi);
@@ -393,20 +396,25 @@ class ApiController extends Controller
                     ]);
 
                     if (Auth::user()->role == 'staff') {
-                        $batalkan_liputan->update([
-                            'batal_is_pemohon' => false
+                        $batalkan_proses_permohonan->update([
+                            'batal_is_pemohon' => false,
                         ]);
-                        $pesanBatal = 'dibatalkan oleh staff.';
+                        $pesanBatal = 'dibatalkan oleh staff';
                     } else {
-                        $batalkan_liputan->update([
-                            'batal_is_pemohon' => true
+                        $batalkan_proses_permohonan->update([
+                            'batal_is_pemohon' => true,
                         ]);
-                        $pesanBatal = 'telah dibatalkan.';
+                        $pesanBatal = 'telah dibatalkan';
                     }
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi('Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
+                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
 
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
+
+                    $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
                     if ($response->getStatusCode() !== 200) {
                         return $response;
                     }
@@ -418,11 +426,13 @@ class ApiController extends Controller
             } elseif ($tipe == 'PROMOSI') {
                 $batalkan_promosi = Promosi::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
                 if ($batalkan_promosi) {
-                    if (Auth::user()->google_id != $batalkan_promosi->google_id) {
+                    if (Auth::user()->google_id != $batalkan_promosi->google_id && Auth::user()->role != 'staff') {
                         return response()->json(['error' => 'Anda tidak memiliki izin untuk membatalkan publikasi ini.'], 403);
                     }
 
                     $batalkan_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+                    $promosi = Promosi::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+                    $pemohon = Pengguna::where('google_id', $promosi->google_id)->first();
 
                     if ($batalkan_promosi->file_stories || $batalkan_promosi->file_poster || $batalkan_promosi->file_video) {
                         Storage::disk('local')->deleteDirectory('promosi/' . $batalkan_promosi->id_verifikasi_publikasi);
@@ -433,26 +443,140 @@ class ApiController extends Controller
                         'tanggal_batal' => Carbon::now(),
                     ]);
 
-                     if (Auth::user()->role == 'staff') {
+                    if (Auth::user()->role == 'staff') {
                         $batalkan_proses_permohonan->update([
-                            'batal_is_pemohon' => false
+                            'batal_is_pemohon' => false,
                         ]);
-                        $pesanBatal = 'dibatalkan oleh staff.';
+                        $pesanBatal = 'dibatalkan oleh staff';
                     } else {
                         $batalkan_proses_permohonan->update([
-                            'batal_is_pemohon' => true
+                            'batal_is_pemohon' => true,
                         ]);
-                        $pesanBatal = 'telah dibatalkan.';
+                        $pesanBatal = 'telah dibatalkan';
                     }
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi('Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
+                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
 
                     if ($response->getStatusCode() !== 200) {
                         return $response;
                     }
 
+                    $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
+
                     return response()->json(['message' => 'Permohonan publikasi berhasil dibatalkan.']);
+                } else {
+                    return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+                }
+            } else {
+                return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function updateStatusPublikasi(Request $request)
+    {
+        // Pastikan pengguna sudah terautentikasi
+        if (!Auth::check() && Auth::user()->role != 'staff') {
+            return response()->json(['error' => 'Pengguna tidak memiliki hak.'], 401);
+        }
+
+        // Validasi apakah pengguna yang membuat publikasi
+        $id_proses_permohonan = $request->validate(
+            [
+                'id_proses_permohonan' => [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) {
+                        $existsInPromosi = DB::table('promosi')->where('id_proses_permohonan', $value)->exists();
+                        $existsInLiputan = DB::table('liputan')->where('id_proses_permohonan', $value)->exists();
+
+                        if (!($existsInPromosi || $existsInLiputan)) {
+                            $fail('Kode proses publikasi tidak ditemukan.');
+                        }
+                    },
+                ],
+                'jenis_proses' => 'required|string|in:Diterima,Diproses,Selesai',
+            ],
+            [
+                'id_proses_permohonan.required' => 'Kode proses publikasi wajib diisi.',
+                'id_proses_permohonan.string' => 'Kode proses publikasi harus berupa teks.',
+                'jenis_proses.required' => 'Jenis proses wajib diisi.',
+                'jenis_proses.string' => 'Jenis proses harus berupa teks.',
+                'jenis_proses.in' => 'Jenis proses tidak valid.',
+            ],
+        );
+
+        try {
+            $split = explode('-', $id_proses_permohonan['id_proses_permohonan']);
+            $tipe = $split[0];
+
+            if ($tipe == 'LIPUTAN') {
+                $terima_liputan = Liputan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                if ($terima_liputan) {
+                    $terima_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                    if ($terima_proses_permohonan->status_verifikasi == 'Batal') {
+                        return response()->json(['error' => 'Permohonan publikasi sudah dibatalkan.'], 403);
+                    }
+
+                    $updateData = ['status' => $id_proses_permohonan['jenis_proses']];
+
+                    if ($id_proses_permohonan['jenis_proses'] === 'Diterima') {
+                        $updateData['tanggal_diterima'] = Carbon::now();
+                    } elseif ($id_proses_permohonan['jenis_proses'] === 'Diproses') {
+                        $updateData['tanggal_diproses'] = Carbon::now();
+                    } elseif ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
+                        $updateData['tanggal_selesai'] = Carbon::now();
+                    }
+
+                    $terima_proses_permohonan->update($updateData);
+
+                    $emailController = new EmailController();
+                    $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
+
+                    return response()->json(['message' => 'Proses permohonan publikasi berhasil diubah.']);
+                } else {
+                    return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+                }
+            } elseif ($tipe == 'PROMOSI') {
+                $terima_promosi = Promosi::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                if ($terima_promosi) {
+                    $terima_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                    if ($terima_proses_permohonan->status_verifikasi == 'Batal') {
+                        return response()->json(['error' => 'Permohonan publikasi sudah dibatalkan.'], 403);
+                    }
+
+                    $updateData = ['status' => $id_proses_permohonan['jenis_proses']];
+
+                    if ($id_proses_permohonan['jenis_proses'] === 'Diterima') {
+                        $updateData['tanggal_diterima'] = Carbon::now();
+                    } elseif ($id_proses_permohonan['jenis_proses'] === 'Diproses') {
+                        $updateData['tanggal_diproses'] = Carbon::now();
+                    } elseif ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
+                        $updateData['tanggal_selesai'] = Carbon::now();
+                    }
+
+                    $terima_proses_permohonan->update($updateData);
+
+                    $emailController = new EmailController();
+                    $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
+
+                    return response()->json(['message' => 'Proses permohonan publikasi berhasil diubah.']);
                 } else {
                     return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
                 }

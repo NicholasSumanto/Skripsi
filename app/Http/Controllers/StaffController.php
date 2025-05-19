@@ -14,8 +14,8 @@ class StaffController extends Controller
     {
         // Ambil parameter filter
         $sort = $request->input('sort', 'desc'); // default ke 'desc'
-        $pub = $request->input('pub');           // 'liputan' atau 'promosi'
-        $proses = $request->input('proses');     // 'diajukan', 'diterima', 'diproses'
+        $pub = $request->input('pub'); // 'liputan' atau 'promosi'
+        $proses = $request->input('proses'); // 'diajukan', 'diterima', 'diproses'
 
         $promosi = DB::table('promosi')
             ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
@@ -26,22 +26,7 @@ class StaffController extends Controller
             ->when($proses, function ($query, $proses) {
                 return $query->where('proses_permohonan.status', $proses); // pastikan kolom 'status' ada
             })
-            ->select(
-                'promosi.id_promosi as id',
-                'promosi.id_proses_permohonan',
-                'promosi.tanggal',
-                'promosi.judul',
-                'promosi.nama_pemohon',
-                'proses_permohonan.status',
-                'proses_permohonan.tanggal_diajukan',
-                'proses_permohonan.tanggal_diterima',
-                'proses_permohonan.tanggal_diproses',
-                'proses_permohonan.tanggal_selesai',
-                'proses_permohonan.tanggal_batal',
-                'unit.nama_unit',
-                'sub_unit.nama_sub_unit',
-                'promosi.created_at'
-            )
+            ->select('promosi.id_promosi as id', 'promosi.id_proses_permohonan', 'promosi.tanggal', 'promosi.judul', 'promosi.nama_pemohon', 'proses_permohonan.status', 'proses_permohonan.tanggal_diajukan', 'proses_permohonan.tanggal_diterima', 'proses_permohonan.tanggal_diproses', 'proses_permohonan.tanggal_selesai', 'proses_permohonan.tanggal_batal', 'unit.nama_unit', 'sub_unit.nama_sub_unit', 'promosi.created_at')
             ->get()
             ->map(function ($item) {
                 return [
@@ -72,22 +57,7 @@ class StaffController extends Controller
             ->when($proses, function ($query, $proses) {
                 return $query->where('proses_permohonan.status', $proses);
             })
-            ->select(
-                'liputan.id_liputan as id',
-                'liputan.id_proses_permohonan',
-                'liputan.tanggal',
-                'liputan.judul',
-                'liputan.nama_pemohon',
-                'proses_permohonan.status',
-                'proses_permohonan.tanggal_diajukan',
-                'proses_permohonan.tanggal_diterima',
-                'proses_permohonan.tanggal_diproses',
-                'proses_permohonan.tanggal_selesai',
-                'proses_permohonan.tanggal_batal',
-                'unit.nama_unit',
-                'sub_unit.nama_sub_unit',
-                'liputan.created_at'
-            )
+            ->select('liputan.id_liputan as id', 'liputan.id_proses_permohonan', 'liputan.tanggal', 'liputan.judul', 'liputan.nama_pemohon', 'proses_permohonan.status', 'proses_permohonan.tanggal_diajukan', 'proses_permohonan.tanggal_diterima', 'proses_permohonan.tanggal_diproses', 'proses_permohonan.tanggal_selesai', 'proses_permohonan.tanggal_batal', 'unit.nama_unit', 'sub_unit.nama_sub_unit', 'liputan.created_at')
             ->get()
             ->map(function ($item) {
                 return [
@@ -117,9 +87,7 @@ class StaffController extends Controller
             $merged = $promosi->merge($liputan);
         }
 
-        $merged = $sort === 'asc'
-            ? $merged->sortBy('tanggal')
-            : $merged->sortByDesc('tanggal');
+        $merged = $sort === 'asc' ? $merged->sortBy('tanggal') : $merged->sortByDesc('tanggal');
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $perPage = 3;
@@ -137,5 +105,33 @@ class StaffController extends Controller
         return view('staff.riwayat');
     }
 
+    public function detailPublikasi($id)
+    {
+        $split = explode('-', $id)[0];
+        $publikasi = null;
 
+        if ($split === 'PROMOSI') {
+            $publikasi = DB::table('promosi')
+                ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+                ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+                ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+                ->join('pengguna', 'promosi.google_id', '=', 'pengguna.google_id')
+                ->where('promosi.id_proses_permohonan', $id)
+                ->select('promosi.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')
+                ->first();
+
+            return view('staff.detail.detail-promosi', compact('publikasi'));
+        } elseif ($split === 'LIPUTAN') {
+            $publikasi = DB::table('liputan')
+                ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+                ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+                ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+                ->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')
+                ->where('liputan.id_proses_permohonan', $id)
+                ->select('liputan.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')
+                ->first();
+
+            return view('staff.detail.detail-liputan', compact('publikasi'));
+        }
+    }
 }

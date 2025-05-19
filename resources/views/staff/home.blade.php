@@ -159,17 +159,17 @@
                         class="mt-auto flex flex-col sm:flex-row justify-between items-center pt-4 md:justify-end justify-center">
                         @if ($item['status'] === 'Diajukan')
                             <a href="#"
-                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold">Diterima</a>
+                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold"
+                                data-terima="{{ $item['id_proses_permohonan'] }}">Diterima</a>
                         @elseif ($item['status'] === 'Diterima')
                             <a href="#"
-                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold">Diproses</a>
-                        @elseif ($item['status'] === 'Diproses')
-                            <a href="#"
-                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold">Selesai</a>
+                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold"
+                                data-diproses="{{ $item['id_proses_permohonan'] }}">Diproses</a>
                         @endif
                         <a href="#"
-                            class="px-4 py-2 rounded-md bg-red-500 w-full sm:w-auto text-center text-white font-semibold md:ms-2 ms-0 md:mt-0 mt-2">Batal</a>
-                        <a href="#"
+                            class="px-4 py-2 rounded-md bg-red-500 w-full sm:w-auto text-center text-white font-semibold md:ms-2 ms-0 md:mt-0 mt-2"
+                            data-batal="{{ $item['id_proses_permohonan'] }}">Batal</a>
+                        <a href="{{ route('staff.detail-publikasi', $item['id_proses_permohonan']) }}"
                             class="px-4 py-2 rounded-md {{ $buttonClass }} w-full sm:w-auto text-center text-base font-semibold md:ms-2 ms-0 md:mt-0 mt-2">Detail</a>
                     </div>
 
@@ -233,18 +233,153 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('js/swal.js') }}" defer></script>
-    <script src="{{ asset('js/notification.js') }}" defer></script>
     <script>
         $(document).ready(function() {
-            const userName = localStorage.getItem('user_name');
-            if (userName) {
-                alert.fire({
-                    icon: 'success',
-                    title: "Selamat datang, " + userName,
+            // Konfirmasi pembatalan
+            $('[data-batal]').on('click', function(e) {
+                e.preventDefault();
+                const id_proses_permohonan = $(this).data('batal');
+
+                Swal.fire({
+                    title: 'Batalkan Permohonan?',
+                    html: `Anda membatalkan permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Batalkan',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('staff.api.delete.publikasi') }}",
+                            headers: {
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            },
+                            data: {
+                                id_proses_permohonan: id_proses_permohonan,
+                            },
+                            beforeSend: function() {
+                                $('[data-batal]').text('Proses Batal Berlangsung').attr(
+                                    'disabled', true);
+                                $(this).text('Membatalkan...').attr('disabled', true);
+                            },
+                            success: function(res) {
+                                localStorage.setItem('batalkan_message', res.message);
+                                location.reload();
+                            },
+                            error: function(err) {
+                                $('[data-batal]').text('Batal').attr(
+                                    'disabled', false);
+                                alert.fire({
+                                    icon: 'error',
+                                    title: err.responseJSON.error ?? err
+                                        .responseJSON.message,
+                                });
+                            }
+                        });
+                    }
                 });
-                localStorage.removeItem('user_name');
-            }
+            });
+
+            // Konfirmasi terima
+            $('[data-terima]').on('click', function(e) {
+                e.preventDefault();
+                const id_proses_permohonan = $(this).data('terima');
+
+                Swal.fire({
+                    title: 'Terima Permohonan?',
+                    html: `Anda menerima permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#088404',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Terima',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('staff.api.update.status-publikasi') }}",
+                            headers: {
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            },
+                            data: {
+                                id_proses_permohonan: id_proses_permohonan,
+                                jenis_proses: 'Diterima',
+                            },
+                            beforeSend: function() {
+                                $('[data-terima]').text('Proses Terima Berlangsung').attr(
+                                    'disabled', true);
+                                $(this).text('Menerima...').attr('disabled', true);
+                            },
+                            success: function(res) {
+                                localStorage.setItem('terima_message', res.message);
+                                location.reload();
+                            },
+                            error: function(err) {
+                                $('[data-terima]').text('Terima').attr(
+                                    'disabled', false);
+                                alert.fire({
+                                    icon: 'error',
+                                    title: err.responseJSON.error ?? err
+                                        .responseJSON.message,
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Konfirmasi diproses
+            $('[data-diproses]').on('click', function(e) {
+                e.preventDefault();
+                const id_proses_permohonan = $(this).data('diproses');
+
+                Swal.fire({
+                    title: 'Proses Permohonan?',
+                    html: `Anda memproses permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#088404',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Proses',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('staff.api.update.status-publikasi') }}",
+                            headers: {
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            },
+                            data: {
+                                id_proses_permohonan: id_proses_permohonan,
+                                jenis_proses: 'Diproses',
+                            },
+                            beforeSend: function() {
+                                $('[data-diproses]').text('Proses Diproses Berlangsung').attr(
+                                    'disabled', true);
+                                $(this).text('Memproses...').attr('disabled', true);
+                            },
+                            success: function(res) {
+                                localStorage.setItem('diproses_message', res.message);
+                                location.reload();
+                            },
+                            error: function(err) {
+                                $('[data-diproses]').text('Diproses').attr(
+                                    'disabled', false);
+                                alert.fire({
+                                    icon: 'error',
+                                    title: err.responseJSON.error ?? err
+                                        .responseJSON.message,
+                                });
+                            }
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection
