@@ -5,7 +5,7 @@
 @section('content')
     <main class="flex-grow bg-white py-20 px-4">
         <div class="text-center mb-16">
-            <h1 class="text-4xl md:text-5xl font-bold text-primary-dark mb-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#1a237e] mb-4">
                 Pilih jenis publikasi yang kalian butuhkan!
             </h1>
         </div>

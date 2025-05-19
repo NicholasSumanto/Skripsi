@@ -353,7 +353,7 @@ class ApiController extends Controller
                 'id_proses_permohonan' => [
                     'required',
                     'string',
-                    function ($attribute, $value, $fail) {
+                    function ($value, $fail) {
                         $existsInPromosi = DB::table('promosi')->where('id_proses_permohonan', $value)->exists();
                         $existsInLiputan = DB::table('liputan')->where('id_proses_permohonan', $value)->exists();
 
@@ -372,10 +372,15 @@ class ApiController extends Controller
         try {
             $split = explode('-', $id_proses_permohonan['id_proses_permohonan']);
             $tipe = $split[0];
+            $pesanBatal = null;
 
             if ($tipe == 'LIPUTAN') {
                 $batalkan_liputan = Liputan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
                 if ($batalkan_liputan) {
+                    if (Auth::user()->google_id != $batalkan_liputan->google_id) {
+                        return response()->json(['error' => 'Anda tidak memiliki izin untuk membatalkan publikasi ini.'], 403);
+                    }
+
                     $batalkan_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
 
                     if ($batalkan_liputan->file_liputan) {
@@ -387,8 +392,20 @@ class ApiController extends Controller
                         'tanggal_batal' => Carbon::now(),
                     ]);
 
+                    if (Auth::user()->role == 'staff') {
+                        $batalkan_liputan->update([
+                            'batal_is_pemohon' => false
+                        ]);
+                        $pesanBatal = 'dibatalkan oleh staff.';
+                    } else {
+                        $batalkan_liputan->update([
+                            'batal_is_pemohon' => true
+                        ]);
+                        $pesanBatal = 'telah dibatalkan.';
+                    }
+
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi('Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan']);
+                    $response = $emailController->batalPublikasi('Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
 
                     if ($response->getStatusCode() !== 200) {
                         return $response;
@@ -401,6 +418,10 @@ class ApiController extends Controller
             } elseif ($tipe == 'PROMOSI') {
                 $batalkan_promosi = Promosi::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
                 if ($batalkan_promosi) {
+                    if (Auth::user()->google_id != $batalkan_promosi->google_id) {
+                        return response()->json(['error' => 'Anda tidak memiliki izin untuk membatalkan publikasi ini.'], 403);
+                    }
+
                     $batalkan_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
 
                     if ($batalkan_promosi->file_stories || $batalkan_promosi->file_poster || $batalkan_promosi->file_video) {
@@ -412,8 +433,20 @@ class ApiController extends Controller
                         'tanggal_batal' => Carbon::now(),
                     ]);
 
+                     if (Auth::user()->role == 'staff') {
+                        $batalkan_proses_permohonan->update([
+                            'batal_is_pemohon' => false
+                        ]);
+                        $pesanBatal = 'dibatalkan oleh staff.';
+                    } else {
+                        $batalkan_proses_permohonan->update([
+                            'batal_is_pemohon' => true
+                        ]);
+                        $pesanBatal = 'telah dibatalkan.';
+                    }
+
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi('Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan']);
+                    $response = $emailController->batalPublikasi('Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
 
                     if ($response->getStatusCode() !== 200) {
                         return $response;

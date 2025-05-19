@@ -11,7 +11,7 @@
 
             {{-- Form Input Kode Kegiatan --}}
             <section class="bg-[#C4C4C4] rounded-lg pt-6 pb-4">
-                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Kegiatan</h2>
+                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Lacak Publikasi</h2>
                 <form class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 mx-2" method="GET"
                     action="{{ route('pemohon.lacak') }}">
                     <input id="kode_proses" name="kode_proses" type="text" placeholder="Masukkan kode"

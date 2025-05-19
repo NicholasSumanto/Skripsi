@@ -96,8 +96,7 @@
         </div>
         <div class="text-container">
             <h2>Halo, {{ $namaPemohon }}</h2>
-            <p>Permohonan <strong>{{ $jenisPermohonan }} "{{ $judulPermohonan }}"</strong> dengan kode <strong>{{ $id_proses_permohonan }}</strong>
-                telah dibatalkan.
+            <p>Permohonan <strong>{{ $jenisPermohonan }} "{{ $judulPermohonan }}"</strong> dengan kode <strong>{{ $id_proses_permohonan }}</strong> {{ $pesanBatal }}.
             </p>
             <div class="alert-container">
                 <p class="alert-text">Jika Anda merasa tidak melakukan pembatalan permohonan publikasi segera hubungi

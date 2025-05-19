@@ -33,11 +33,11 @@ class EmailController extends Controller
         }
     }
 
-    public function batalPublikasi($permohonan, $judulPermohonan, $id_proses_permohonan)
+    public function batalPublikasi($permohonan, $judulPermohonan, $id_proses_permohonan, $pesanBatal)
     {
         try {
             // Kirim Email
-            Mail::to(Auth::user()->email)->send(new BatalPublikasi(Auth::user()->name, "Publikasi $permohonan", $judulPermohonan, $id_proses_permohonan));
+            Mail::to(Auth::user()->email)->send(new BatalPublikasi(Auth::user()->name, "Publikasi $permohonan", $judulPermohonan, $id_proses_permohonan, $pesanBatal));
             return response()->json(['message' => 'Cek inbox atau folder spam email untuk pembatalan!']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error Pada Backend : ' . $e->getMessage()], 500);

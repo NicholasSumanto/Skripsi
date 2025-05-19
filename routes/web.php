@@ -65,6 +65,9 @@ Route::middleware(['auth', 'role:staff'])
     ->name('staff.')
     ->group(function () {
         Route::get('/home', [StaffController::class, 'home'])->name('home');
+        Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
+        Route::get('/staff/detail/liputan/{id}', [StaffController::class, 'detailLiputan'])->name('staff.detail.detail-liputan');
+        Route::get('/staff/detail/promosi/{id}', [StaffController::class, 'detailPromosi'])->name('staff.detail.detail-promosi');
     });
 // Pemohon End
 

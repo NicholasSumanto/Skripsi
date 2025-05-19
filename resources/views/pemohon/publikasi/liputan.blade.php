@@ -56,7 +56,9 @@
                     <div>
                         <label class="font-semibold text-lg">Tanggal Acara * :</label>
                         <input type="date" name="tanggal" placeholder="Pilih tanggal acara"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
+                            style="height: 50px;"
+                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                     </div>
 
                     <div>
@@ -68,7 +70,7 @@
                     <div>
                         <label class="font-semibold text-lg">Unit * :</label>
                         <select id="unit" name="unit"
-                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class=" w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                             <option value="">Pilih Unit</option>
                             @foreach ($unit as $u)
                                 <option value="{{ $u->id_unit }}">{{ $u->nama_unit }}</option>
@@ -79,11 +81,10 @@
                     <div>
                         <label class="font-semibold text-lg">Sub Unit * :</label>
                         <select id="id_sub_unit" name="id_sub_unit"
-                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class=" w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                             <option value="">Pilih Sub Unit</option>
                         </select>
                     </div>
-
 
                     <div>
                         <label class="font-semibold text-lg">Rundown dan TOR * :</label>

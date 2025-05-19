@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
 @endsection
 
+
 @section('content')
     <main class="flex-grow bg-gray-50 py-16 px-6">
         <h1 class="text-5xl font-bold mb-12 text-center" style="color: #1E285F;">Permohonan Publikasi<br>Promosi Acara</h1>
@@ -20,7 +21,8 @@
                     <div>
                         <label class="font-semibold text-lg">Nomor Handphone * :</label>
                         <input type="text" name="nomor_handphone" placeholder="+62"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white"
+                            id="nomor_handphone">
                     </div>
 
                     <div>
@@ -45,13 +47,15 @@
                     <div>
                         <label class="font-semibold text-lg">Tanggal Acara * :</label>
                         <input type="date" name="tanggal"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white"
+                            style="height: 50px;"
+                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Unit * :</label>
                         <select id="unit" name="unit"
-                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                             <option value="">Pilih Unit</option>
                             @foreach ($unit as $u)
                                 <option value="{{ $u->id_unit }}">{{ $u->nama_unit }}</option>
@@ -62,7 +66,7 @@
                     <div>
                         <label class="font-semibold text-lg">Sub Unit * :</label>
                         <select id="id_sub_unit" name="id_sub_unit"
-                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-[#006034] bg-white">
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                             <option value="">Pilih Sub Unit</option>
                         </select>
                     </div>
@@ -304,4 +308,16 @@
             });
         });
     </script>
+
+    <script>
+    document.getElementById('nomor_handphone').addEventListener('input', function() {
+        let value = this.value;
+
+        if (value.startsWith('08')) {
+            this.value = '+62' + value.substring(2);
+        } else if (value.startsWith('08') || value.startsWith('+62')) {
+            this.value = value.replace(/^08/, '+62'); 
+        }
+    });
+</script>
 @endsection

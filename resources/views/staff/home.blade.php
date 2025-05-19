@@ -155,11 +155,20 @@
 
                     </section>
 
-                    <div class="mt-auto flex flex-col sm:flex-row justify-between items-center pt-4 md:justify-end justify-center">
+                    <div
+                        class="mt-auto flex flex-col sm:flex-row justify-between items-center pt-4 md:justify-end justify-center">
+                        @if ($item['status'] === 'Diajukan')
+                            <a href="#"
+                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold">Diterima</a>
+                        @elseif ($item['status'] === 'Diterima')
+                            <a href="#"
+                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold">Diproses</a>
+                        @elseif ($item['status'] === 'Diproses')
+                            <a href="#"
+                                class="px-4 py-2 rounded-md bg-green-500 w-full sm:w-auto text-center text-white font-semibold">Selesai</a>
+                        @endif
                         <a href="#"
-                            class="px-4 py-2 rounded-md {{ $buttonClass }} w-full sm:w-auto text-center text-base font-semibold">Diterima</a>
-                        <a href="#"
-                            class="px-4 py-2 rounded-md {{ $buttonClass }} w-full sm:w-auto text-center text-base font-semibold md:ms-2 ms-0 md:mt-0 mt-2">Ditolak</a>
+                            class="px-4 py-2 rounded-md bg-red-500 w-full sm:w-auto text-center text-white font-semibold md:ms-2 ms-0 md:mt-0 mt-2">Batal</a>
                         <a href="#"
                             class="px-4 py-2 rounded-md {{ $buttonClass }} w-full sm:w-auto text-center text-base font-semibold md:ms-2 ms-0 md:mt-0 mt-2">Detail</a>
                     </div>

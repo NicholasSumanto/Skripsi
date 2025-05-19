@@ -131,4 +131,11 @@ class StaffController extends Controller
 
         return view('staff.home', compact('publikasi'));
     }
+
+    public function riwayat()
+    {
+        return view('staff.riwayat');
+    }
+
+
 }
