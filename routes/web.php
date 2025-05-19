@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PemohonController;
 use App\Http\Controllers\UmumController;
 use App\Http\Controllers\PublikasiController;
@@ -42,7 +43,6 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:pemohon'])
         Route::post('/api/post/publikasi/promosi', [ApiController::class, 'postPromosi'])->name('api.post.promosi');
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('api.email.verifikasi-publikasi');
-
     });
 Route::middleware(['redirectIfNotAuthencicated', 'role:pemohon'])
     ->prefix('/pemohon')
@@ -67,15 +67,17 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
     ->group(function () {
         Route::get('/home', [StaffController::class, 'home'])->name('home');
         Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
-        // Route::get('/detail/liputan/{id}', [StaffController::class, 'detailLiputan'])->name('staff.detail.detail-liputan');
-        // Route::get('/detail/promosi/{id}', [StaffController::class, 'detailPromosi'])->name('staff.detail.detail-promosi');
         Route::get('/detail-publikasi/{id}', [StaffController::class, 'detailPublikasi'])->name('detail-publikasi');
 
         // API
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/api/update/status-publikasi/', [ApiController::class, 'updateStatusPublikasi'])->name('api.update.status-publikasi');
+        Route::get('/api/get/file-promosi/{id}/{type}/{filename}', [FileController::class, 'getURL'])
+            ->where('filename', '.*')
+            ->name('api.get.file-promosi');
+        Route::get('/thumbnail/video/{id}/{type}/{filename}', [FileController::class, 'getVideoThumbnailTemp'])->name('api.get.video-thumbnail-temp');
     });
-// Pemohon End
+// Staff End
 
 // API
 // Route::get('auth/google/callback', [AccountController::class, 'handleProvidersCallback'])->name('google.callback');

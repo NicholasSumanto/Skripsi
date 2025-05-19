@@ -1,8 +1,7 @@
 @extends('template.pemohon.main-pemohon')
 @section('title', 'Form Promosi')
 @section('custom-header')
-    {{-- <link rel="stylesheet" href="{{ asset('css/chosen.css') }}"> --}}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
 @endsection
 
 
@@ -11,7 +10,7 @@
         <h1 class="text-5xl font-bold mb-12 text-center" style="color: #1E285F;">Permohonan Publikasi<br>Promosi Acara</h1>
 
         <div class="max-w-4xl mx-auto bg-gray-100 text-[#006034] rounded-xl shadow-xl p-10">
-            <form id="form-promosi" class="space-y-6">
+            <form id="form-promosi" class="space-y-6" enctype="multipart/form-data">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="font-semibold text-lg">Nama Pemohon * :</label>
@@ -114,11 +113,9 @@
 @endsection
 
 @section('script')
-    {{-- <script src="{{ asset('js/chosen.js') }}" defer></script> --}}
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{{ asset('js/chosen.js') }}"></script>
     <script>
         $(document).ready(function() {
-            // $('.chosen-select').select2();
             $('.chosen-select').select2();
 
             const chosenClasses = [
@@ -131,7 +128,8 @@
                 'focus:ring-2',
                 'focus:ring-[#FFCC29]',
                 'focus:outline-none',
-                'text-black'
+                'text-black',
+                'bg-white',
             ];
 
             function applyChosenStylesByClass(className) {
@@ -143,15 +141,40 @@
                 return false;
             }
 
+            function hideElementsByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                Array.from(elements).forEach(el => {
+                    el.style.setProperty('background', 'transparent', 'important');
+                    el.style.setProperty('border', 'none', 'important');
+                });
+            }
+
+            function changeTextColorByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                Array.from(elements).forEach(el => {
+                    el.style.setProperty('color', '#006034', 'important');
+                    el.style.setProperty('position', 'absolute', 'important');
+                    el.style.setProperty('top', '50%', 'important');
+                    el.style.setProperty('transform', 'translateY(-50%)', 'important');
+                });
+            }
+
+            function removeWidthByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                Array.from(elements).forEach(el => {
+                    el.style.removeProperty('width');
+                });
+            }
 
 
             // Observer untuk elemen yang dimunculkan chosen
             const observer = new MutationObserver(function() {
-                // const ready1 = applyChosenStylesByClass('select2');
-                const ready2 = applyChosenStylesByClass('select2-selection__rendered');
-                const ready3 = applyChosenStylesByClass('selection');
-                // const ready4 = applyChosenStylesByClass('select2-selection');
-                if (ready2 && ready3) {
+                const ready1 = applyChosenStylesByClass('select2');
+                const ready2 = hideElementsByClass('select2-selection');
+                const ready3 = changeTextColorByClass('select2-selection__rendered');
+                const ready4 = changeTextColorByClass('select2-selection__arrow');
+                const ready5 = removeWidthByClass('select2');
+                if (ready1 && ready2 && ready3 && ready4) {
                     observer.disconnect();
                 }
             });
@@ -186,11 +209,6 @@
                                 );
                             });
                             $('#id_sub_unit').trigger("chosen:updated");
-
-                            // Tambahkan styling ulang
-                            setTimeout(() => {
-                                applyChosenStylesById('id_sub_unit_chosen');
-                            }, 100);
                         },
                         error: function() {
                             $('#id_sub_unit').empty().append(

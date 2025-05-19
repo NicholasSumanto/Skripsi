@@ -228,7 +228,7 @@ class ApiController extends Controller
                 'file_poster.max' => 'File Instagram Post tidak boleh lebih dari 15MB.',
                 'file_video.mimes' => 'File liputan harus berupa file dengan format mp4.',
                 'file_video.*.mimes' => 'File liputan harus berupa file dengan format mp4.',
-                'file_video.max' => 'File Videotron tidak boleh lebih dari 15MB.',
+                'file_video.max' => 'File Videotron tidak boleh lebih dari 150MB.',
             ],
         );
 

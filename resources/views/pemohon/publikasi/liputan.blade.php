@@ -2,18 +2,6 @@
 @section('title', 'Form Liputan')
 @section('custom-header')
     <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
-    {{--
-    <style>
-        .chosen-container-single .chosen-single {
-            height: 44px;
-            border-radius: 0.5rem;
-            padding: 10px 12px;
-            background-color: white;
-            border: 1px solid #d1d5db;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            font-size: 16px;
-        }
-    </style> --}}
 @endsection
 
 @section('content')
@@ -57,8 +45,7 @@
                         <label class="font-semibold text-lg">Tanggal Acara * :</label>
                         <input type="date" name="tanggal" placeholder="Pilih tanggal acara"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
-                            style="height: 50px;"
-                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                            style="height: 50px;" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                     </div>
 
                     <div>
@@ -70,7 +57,7 @@
                     <div>
                         <label class="font-semibold text-lg">Unit * :</label>
                         <select id="unit" name="unit"
-                            class=" w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                             <option value="">Pilih Unit</option>
                             @foreach ($unit as $u)
                                 <option value="{{ $u->id_unit }}">{{ $u->nama_unit }}</option>
@@ -81,7 +68,7 @@
                     <div>
                         <label class="font-semibold text-lg">Sub Unit * :</label>
                         <select id="id_sub_unit" name="id_sub_unit"
-                            class=" w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                             <option value="">Pilih Sub Unit</option>
                         </select>
                     </div>
@@ -139,12 +126,10 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('js/chosen.js') }}" defer></script>
+    <script src="{{ asset('js/chosen.js') }}"></script>
     <script>
         $(document).ready(function() {
-            $('.chosen-select').chosen({
-                width: "100%"
-            });
+            $('.chosen-select').select2();
 
             const chosenClasses = [
                 'w-full',
@@ -156,23 +141,52 @@
                 'focus:ring-2',
                 'focus:ring-[#FFCC29]',
                 'focus:outline-none',
-                'text-black'
+                'text-black',
+                'bg-white',
             ];
 
-            function applyChosenStylesById(id) {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.classList.add(...chosenClasses);
+            function applyChosenStylesByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                if (elements.length > 0) {
+                    Array.from(elements).forEach(el => el.classList.add(...chosenClasses));
                     return true;
                 }
                 return false;
             }
 
+            function hideElementsByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                Array.from(elements).forEach(el => {
+                    el.style.setProperty('background', 'transparent', 'important');
+                    el.style.setProperty('border', 'none', 'important');
+                });
+            }
+
+            function changeTextColorByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                Array.from(elements).forEach(el => {
+                    el.style.setProperty('color', '#006034', 'important');
+                    el.style.setProperty('position', 'absolute', 'important');
+                    el.style.setProperty('top', '50%', 'important');
+                    el.style.setProperty('transform', 'translateY(-50%)', 'important');
+                });
+            }
+
+            function removeWidthByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                Array.from(elements).forEach(el => {
+                    el.style.removeProperty('width');
+                });
+            }
+
             // Observer untuk elemen yang dimunculkan chosen
             const observer = new MutationObserver(function() {
-                const ready1 = applyChosenStylesById('id_sub_unit_chosen');
-                const ready2 = applyChosenStylesById('unit_chosen');
-                if (ready1 && ready2) {
+                const ready1 = applyChosenStylesByClass('select2');
+                const ready2 = hideElementsByClass('select2-selection');
+                const ready3 = changeTextColorByClass('select2-selection__rendered');
+                const ready4 = changeTextColorByClass('select2-selection__arrow');
+                const ready5 = removeWidthByClass('select2');
+                if (ready1 && ready2 && ready3 && ready4) {
                     observer.disconnect();
                 }
             });
@@ -207,11 +221,6 @@
                                 );
                             });
                             $('#id_sub_unit').trigger("chosen:updated");
-
-                            // Tambahkan styling ulang
-                            setTimeout(() => {
-                                applyChosenStylesById('id_sub_unit_chosen');
-                            }, 100);
                         },
                         error: function() {
                             $('#id_sub_unit').empty().append(

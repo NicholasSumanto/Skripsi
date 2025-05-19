@@ -13,7 +13,7 @@ class StaffController extends Controller
     public function home(Request $request)
     {
         // Ambil parameter filter
-        $sort = $request->input('sort', 'desc'); // default ke 'desc'
+        $sort = $request->input('sort', 'asc'); // default ke 'desc'
         $pub = $request->input('pub'); // 'liputan' atau 'promosi'
         $proses = $request->input('proses'); // 'diajukan', 'diterima', 'diproses'
 
@@ -111,25 +111,11 @@ class StaffController extends Controller
         $publikasi = null;
 
         if ($split === 'PROMOSI') {
-            $publikasi = DB::table('promosi')
-                ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-                ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
-                ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-                ->join('pengguna', 'promosi.google_id', '=', 'pengguna.google_id')
-                ->where('promosi.id_proses_permohonan', $id)
-                ->select('promosi.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')
-                ->first();
+            $publikasi = DB::table('promosi')->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'promosi.google_id', '=', 'pengguna.google_id')->where('promosi.id_proses_permohonan', $id)->select('promosi.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')->first();
 
             return view('staff.detail.detail-promosi', compact('publikasi'));
         } elseif ($split === 'LIPUTAN') {
-            $publikasi = DB::table('liputan')
-                ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-                ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
-                ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-                ->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')
-                ->where('liputan.id_proses_permohonan', $id)
-                ->select('liputan.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')
-                ->first();
+            $publikasi = DB::table('liputan')->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')->where('liputan.id_proses_permohonan', $id)->select('liputan.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')->first();
 
             return view('staff.detail.detail-liputan', compact('publikasi'));
         }

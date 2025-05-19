@@ -2,12 +2,15 @@
 @section('title', 'Detail Permohonan Publikasi')
 
 @section('custom-header')
-    <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
+    <link href="{{ asset('css/nanoGallery/nanogallery2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/nanoGallery/nanogallery2.woff.min.css') }}" rel="stylesheet">
 @endsection
+
 
 @section('content')
     <main class="flex-grow bg-gray-50 py-16 px-6">
-        <h1 class="text-5xl font-bold mb-12 text-center" style="color: #1E285F;">Detail Permohonan Publikasi<br>Promosi Acara</h1>
+        <h1 class="text-5xl font-bold mb-12 text-center" style="color: #1E285F;">Detail Permohonan Publikasi<br>Promosi Acara
+        </h1>
 
         <div class="max-w-4xl mx-auto bg-gray-100 text-[#006034] rounded-xl shadow-xl p-10">
             <form id="form-promosi-view" class="space-y-6">
@@ -64,20 +67,99 @@
 
                 <div class="mt-6">
                     <label class="font-semibold text-lg block mb-2">Materi Promosi :</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block mb-1">Instagram Stories</label>
-                            <p>{{ $publikasi->file_stories ? 'Tersedia' : 'Tidak ada file' }}</p>
-                        </div>
-                        <div>
-                            <label class="block mb-1">Instagram Post</label>
-                            <p>{{ $publikasi->file_poster ? 'Tersedia' : 'Tidak ada file' }}</p>
-                        </div>
-                        <div>
-                            <label class="block mb-1">Videotron</label>
-                            <p>{{ $publikasi->file_video ? 'Tersedia' : 'Tidak ada file' }}</p>
-                        </div>
+                    <div class="space-y-8">
+
+                        @php
+                            function getThumbUrl($publikasi, $type, $file)
+                            {
+                                $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                                return $ext === 'mp4'
+                                    ? route('staff.api.get.video-thumbnail-temp', [
+                                        'id' => $publikasi->id_verifikasi_publikasi,
+                                        'type' => $type,
+                                        'filename' => $file,
+                                    ])
+                                    : route('staff.api.get.file-promosi', [
+                                        'id' => $publikasi->id_verifikasi_publikasi,
+                                        'type' => $type,
+                                        'filename' => $file,
+                                    ]);
+                            }
+
+                            function getFileUrl($publikasi, $type, $file)
+                            {
+                                return route('staff.api.get.file-promosi', [
+                                    'id' => $publikasi->id_verifikasi_publikasi,
+                                    'type' => $type,
+                                    'filename' => $file,
+                                ]);
+                            }
+                        @endphp
+
+                        @if ($publikasi->file_stories)
+                            <div>
+                                <label class="block font-semibold text-green-700 mb-2">Instagram Stories</label>
+                                <div id="nanoGallery-stories">
+                                    @foreach (json_decode($publikasi->file_stories) as $file)
+                                        @if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'mp4')
+                                            <a href="{{ getFileUrl($publikasi, 'file_stories', $file) }}"
+                                                data-ngdesc="Instagram Story (Video)"
+                                                data-downloadurl="video/{{ basename($file) }}:{{ getFileUrl($publikasi, 'file_stories', $file) }}"
+                                                data-ngthumb="{{ getThumbUrl($publikasi, 'file_stories', $file) }}"></a>
+                                        @else
+                                            <a href="{{ getFileUrl($publikasi, 'file_stories', $file) }}"
+                                                data-ngdesc="Instagram Story"
+                                                data-downloadurl="image/{{ basename($file) }}:{{ getFileUrl($publikasi, 'file_stories', $file) }}"></a>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- file_poster --}}
+                        @if ($publikasi->file_poster)
+                            <div>
+                                <label class="block font-semibold text-green-700 mb-2">Instagram Post</label>
+                                <div id="nanoGallery-poster">
+                                    @foreach (json_decode($publikasi->file_poster) as $file)
+                                        @if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'mp4')
+                                            <a href="{{ getFileUrl($publikasi, 'file_poster', $file) }}"
+                                                data-ngdesc="Instagram Post (Video)"
+                                                data-downloadurl="video/{{ basename($file) }}:{{ getFileUrl($publikasi, 'file_poster', $file) }}"
+                                                data-ngthumb="{{ getThumbUrl($publikasi, 'file_poster', $file) }}"></a>
+                                        @else
+                                            <a href="{{ getFileUrl($publikasi, 'file_poster', $file) }}"
+                                                data-ngdesc="Instagram Post"
+                                                data-downloadurl="image/{{ basename($file) }}:{{ getFileUrl($publikasi, 'file_poster', $file) }}"></a>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- file_video --}}
+                        @if ($publikasi->file_video)
+                            <div>
+                                <label class="block font-semibold text-green-700 mb-2">Videotron</label>
+                                <div id="nanoGallery-videotron">
+                                    @foreach (json_decode($publikasi->file_video) as $file)
+                                        @if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'mp4')
+                                            <a href="{{ getFileUrl($publikasi, 'file_video', $file) }}"
+                                                data-ngdesc="Videotron (Video)"
+                                                data-ngthumb="{{ getThumbUrl($publikasi, 'file_video', $file) }}"
+                                                data-downloadurl="image/{{ basename($file) }}:{{ getFileUrl($publikasi, 'file_video', $file) }}"></a>
+                                        @else
+                                            <a href="{{ getFileUrl($publikasi, 'file_video', $file) }}"
+                                                data-ngdesc="Videotron"
+                                                data-downloadurl="image/{{ basename($file) }}:{{ getFileUrl($publikasi, 'file_video', $file) }}"></a>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                     </div>
+
                 </div>
 
                 <div class="mt-6">
@@ -87,8 +169,7 @@
                 </div>
 
                 <div class="flex justify-between mt-6">
-                    <button type="button"
-                        onclick="window.location.href='{{ route('pemohon.home') }}';"
+                    <button type="button" onclick="window.location.href='{{ route('pemohon.home') }}';"
                         class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-full transition duration-300">
                         Batal
                     </button>
@@ -96,4 +177,60 @@
             </form>
         </div>
     </main>
+@endsection
+
+@section('script')
+    <script src="{{ asset('js/nanoGallery/jquery.nanogallery2.core.min.js') }}"></script>
+    <script src="{{ asset('js/nanoGallery/nanogallery2.min.js') }}"></script>
+    <script src="{{ asset('js/nanoGallery/jquery.nanogallery2.data_flickr.min.js') }}"></script>
+    <script src="{{ asset('js/nanoGallery/jquery.nanogallery2.data_nano_photos_provider2.min.js') }}"></script>\
+    <script src="{{ asset('js/nanoGallery/jquery.nanogallery2.data_google3.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#nanoGallery-stories').nanogallery2({
+                thumbnailHeight: 300,
+                thumbnailWidth: 'auto',
+                thumbnailBorderVertical: 0,
+                thumbnailBorderHorizontal: 0,
+                galleryDisplayMode: 'moreButton',
+                thumbnailHoverEffect2: 'scale120',
+                galleryTheme: {
+                    navigationDots: false
+                },
+                viewerTools: {
+                    topRight: 'download, rotateLeft, rotateRight, fullscreen, close'
+                }
+            });
+
+            $('#nanoGallery-poster').nanogallery2({
+                thumbnailHeight: 300,
+                thumbnailWidth: 'auto',
+                thumbnailBorderVertical: 0,
+                thumbnailBorderHorizontal: 0,
+                galleryDisplayMode: 'moreButton',
+                thumbnailHoverEffect2: 'scale120',
+                galleryTheme: {
+                    navigationDots: false
+                },
+                viewerTools: {
+                    topRight: 'download, rotateLeft, rotateRight, fullscreen, close'
+                }
+            });
+
+            $('#nanoGallery-videotron').nanogallery2({
+                thumbnailHeight: 300,
+                thumbnailWidth: 'auto',
+                thumbnailBorderVertical: 0,
+                thumbnailBorderHorizontal: 0,
+                galleryDisplayMode: 'rows',
+                thumbnailHoverEffect2: 'scale120',
+                galleryTheme: {
+                    navigationDots: false
+                },
+                viewerTools: {
+                    topRight: 'download, rotateLeft, rotateRight, fullscreen, close'
+                }
+            });
+        });
+    </script>
 @endsection
