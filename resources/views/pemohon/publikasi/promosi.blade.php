@@ -1,7 +1,8 @@
 @extends('template.pemohon.main-pemohon')
 @section('title', 'Form Promosi')
 @section('custom-header')
-    <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/chosen.css') }}"> --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endsection
 
 
@@ -48,14 +49,13 @@
                         <label class="font-semibold text-lg">Tanggal Acara * :</label>
                         <input type="date" name="tanggal"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white"
-                            style="height: 50px;"
-                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                            style="height: 50px;" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Unit * :</label>
                         <select id="unit" name="unit"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                             <option value="">Pilih Unit</option>
                             @foreach ($unit as $u)
                                 <option value="{{ $u->id_unit }}">{{ $u->nama_unit }}</option>
@@ -66,7 +66,7 @@
                     <div>
                         <label class="font-semibold text-lg">Sub Unit * :</label>
                         <select id="id_sub_unit" name="id_sub_unit"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                             <option value="">Pilih Sub Unit</option>
                         </select>
                     </div>
@@ -114,12 +114,12 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('js/chosen.js') }}" defer></script>
+    {{-- <script src="{{ asset('js/chosen.js') }}" defer></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.chosen-select').chosen({
-                width: "100%"
-            });
+            // $('.chosen-select').select2();
+            $('.chosen-select').select2();
 
             const chosenClasses = [
                 'w-full',
@@ -134,20 +134,24 @@
                 'text-black'
             ];
 
-            function applyChosenStylesById(id) {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.classList.add(...chosenClasses);
+            function applyChosenStylesByClass(className) {
+                const elements = document.getElementsByClassName(className);
+                if (elements.length > 0) {
+                    Array.from(elements).forEach(el => el.classList.add(...chosenClasses));
                     return true;
                 }
                 return false;
             }
 
+
+
             // Observer untuk elemen yang dimunculkan chosen
             const observer = new MutationObserver(function() {
-                const ready1 = applyChosenStylesById('id_sub_unit_chosen');
-                const ready2 = applyChosenStylesById('unit_chosen');
-                if (ready1 && ready2) {
+                // const ready1 = applyChosenStylesByClass('select2');
+                const ready2 = applyChosenStylesByClass('select2-selection__rendered');
+                const ready3 = applyChosenStylesByClass('selection');
+                // const ready4 = applyChosenStylesByClass('select2-selection');
+                if (ready2 && ready3) {
                     observer.disconnect();
                 }
             });
@@ -310,14 +314,14 @@
     </script>
 
     <script>
-    document.getElementById('nomor_handphone').addEventListener('input', function() {
-        let value = this.value;
+        document.getElementById('nomor_handphone').addEventListener('input', function() {
+            let value = this.value;
 
-        if (value.startsWith('08')) {
-            this.value = '+62' + value.substring(2);
-        } else if (value.startsWith('08') || value.startsWith('+62')) {
-            this.value = value.replace(/^08/, '+62'); 
-        }
-    });
-</script>
+            if (value.startsWith('08')) {
+                this.value = '+62' + value.substring(2);
+            } else if (value.startsWith('08') || value.startsWith('+62')) {
+                this.value = value.replace(/^08/, '+62');
+            }
+        });
+    </script>
 @endsection
