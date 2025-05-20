@@ -8,11 +8,19 @@
 
         <!-- Desktop Menu -->
         <nav class="hidden md:flex items-center space-x-6">
-            <a href="{{ route('staff.home') }}" class="text-white hover:text-gray-200">Publikasi</a>
-            <a href="{{ route('staff.riwayat') }}" class="text-white hover:text-gray-200">Riwayat</a>
-            <a href="" class="text-white hover:text-gray-200 logout-btn"><img class="w-8 h-8"
-                    src="{{ asset('img/logout.png') }}" alt="Logout Icon"></a>
+            <a href="{{ route('staff.home') }}"
+                class="text-white hover:text-gray-200 {{ request()->routeIs('staff.home') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">
+                Publikasi
+            </a>
+            <a href="{{ route('staff.riwayat') }}"
+                class="text-white hover:text-gray-200 {{ request()->routeIs('staff.riwayat') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">
+                Riwayat
+            </a>
+            <a href="" class="text-white hover:text-gray-200 logout-btn">
+                <img class="w-8 h-8" src="{{ asset('img/logout.png') }}" alt="Logout Icon">
+            </a>
         </nav>
+
 
         <!-- Mobile Button -->
         <div class="md:hidden flex items-center" x-data="{ open: false }">
@@ -29,13 +37,30 @@
             <!-- Mobile Menu Dropdown -->
             <div x-show="open" @click.away="open = false"
                 class="absolute top-16 right-4 bg-primary rounded-md shadow-lg flex flex-col items-start py-2 w-40 p-2">
+
                 <a href="{{ route('staff.home') }}"
-                    class="w-full text-white hover:bg-primary-dark px-4 py-2">Publikasi</a>
+                    class="w-full px-4 py-2 rounded-md
+          {{ request()->routeIs('staff.home')
+              ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
+              : 'text-white hover:bg-primary-dark' }}">
+                    Publikasi
+                </a>
+
                 <a href="{{ route('staff.riwayat') }}"
-                    class="w-full text-white hover:bg-primary-dark px-4 py-2">Riwayat</a>
+                    class="w-full px-4 py-2 rounded-md
+          {{ request()->routeIs('staff.riwayat')
+              ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
+              : 'text-white hover:bg-primary-dark' }}">
+                    Riwayat
+                </a>
+
                 <a href="#"
-                    class="w-full text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md mt-2 logout-btn">Logout</a>
+                    class="w-full text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md mt-2 logout-btn text-center">
+                    Logout
+                </a>
+
             </div>
+
         </div>
 
     </div>

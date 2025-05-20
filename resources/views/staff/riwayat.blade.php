@@ -5,8 +5,9 @@
     <div x-data="riwayatPublikasi()" class="p-6 bg-white rounded shadow relative">
         <h2 class="text-2xl font-bold text-center mb-4 text-blue-900">Riwayat Publikasi</h2>
 
-        <form class="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex flex-wrap items-center gap-2 md:justify-start justify-center">
+        <form class="mb-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2 md:justify-start justify-center flex-1 min-w-[300px]">
+                <!-- Filter urutan, jenis, search, reset -->
                 <label class="text-lg font-semibold text-green-700">Urutan:</label>
                 <select x-model="sortOrder"
                     class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
@@ -26,23 +27,35 @@
                     class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
 
                 <button type="button" @click="resetFilter"
-                    class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md">Reset</button>
+                    class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md whitespace-nowrap">Reset</button>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <label class="text-sm text-gray-700">Dari:</label>
-                    <input type="date" x-model="startDate" :max="computedMaxStartDate" @change="adjustEndDateRange"
-                        class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm">
+            <!-- Bagian range tanggal dan export -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto min-w-[280px] justify-end">
 
-                    <label class="text-sm text-gray-700">Sampai:</label>
-                    <input type="date" x-model="endDate" :min="computedMinEndDate" @change="adjustStartDateRange"
-                        class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Dari:</label>
+                        <input type="date" x-model="startDate" :max="computedMaxStartDate" @change="adjustEndDateRange"
+                            class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto">
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-3 sm:mt-0">
+                        <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Sampai:</label>
+                        <input type="date" x-model="endDate" :min="computedMinEndDate" @change="adjustStartDateRange"
+                            class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto">
+                    </div>
                 </div>
+
                 <button type="button" @click="exportData"
-                    class="px-4 py-2 bg-green-700 text-white text-sm rounded-md">Export to CSV</button>
+                    class="px-4 py-2 bg-green-700 text-white text-sm rounded-md whitespace-nowrap w-full sm:w-auto">
+                    Export to CSV
+                </button>
             </div>
         </form>
+
+
 
         <div class="overflow-x-auto">
             <table class="w-full border text-sm text-center">

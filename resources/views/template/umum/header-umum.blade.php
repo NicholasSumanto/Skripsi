@@ -8,11 +8,23 @@
 
         <!-- Desktop Menu -->
         <nav class="hidden md:flex items-center space-x-6">
-            <a href="{{ route('umum.home') }}" class="text-white hover:text-gray-200">Beranda</a>
-            <a href="{{ route('umum.unduhan') }}" class="text-white hover:text-gray-200">Unduhan</a>
+            <a href="{{ route('umum.home') }}"
+                class="text-white hover:text-gray-200 {{ request()->routeIs('umum.home') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">
+                Beranda
+            </a>
+            <a href="{{ route('umum.unduhan') }}"
+                class="text-white hover:text-gray-200 {{ request()->routeIs('umum.unduhan') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">
+                Unduhan
+            </a>
             <a href="{{ route('umum.lacak') }}"
-                class="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-600">Lacak</a>
+                class="px-4 py-2 rounded-md {{ request()->routeIs('umum.lacak') ? 'text-white' : 'text-black' }}"
+                style="{{ request()->routeIs('umum.lacak') ? 'background-color: #1a237e;' : 'background-color: #fbbf24;' }}"
+                onmouseover="this.style.backgroundColor='{{ request()->routeIs('umum.lacak') ? '#1a237e' : '#d97706' }}'"
+                onmouseout="this.style.backgroundColor='{{ request()->routeIs('umum.lacak') ? '#1a237e' : '#fbbf24' }}'">
+                Lacak
+            </a>
         </nav>
+
 
         <!-- Mobile Button -->
         <div class="md:hidden flex items-center" x-data="{ open: false }">
@@ -29,12 +41,33 @@
             <!-- Mobile Menu Dropdown -->
             <div x-show="open" @click.away="open = false"
                 class="absolute top-16 right-4 bg-primary rounded-md shadow-lg flex flex-col items-start py-2 w-40 p-2">
-                <a href="{{ route('umum.home') }}" class="w-full text-white hover:bg-primary-dark px-4 py-2">Beranda</a>
+
+                <a href="{{ route('umum.home') }}"
+                    class="w-full px-4 py-2 rounded-md
+                    {{ request()->routeIs('umum.home')
+                        ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
+                        : 'text-white hover:bg-primary-dark' }}">
+                    Beranda
+                </a>
+
                 <a href="{{ route('umum.unduhan') }}"
-                    class="w-full text-white hover:bg-primary-dark px-4 py-2">Unduhan</a>
+                    class="w-full px-4 py-2 rounded-md
+                    {{ request()->routeIs('umum.unduhan')
+                        ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
+                        : 'text-white hover:bg-primary-dark' }}">
+                    Unduhan
+                </a>
+
                 <a href="{{ route('umum.lacak') }}"
-                    class="w-full bg-yellow-500 text-black hover:bg-yellow-600 px-4 py-2 rounded-md">Lacak</a>
+                    class="w-full px-4 py-2 rounded-md
+                    {{ request()->routeIs('umum.lacak')
+                        ? 'bg-[#1a237e] text-white'
+                        : 'bg-yellow-500 text-black hover:bg-yellow-600' }}">
+                    Lacak
+                </a>
+
             </div>
+
         </div>
 
     </div>

@@ -8,9 +8,15 @@
 
         <!-- Desktop Menu -->
         <nav class="hidden md:flex items-center space-x-6">
-            <a href="{{ route('pemohon.home') }}" class="text-white hover:text-gray-200">Publikasi</a>
-            <a href="{{ route('pemohon.agenda') }}" class="text-white hover:text-gray-200">Agenda</a>
-            <a href="{{ route('pemohon.lacak') }}" class="bg-yellow-500 text-black px-4 py-2 rounded-md hover:bg-yellow-600">Lacak</a>
+            <a href="{{ route('pemohon.home') }}"
+                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.home') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">Publikasi</a>
+            <a href="{{ route('pemohon.agenda') }}"
+                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.agenda') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">Agenda</a>
+            <a href="{{ route('pemohon.lacak') }}"
+                class="px-4 py-2 rounded-md {{ request()->routeIs('pemohon.lacak') ? 'text-white' : 'text-black' }}"
+                style="{{ request()->routeIs('pemohon.lacak') ? 'background-color: #1a237e;' : 'background-color: #fbbf24;' }}"
+                onmouseover="this.style.backgroundColor='{{ request()->routeIs('pemohon.lacak') ? '#1a237e' : '#d97706' }}'"
+                onmouseout="this.style.backgroundColor='{{ request()->routeIs('pemohon.lacak') ? '#1a237e' : '#fbbf24' }}'">Lacak</a>
             <a href="" class="text-white hover:text-gray-200 logout-btn"><img class="w-8 h-8"
                     src="{{ asset('img/logout.png') }}" alt="Logout Icon"></a>
         </nav>
@@ -30,10 +36,21 @@
             <!-- Mobile Menu Dropdown -->
             <div x-show="open" @click.away="open = false"
                 class="absolute top-16 right-4 bg-primary rounded-md shadow-lg flex flex-col items-start py-2 w-40 p-2">
-                <a href="{{ route('pemohon.home') }}" class="w-full text-white hover:bg-primary-dark px-4 py-2">Publikasi</a>
-                <a href="{{ route('pemohon.agenda') }}" class="w-full text-white hover:bg-primary-dark px-4 py-2">Agenda</a>
-                <a href="#"
-                    class="w-full bg-yellow-500 text-black hover:bg-yellow-600 px-4 py-2 rounded-md mt-2">Lacak</a>
+                <a href="{{ route('pemohon.home') }}"
+                    class="w-full px-4 py-2 rounded-md
+                    {{ request()->routeIs('pemohon.home')
+                        ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
+                        : 'text-white hover:bg-primary-dark' }}">Publikasi</a>
+                <a href="{{ route('pemohon.agenda') }}"
+                    class="w-full px-4 py-2 rounded-md
+                    {{ request()->routeIs('pemohon.agenda')
+                        ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
+                        : 'text-white hover:bg-primary-dark' }}">Agenda</a>
+                <a href="{{ route('pemohon.lacak') }}"
+                    class="w-full px-4 py-2 rounded-md
+                    {{ request()->routeIs('pemohon.lacak')
+                        ? 'bg-[#1a237e] text-white'
+                        : 'bg-yellow-500 text-black hover:bg-yellow-600' }}">Lacak</a>
                 <a href="#"
                     class="w-full text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md mt-2 logout-btn">Logout</a>
             </div>
