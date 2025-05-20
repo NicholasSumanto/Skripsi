@@ -29,7 +29,7 @@ class ApiController extends Controller
         return $prefix . '-' . $timestamp . '-' . $uuid;
     }
 
-    // Simpon Data Form
+    // Simpan Data Form
     public function postLiputan(Request $request)
     {
         // Pastikan pengguna sudah terautentikasi

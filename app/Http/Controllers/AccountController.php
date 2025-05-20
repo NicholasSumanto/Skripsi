@@ -78,7 +78,7 @@ class AccountController extends Controller
                     return response()->json(['error' => 'Gagal membuat pengguna.'], 500);
                 }
             } else {
-                return response()->json(['error' => 'Domain email harus students.ukdw.ac.id'], 401);
+                return response()->json(['error' => 'Domain email harus .ukdw.ac.id'], 401);
             }
         } else {
             return response()->json(['error' => 'Token tidak valid.'], 400);
