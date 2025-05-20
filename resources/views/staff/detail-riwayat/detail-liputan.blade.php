@@ -136,18 +136,30 @@
                         readonly>{{ $publikasi->catatan }}</textarea>
                 </div>
 
-                @if ($publikasi->status === 'Diproses')
+                @if ($publikasi->status === 'Selesai')
                     <div class="space-y-2">
                         <label class="font-semibold text-lg text-yellow-400">Link Output * :</label>
                         <div class="control-form space-y-2">
-                            <div class="entry flex overflow-hidden rounded-lg border border-gray-300">
-                                <input type="text" name="link_output[]" class="flex-1 p-3 outline-none text-black"
-                                    placeholder="https://...">
-                                <button type="button"
-                                    class="btn btn-add w-12 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center">
-                                    +
-                                </button>
-                            </div>
+                            @php
+                                $linkOutput = json_decode($publikasi->link_output, true);
+                            @endphp
+                            @foreach ($linkOutput as $link)
+                                <div class="entry flex overflow-hidden rounded-lg border border-gray-300">
+                                    <input type="text" name="link_output[]" class="flex-1 p-3 outline-none text-black"
+                                        placeholder="https://..." value="{{ $link }}" disabled>
+                                    @if (!$loop->last)
+                                        <button type="button" disabled
+                                            class="btn btn-remove bg-red-500 hover:bg-red-600 w-12 text-white flex items-center justify-center opacity-50 cursor-not-allowed">
+                                            -
+                                        </button>
+                                    @else
+                                        <button type="button" disabled
+                                            class="btn btn-add w-12 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center opacity-50 cursor-not-allowed">
+                                            +
+                                        </button>
+                                    @endif
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 @endif
@@ -157,11 +169,15 @@
                         class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
                         Kembali
                     </a>
-                    @if ($publikasi->status === 'Diproses')
-                        <a id="btn-selesai"
-                            class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
-                            Selesai
-                        </a>
+                    @if ($publikasi->status === 'Selesai')
+                        <div class="flex gap-2">
+                            <button type="button" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+                                id="btn-edit">Edit</button>
+                            <button type="button" class="bg-green-500 text-white px-4 py-2 rounded hidden"
+                                id="btn-save">Simpan</button>
+                            <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hidden"
+                                id="btn-cancel">Batal</button>
+                        </div>
                     @endif
                 </div>
             </form>
@@ -170,7 +186,7 @@
 @endsection
 
 @section('script')
-    @if ($publikasi->status === 'Diproses')
+    @if ($publikasi->status === 'Selesai')
         <script>
             $(document).ready(function() {
                 $(document).ready(function() {
@@ -212,6 +228,86 @@
                 });
             });
         </script>
+
+        <script>
+            $(document).ready(function() {
+                const originalLinks = @json($publikasi->link_output);
+
+                function setDisabled(state) {
+                    $('#output-form input[name="link_output[]"]').prop('disabled', state);
+                    $('#output-form input[name="link_output[]"]').toggleClass('bg-gray-100', state);
+                }
+
+                $('#btn-edit').on('click', function() {
+                    setDisabled(false);
+                    $('#btn-edit').addClass('hidden');
+                    $('#btn-save, #btn-cancel').removeClass('hidden');
+                });
+
+                $('#btn-cancel').on('click', function() {
+                    $('#output-form input[name="link_output[]"]').each(function(i) {
+                        $(this).val(originalLinks[i]);
+                    });
+                    setDisabled(true);
+                    $('#btn-edit').removeClass('hidden');
+                    $('#btn-save, #btn-cancel').addClass('hidden');
+                });
+
+                $('#btn-save').on('click', function() {
+                    const links = $('input[name="link_output[]"]').map(function() {
+                        return $(this).val().trim();
+                    }).get();
+
+                    const filtered = links.filter(link => link !== '');
+                    if (filtered.length === 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Minimal satu link harus diisi.'
+                        });
+                        return;
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('staff.api.update.status-publikasi') }}",
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        data: {
+                            id_proses_permohonan: "{{ $publikasi->id_proses_permohonan }}",
+                            jenis_proses: 'Selesai',
+                            link_output: links
+                        },
+                        beforeSend: function() {
+                            $('#btn-save').text('Menyimpan...').attr('disabled', true);
+                        },
+                        success: function(res) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: res.message ?? 'Data berhasil diperbarui.'
+                            });
+
+                            setDisabled(true);
+                            $('#btn-edit').removeClass('hidden');
+                            $('#btn-save').text('Simpan').attr('disabled', false).addClass(
+                                'hidden');
+                            $('#btn-cancel').addClass('hidden');
+                        },
+                        error: function(err) {
+                            $('#btn-save').text('Simpan').attr('disabled', false);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: err.responseJSON?.message ?? 'Terjadi kesalahan.'
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+
         <script>
             $(document).ready(function() {
                 $('#btn-selesai').on('click', function(e) {
@@ -261,7 +357,7 @@
                                 data: {
                                     id_proses_permohonan: id_proses_permohonan,
                                     jenis_proses: 'Selesai',
-                                    link_output: filteredLinks
+                                    link_output: link_outputs
                                 },
                                 beforeSend: function() {
                                     $('#btn-selesai').text('Mengirim...').attr('disabled',

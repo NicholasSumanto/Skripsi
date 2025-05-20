@@ -78,16 +78,19 @@
                             <label class="block mb-1">Instagram Stories</label>
                             <input type="file" name="file_stories[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                                <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
                         </div>
                         <div>
                             <label class="block mb-1">Instagram Post</label>
                             <input type="file" name="file_poster[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                                <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
                         </div>
                         <div>
                             <label class="block mb-1">Videotron</label>
                             <input type="file" name="file_video[]" multiple accept=".mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
+                                <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
                         </div>
                     </div>
                 </div>
@@ -115,7 +118,6 @@
 @section('script')
     <script src="{{ asset('js/chosen.js') }}"></script>
     <script>
-        $(document).ready(function() {
             $('.chosen-select').select2();
 
             const chosenClasses = [
@@ -221,7 +223,6 @@
                         "chosen:updated");
                 }
             });
-        });
     </script>
 
     <script>

@@ -168,7 +168,7 @@
                         class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">{{ $publikasi->catatan }}</textarea>
                 </div>
 
-                @if ($publikasi->status === 'Diproses')
+                @if ($publikasi->status === 'Selesai')
                     <div class="space-y-2">
                         <label class="font-semibold text-lg text-yellow-400">Link Output * :</label>
                         <div class="control-form space-y-2">
@@ -189,7 +189,7 @@
                         class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
                         Kembali
                     </a>
-                    @if ($publikasi->status === 'Diproses')
+                    @if ($publikasi->status === 'Selesai')
                         <a id="btn-selesai"
                             class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
                             Selesai
@@ -256,7 +256,7 @@
         });
     </script>
 
-    @if ($publikasi->status === 'Diproses')
+    @if ($publikasi->status === 'Selesai')
         <script>
             $(document).ready(function() {
                 $(document).ready(function() {

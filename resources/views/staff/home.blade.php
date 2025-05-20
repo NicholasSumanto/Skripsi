@@ -120,10 +120,7 @@
                             <div class="flex flex-col sm:flex-row sm:justify-between gap-6 sm:gap-0 relative z-10">
                                 @foreach ($steps as $label => $date)
                                     @php
-                                        // Tandai aktif kalau status sekarang BELUM dilewati
                                         $isActive = $stepReached;
-
-                                        // Kalau label saat ini sama dengan status, hentikan keaktifan berikutnya
                                         if ($label === $activeStep) {
                                             $stepReached = false;
                                         }
@@ -206,10 +203,10 @@
 
             @for ($page = $start; $page <= $end; $page++)
                 @if ($page == $publikasi->currentPage())
-                    <span class="px-2 sm:px-3 py-1 bg-green-700 text-white rounded">{{ $page }}</span>
+                    <span class="px-2 sm:px-3 py-1 bg-blue-200 text-yellow-700 rounded">{{ $page }}</span>
                 @else
                     <a href="{{ $publikasi->url($page) }}"
-                        class="px-2 sm:px-3 py-1 bg-blue-100 text-yellow-700 rounded hover:bg-blue-200">{{ $page }}</a>
+                        class="px-2 sm:px-3 py-1 bg-green-700 text-white rounded hover:bg-blue-100">{{ $page }}</a>
                 @endif
             @endfor
 

@@ -6,7 +6,6 @@ use App\Models\Pengguna;
 use App\Models\Promosi;
 use App\Models\ProsesPermohonan;
 use App\Models\Unit;
-use Google\Service\BigtableAdmin\Split;
 use Illuminate\Http\Request;
 use App\Models\Liputan;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use Carbon\Carbon;
 
@@ -502,6 +502,8 @@ class ApiController extends Controller
                     },
                 ],
                 'jenis_proses' => 'required|string|in:Diterima,Diproses,Selesai',
+                'link_output' => 'nullable|array',
+                'link_output.*' => 'nullable|url',
             ],
             [
                 'id_proses_permohonan.required' => 'Kode proses publikasi wajib diisi.',
@@ -509,6 +511,7 @@ class ApiController extends Controller
                 'jenis_proses.required' => 'Jenis proses wajib diisi.',
                 'jenis_proses.string' => 'Jenis proses harus berupa teks.',
                 'jenis_proses.in' => 'Jenis proses tidak valid.',
+                'link_output.*.url' => 'Setiap link output harus berupa URL yang valid.',
             ],
         );
 
@@ -533,15 +536,28 @@ class ApiController extends Controller
                     } elseif ($id_proses_permohonan['jenis_proses'] === 'Diproses') {
                         $updateData['tanggal_diproses'] = Carbon::now();
                     } elseif ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
+                        if ($terima_proses_permohonan->status === 'Selesai') {
+                            return response()->json(['error' => 'Proses permohonan publikasi sudah selesai.'], 403);
+                        } else if ($terima_proses_permohonan->status !== 'Diproses') {
+                            return response()->json(['error' => 'Proses permohonan publikasi tidak valid.'], 403);
+                        }
+
                         $updateData['tanggal_selesai'] = Carbon::now();
+                        $terima_liputan['tautan_liputan'] = json_encode(array_values($id_proses_permohonan['link_output']));
                     }
 
                     $terima_proses_permohonan->update($updateData);
+                    $terima_liputan->save();
 
                     $emailController = new EmailController();
                     $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
+
                     if ($response->getStatusCode() !== 200) {
                         return $response;
+                    }
+
+                    if ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
+                        return response()->json(['message' => 'Proses permohonan telah selesai.', 'message_info' => 'Riwayat permohonan dapat dilihat pada laman Riwayat.']);
                     }
 
                     return response()->json(['message' => 'Proses permohonan publikasi berhasil diubah.']);
@@ -565,15 +581,28 @@ class ApiController extends Controller
                     } elseif ($id_proses_permohonan['jenis_proses'] === 'Diproses') {
                         $updateData['tanggal_diproses'] = Carbon::now();
                     } elseif ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
+                        if ($terima_proses_permohonan->status === 'Selesai') {
+                            return response()->json(['error' => 'Proses permohonan publikasi sudah selesai.'], 403);
+                        } else if ($terima_proses_permohonan->status !== 'Diproses') {
+                            return response()->json(['error' => 'Proses permohonan publikasi tidak valid.'], 403);
+                        }
+
                         $updateData['tanggal_selesai'] = Carbon::now();
+                        $terima_promosi['tautan_promosi'] = json_encode(array_values($id_proses_permohonan['link_output']));
                     }
 
                     $terima_proses_permohonan->update($updateData);
+                    $terima_promosi->save();
 
                     $emailController = new EmailController();
                     $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
+
                     if ($response->getStatusCode() !== 200) {
                         return $response;
+                    }
+
+                    if ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
+                        return response()->json(['message' => 'Proses permohonan telah selesai.', 'message_info' => 'Riwayat permohonan dapat dilihat pada laman Riwayat.']);
                     }
 
                     return response()->json(['message' => 'Proses permohonan publikasi berhasil diubah.']);
@@ -586,5 +615,82 @@ class ApiController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function getRiwayat(Request $request)
+    {
+        $sort = $request->input('sort', 'asc');
+        $pub = $request->input('pub');
+        $proses = $request->input('proses');
+
+        $promosi = DB::table('promosi')
+            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->when($proses, fn($q) => $q->where('proses_permohonan.status', $proses))
+            ->select(
+                'promosi.id_proses_permohonan as id',
+                'promosi.tanggal',
+                'promosi.judul as nama',
+                'promosi.nama_pemohon',
+                'proses_permohonan.status',
+                'unit.nama_unit as unit',
+                'sub_unit.nama_sub_unit as subUnit',
+                'promosi.id_proses_permohonan',
+                'promosi.tautan_promosi as tautan'
+            )
+            ->get()
+            ->map(fn($item) => [
+                'id' => $item->id,
+                'tanggal' => $item->tanggal,
+                'nama' => $item->nama,
+                'unit' => $item->unit,
+                'subUnit' => $item->subUnit,
+                'jenis' => 'Promosi',
+                'tautan' => $item->tautan,
+                'id_proses_permohonan' => $item->id_proses_permohonan,
+            ]);
+
+        $liputan = DB::table('liputan')
+            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->when($proses, fn($q) => $q->where('proses_permohonan.status', $proses))
+            ->select(
+                'liputan.id_proses_permohonan as id',
+                'liputan.tanggal',
+                'liputan.judul as nama',
+                'liputan.nama_pemohon',
+                'proses_permohonan.status',
+                'unit.nama_unit as unit',
+                'sub_unit.nama_sub_unit as subUnit',
+                'liputan.id_proses_permohonan',
+                'liputan.tautan_liputan as tautan'
+            )
+            ->get()
+            ->map(fn($item) => [
+                'id' => $item->id,
+                'tanggal' => $item->tanggal,
+                'nama' => $item->nama,
+                'unit' => $item->unit,
+                'subUnit' => $item->subUnit,
+                'jenis' => 'Liputan',
+                'tautan' => $item->tautan,
+                'id_proses_permohonan' => $item->id_proses_permohonan,
+            ]);
+
+        $data = match ($pub) {
+            'promosi' => $promosi,
+            'liputan' => $liputan,
+            default => $promosi->merge($liputan),
+        };
+
+        $data = $sort === 'asc'
+            ? $data->sortBy('tanggal')->values()
+            : $data->sortByDesc('tanggal')->values();
+
+        return response()->json($data);
     }
 }

@@ -19,13 +19,13 @@
                     <div>
                         <label class="font-semibold text-lg">Nomor Handphone * :</label>
                         <input type="text" name="nomor_handphone" placeholder="Masukkan nomor handphone"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black" id="nomor_handphone">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Email :</label>
                         <input type="email" name="email" placeholder="Masukkan email"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-white"
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-[#FFCC29]"
                             value="{{ Auth::user()->email }}" readonly disabled>
                     </div>
 
@@ -57,7 +57,7 @@
                     <div>
                         <label class="font-semibold text-lg">Unit * :</label>
                         <select id="unit" name="unit"
-                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-[#FFCC29]">
                             <option value="">Pilih Unit</option>
                             @foreach ($unit as $u)
                                 <option value="{{ $u->id_unit }}">{{ $u->nama_unit }}</option>
@@ -68,7 +68,7 @@
                     <div>
                         <label class="font-semibold text-lg">Sub Unit * :</label>
                         <select id="id_sub_unit" name="id_sub_unit"
-                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                            class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-[#FFCC29]">
                             <option value="">Pilih Sub Unit</option>
                         </select>
                     </div>
@@ -77,8 +77,8 @@
                         <label class="font-semibold text-lg">Rundown dan TOR * :</label>
                         <input type="file" name="file_liputan[]" multiple
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none bg-white text-black"
-                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.7z">
-                        <small class="text-white-500">Ukuran total tidak lebih dari 2048 MB.</small>
+                            accept=".pdf">
+                        <small class="text-white-500">Format file berupa .pdf (Max 2048 MB).</small>
                     </div>
                 </div>
 
@@ -128,7 +128,6 @@
 @section('script')
     <script src="{{ asset('js/chosen.js') }}"></script>
     <script>
-        $(document).ready(function() {
             $('.chosen-select').select2();
 
             const chosenClasses = [
@@ -233,7 +232,6 @@
                         "chosen:updated");
                 }
             });
-        });
     </script>
 
     <script>
@@ -247,7 +245,7 @@
                             title: 'File terlalu besar',
                             text: `File "${this.files[i].name}" melebihi batas 15MB.`,
                         });
-                        $(this).val(''); // reset input
+                        $(this).val('');
                         break;
                     }
                 }
@@ -363,6 +361,18 @@
                     }
                 });
             });
+        });
+    </script>
+
+     <script>
+        document.getElementById('nomor_handphone').addEventListener('input', function() {
+            let value = this.value;
+
+            if (value.startsWith('08')) {
+                this.value = '+62' + value.substring(2);
+            } else if (value.startsWith('08') || value.startsWith('+62')) {
+                this.value = value.replace(/^08/, '+62');
+            }
         });
     </script>
 @endsection

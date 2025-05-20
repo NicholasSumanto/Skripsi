@@ -118,7 +118,7 @@
                         <td>
                             {{ \Carbon\Carbon::parse($publikasi->tanggal)->format('d/m/Y') }}
                             @if ($publikasi->jenis_publikasi === 'Liputan' && isset($publikasi->waktu))
-                                <br> {{  \Carbon\Carbon::parse($publikasi->waktu)->Format('H:i')}}
+                                <br> {{ \Carbon\Carbon::parse($publikasi->waktu)->Format('H:i') }}
                             @endif
                         </td>
                         <td>{{ $publikasi->nama_unit }}</td>
@@ -180,6 +180,31 @@
                     </tr>
                 @endforeach
             </table>
+
+            @if ($publikasi->link_output)
+                @php
+                    $link_Output = json_decode($publikasi->link_output, true);
+                @endphp
+
+                <h4 style="color: #0B4D1E; margin-top: 0.5rem; margin-bottom: 1rem;">Link Output Hasil Publikasi:</h4>
+
+                @if (!empty($link_Output) && is_array($link_Output))
+                    <ul style="padding-left: 1.25rem; margin: 0;">
+                        @foreach ($link_Output as $link)
+                            @if (!empty($link))
+                                <li>
+                                    <a href="{{ $link }}" style="color: #1a0dab; text-decoration: underline;">
+                                        {{ $link }}
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                @else
+                    <p style="color: #6b7280;">Tidak ada link output yang tersedia.</p>
+                @endif
+            @endif
+
             <p>Pantau proses publikasi Anda di menu
                 <a href="{{ $urlLacak }}" class="link-verifikasi">Lacak</a>.
             </p>

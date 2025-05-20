@@ -67,14 +67,18 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
     ->group(function () {
         Route::get('/home', [StaffController::class, 'home'])->name('home');
         Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
+        Route::get('/riwayat/{id}', [StaffController::class, 'detailRiwayat'])->name('detail-riwayat');
         Route::get('/detail-publikasi/{id}', [StaffController::class, 'detailPublikasi'])->name('detail-publikasi');
 
-        // API
+        Route::get('/api/get/riwayat', [ApiController::class, 'getRiwayat'])->name('api.get.riwayat');
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/api/update/status-publikasi/', [ApiController::class, 'updateStatusPublikasi'])->name('api.update.status-publikasi');
-        Route::get('/api/get/file-promosi/{id}/{type}/{filename}', [FileController::class, 'getURL'])
+        Route::get('/api/get/file-promosi/{id}/{type}/{filename}', [FileController::class, 'getURLPromosi'])
             ->where('filename', '.*')
             ->name('api.get.file-promosi');
+        Route::get('/api/get/file-liputan/{id}/{filename}', [FileController::class, 'getURLLiputan'])
+            ->where('filename', '.*')
+            ->name('api.get.file-liputan');
         Route::get('/thumbnail/video/{id}/{type}/{filename}', [FileController::class, 'getVideoThumbnailTemp'])->name('api.get.video-thumbnail-temp');
     });
 // Staff End

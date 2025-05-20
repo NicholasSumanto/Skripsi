@@ -75,6 +75,8 @@
         const batal_publikasi = localStorage.getItem('batalkan_message');
         const terima_message = localStorage.getItem('terima_message');
         const diproses_message = localStorage.getItem('diproses_message');
+        const selesai_message = localStorage.getItem('selesai_message');
+        const message_info = localStorage.getItem('message_info');
 
         if (batal_publikasi) {
             alert.fire({
@@ -106,6 +108,16 @@
                 title: diproses_message,
             });
             localStorage.removeItem('diproses_message');
+        }
+
+        if (selesai_message && message_info) {
+            alert.fire({
+                icon: 'success',
+                title: selesai_message,
+                text: message_info,
+            });
+            localStorage.removeItem('selesai_message');
+            localStorage.removeItem('message_info');
         }
     });
 </script>
