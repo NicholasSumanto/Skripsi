@@ -2,6 +2,14 @@
 @section('title', 'Form Promosi')
 @section('custom-header')
     <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
+    <style>
+        .select2-selection__arrow {
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            position: absolute !important;
+            right: 10px !important;
+        }
+    </style>
 @endsection
 
 
@@ -78,19 +86,19 @@
                             <label class="block mb-1">Instagram Stories</label>
                             <input type="file" name="file_stories[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                                <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
+                            <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
                         </div>
                         <div>
                             <label class="block mb-1">Instagram Post</label>
                             <input type="file" name="file_poster[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                                <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
+                            <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
                         </div>
                         <div>
                             <label class="block mb-1">Videotron</label>
                             <input type="file" name="file_video[]" multiple accept=".mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                                <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
+                            <small class="text-white-500">Format file berupa (.mp4)</small>
                         </div>
                     </div>
                 </div>
@@ -102,13 +110,13 @@
                 </div>
 
                 <div class="flex justify-between mt-6">
-                    <button type="submit"
-                        class="bg-[#006034] hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full transition duration-300">Kirim</button>
-                    <button type="button"
+                    <button type="button" id="btn-batal"
                         onclick="document.getElementById('form-promosi').reset(); window.location.href='{{ route('pemohon.home') }}';"
                         class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-full transition duration-300">
                         Batal
                     </button>
+                    <button type="submit"
+                        class="bg-[#006034] hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full transition duration-300">Kirim</button>
                 </div>
             </form>
         </div>
@@ -118,111 +126,111 @@
 @section('script')
     <script src="{{ asset('js/chosen.js') }}"></script>
     <script>
-            $('.chosen-select').select2();
+        $('.chosen-select').select2();
 
-            const chosenClasses = [
-                'w-full',
-                'rounded-lg',
-                'p-3',
-                'border',
-                'border-gray-300',
-                'shadow-sm',
-                'focus:ring-2',
-                'focus:ring-[#FFCC29]',
-                'focus:outline-none',
-                'text-black',
-                'bg-white',
-            ];
+        const chosenClasses = [
+            'w-full',
+            'rounded-lg',
+            'p-3',
+            'border',
+            'border-gray-300',
+            'shadow-sm',
+            'focus:ring-2',
+            'focus:ring-[#FFCC29]',
+            'focus:outline-none',
+            'text-black',
+            'bg-white',
+        ];
 
-            function applyChosenStylesByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                if (elements.length > 0) {
-                    Array.from(elements).forEach(el => el.classList.add(...chosenClasses));
-                    return true;
-                }
-                return false;
+        function applyChosenStylesByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            if (elements.length > 0) {
+                Array.from(elements).forEach(el => el.classList.add(...chosenClasses));
+                return true;
             }
+            return false;
+        }
 
-            function hideElementsByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                Array.from(elements).forEach(el => {
-                    el.style.setProperty('background', 'transparent', 'important');
-                    el.style.setProperty('border', 'none', 'important');
-                });
-            }
-
-            function changeTextColorByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                Array.from(elements).forEach(el => {
-                    el.style.setProperty('color', '#006034', 'important');
-                    el.style.setProperty('position', 'absolute', 'important');
-                    el.style.setProperty('top', '50%', 'important');
-                    el.style.setProperty('transform', 'translateY(-50%)', 'important');
-                });
-            }
-
-            function removeWidthByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                Array.from(elements).forEach(el => {
-                    el.style.removeProperty('width');
-                });
-            }
-
-
-            // Observer untuk elemen yang dimunculkan chosen
-            const observer = new MutationObserver(function() {
-                const ready1 = applyChosenStylesByClass('select2');
-                const ready2 = hideElementsByClass('select2-selection');
-                const ready3 = changeTextColorByClass('select2-selection__rendered');
-                const ready4 = changeTextColorByClass('select2-selection__arrow');
-                const ready5 = removeWidthByClass('select2');
-                if (ready1 && ready2 && ready3 && ready4) {
-                    observer.disconnect();
-                }
+        function hideElementsByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            Array.from(elements).forEach(el => {
+                el.style.setProperty('background', 'transparent', 'important');
+                el.style.setProperty('border', 'none', 'important');
             });
+        }
 
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true,
+        function changeTextColorByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            Array.from(elements).forEach(el => {
+                el.style.setProperty('color', '#006034', 'important');
+                el.style.setProperty('white-space', 'nowrap', 'important');
+                el.style.setProperty('overflow', 'hidden', 'important');
+                el.style.setProperty('text-overflow', 'ellipsis', 'important');
             });
+        }
 
-            $('#unit').on('change', function() {
-                var unitID = $(this).val();
-                $('#id_sub_unit').empty().append('<option value="">Loading...</option>').trigger(
+        function removeWidthByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            Array.from(elements).forEach(el => {
+                el.style.removeProperty('width');
+            });
+        }
+
+
+        // Observer untuk elemen yang dimunculkan chosen
+        const observer = new MutationObserver(function() {
+            const ready1 = applyChosenStylesByClass('select2');
+            const ready2 = hideElementsByClass('select2-selection');
+            const ready3 = changeTextColorByClass('select2-selection__rendered');
+            const ready4 = changeTextColorByClass('select2-selection__arrow');
+            const ready5 = removeWidthByClass('select2');
+            if (ready1 && ready2 && ready3 && ready4) {
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+
+        $('#unit').on('change', function() {
+            var unitID = $(this).val();
+            $('#id_sub_unit').empty().append('<option value="">Loading...</option>').trigger(
+                "chosen:updated");
+
+            if (unitID) {
+                $.ajax({
+                    url: '{{ route('pemohon.api.get.sub-units') }}',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    type: 'POST',
+                    data: {
+                        id_unit: unitID
+                    },
+                    success: function(data) {
+                        $('#id_sub_unit').empty().append(
+                            '<option value="">Pilih Sub Unit</option>');
+                        $.each(data, function(index, sub) {
+                            $('#id_sub_unit').append(
+                                '<option value="' + sub.id_sub_unit + '">' + sub
+                                .nama_sub_unit + '</option>'
+                            );
+                        });
+                        $('#id_sub_unit').trigger("chosen:updated");
+                    },
+                    error: function() {
+                        $('#id_sub_unit').empty().append(
+                            '<option value="">Gagal memuat Sub Unit</option>'
+                        ).trigger("chosen:updated");
+                    }
+                });
+            } else {
+                $('#id_sub_unit').empty().append('<option value="">Pilih Sub Unit</option>').trigger(
                     "chosen:updated");
-
-                if (unitID) {
-                    $.ajax({
-                        url: '{{ route('pemohon.api.get.sub-units') }}',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        type: 'POST',
-                        data: {
-                            id_unit: unitID
-                        },
-                        success: function(data) {
-                            $('#id_sub_unit').empty().append(
-                                '<option value="">Pilih Sub Unit</option>');
-                            $.each(data, function(index, sub) {
-                                $('#id_sub_unit').append(
-                                    '<option value="' + sub.id_sub_unit + '">' + sub
-                                    .nama_sub_unit + '</option>'
-                                );
-                            });
-                            $('#id_sub_unit').trigger("chosen:updated");
-                        },
-                        error: function() {
-                            $('#id_sub_unit').empty().append(
-                                '<option value="">Gagal memuat Sub Unit</option>'
-                            ).trigger("chosen:updated");
-                        }
-                    });
-                } else {
-                    $('#id_sub_unit').empty().append('<option value="">Pilih Sub Unit</option>').trigger(
-                        "chosen:updated");
-                }
-            });
+            }
+        });
     </script>
 
     <script>
@@ -274,18 +282,22 @@
                 const hasAtLeastOneFile = Array.from(fileInputs).some(input => input.files && input.files
                     .length > 0);
 
-                if (!hasAtLeastOneFile) {
-                    alert("Minimal satu file harus diunggah.");
-                    event.preventDefault();
-                }
-
                 if (!isValid) {
-                    Swal.fire({
+                    alert.fire({
                         icon: 'error',
                         title: 'Formulir tidak lengkap',
                         text: 'Harap lengkapi semua kolom bertanda bintang (*).'
                     });
                     return;
+                }
+
+                if (!hasAtLeastOneFile) {
+                    alert.fire({
+                        icon: 'error',
+                        title: 'File tidak ditemukan',
+                        text: 'Harap unggah minimal satu file untuk promosi.'
+                    });
+                    event.preventDefault();
                 }
 
                 let form = $(this)[0];
@@ -301,8 +313,22 @@
                         'X-CSRF-TOKEN': "{{ csrf_token() }}"
                     },
                     beforeSend: function() {
-                        $('button[type="submit"]').text('Mengirim...').attr('disabled', true);
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Mohon Menunggu',
+                            html: 'Permintaan publikasi sedang diproses.<br><b>Proses ini bisa memakan waktu hingga 5 menit</b>.<br>Mohon <b>jangan tutup, reload, atau menekan tombol kembali</b> selama proses berlangsung.',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $('button[type="submit"]').text('Mengirim...').attr('disabled',
+                            true);
                         $('#form-promosi :input').prop('disabled', true);
+                        $('#btn-batal').attr('disabled', true);
                     },
                     success: function(response) {
                         localStorage.setItem('promosi_message', response.message);
@@ -312,6 +338,7 @@
                     error: function(xhr) {
                         $('button[type="submit"]').text('Kirim').attr('disabled', false);
                         $('#form-promosi :input').prop('disabled', false);
+                        $('#btn-batal').attr('disabled', false);
 
                         let message = 'Terjadi kesalahan. Silakan coba lagi.';
                         if (xhr.responseJSON?.error) {

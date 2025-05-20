@@ -137,7 +137,7 @@
                 </div>
 
                 @if ($publikasi->status === 'Selesai')
-                    <div class="space-y-2">
+                    <div class="space-y-2" id="output-form">
                         <label class="font-semibold text-lg text-yellow-400">Link Output * :</label>
                         <div class="control-form space-y-2">
                             @php
@@ -171,11 +171,12 @@
                     </a>
                     @if ($publikasi->status === 'Selesai')
                         <div class="flex gap-2">
-                            <button type="button" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
-                                id="btn-edit">Edit</button>
-                            <button type="button" class="bg-green-500 text-white px-4 py-2 rounded hidden"
+                            <button type="button"
+                                class="font-semibold bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+                                id="btn-edit">Edit Link</button>
+                            <button type="button" class="font-semibold bg-green-500 text-white px-4 py-2 rounded hidden"
                                 id="btn-save">Simpan</button>
-                            <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hidden"
+                            <button type="button" class="font-semibold bg-red-500 text-white px-4 py-2 rounded hidden"
                                 id="btn-cancel">Batal</button>
                         </div>
                     @endif
@@ -231,86 +232,42 @@
 
         <script>
             $(document).ready(function() {
-                const originalLinks = @json($publikasi->link_output);
+                const originalLinks = Array.isArray(@json(json_decode($publikasi->link_output, true))) ?
+                    @json(json_decode($publikasi->link_output, true)) : [];
+                3
+                const originalHTML = $('.control-form').html();
 
                 function setDisabled(state) {
                     $('#output-form input[name="link_output[]"]').prop('disabled', state);
                     $('#output-form input[name="link_output[]"]').toggleClass('bg-gray-100', state);
+                    $('#output-form button').prop('disabled', state);
+                    $('#output-form button').toggleClass('opacity-50 cursor-not-allowed', state);
                 }
 
-                $('#btn-edit').on('click', function() {
+                $('#btn-edit').on('click', function(e) {
+                    e.preventDefault(e);
+
                     setDisabled(false);
                     $('#btn-edit').addClass('hidden');
                     $('#btn-save, #btn-cancel').removeClass('hidden');
+
                 });
 
-                $('#btn-cancel').on('click', function() {
+                $('#btn-cancel').on('click', function(e) {
+                    e.preventDefault(e);
+
+                    $('.control-form').html(originalHTML);
+
                     $('#output-form input[name="link_output[]"]').each(function(i) {
                         $(this).val(originalLinks[i]);
                     });
+
                     setDisabled(true);
                     $('#btn-edit').removeClass('hidden');
                     $('#btn-save, #btn-cancel').addClass('hidden');
                 });
 
-                $('#btn-save').on('click', function() {
-                    const links = $('input[name="link_output[]"]').map(function() {
-                        return $(this).val().trim();
-                    }).get();
-
-                    const filtered = links.filter(link => link !== '');
-                    if (filtered.length === 0) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal',
-                            text: 'Minimal satu link harus diisi.'
-                        });
-                        return;
-                    }
-
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('staff.api.update.status-publikasi') }}",
-                        headers: {
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                        },
-                        data: {
-                            id_proses_permohonan: "{{ $publikasi->id_proses_permohonan }}",
-                            jenis_proses: 'Selesai',
-                            link_output: links
-                        },
-                        beforeSend: function() {
-                            $('#btn-save').text('Menyimpan...').attr('disabled', true);
-                        },
-                        success: function(res) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: res.message ?? 'Data berhasil diperbarui.'
-                            });
-
-                            setDisabled(true);
-                            $('#btn-edit').removeClass('hidden');
-                            $('#btn-save').text('Simpan').attr('disabled', false).addClass(
-                                'hidden');
-                            $('#btn-cancel').addClass('hidden');
-                        },
-                        error: function(err) {
-                            $('#btn-save').text('Simpan').attr('disabled', false);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: err.responseJSON?.message ?? 'Terjadi kesalahan.'
-                            });
-                        }
-                    });
-                });
-            });
-        </script>
-
-        <script>
-            $(document).ready(function() {
-                $('#btn-selesai').on('click', function(e) {
+                $('#btn-save').on('click', function(e) {
                     e.preventDefault();
 
                     const id_proses_permohonan = "{{ $publikasi->id_proses_permohonan }}";
@@ -330,46 +287,70 @@
                         return;
                     }
 
+                    const isSameAsOriginal = JSON.stringify(filteredLinks) === JSON.stringify(originalLinks);
+
+                    if (isSameAsOriginal) {
+                        alert.fire({
+                            icon: 'info',
+                            title: 'Tidak ada perubahan',
+                            text: 'Tidak ada perubahan pada link output.'
+                        });
+                        return;
+                    }
+
                     $('input[name="link_output[]"]').each(function() {
                         if ($(this).val().trim() === '') {
                             $(this).closest('.entry').remove();
                         }
                     });
 
-
                     Swal.fire({
-                        title: 'Selesaikan Permohonan?',
-                        html: `Anda akan menyelesaikan permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
+                        title: 'Ubah Link Output?',
+                        html: `Anda akan mengubah link output permohonan publikasi.<br><span class="text-red-500 font-bold">Pemohon akan mendapatkan notifikasi melalui email.</span>`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#088404',
                         cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Ya, Terima',
+                        confirmButtonText: 'Ya, Ubah',
                         cancelButtonText: 'Tidak'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
                                 type: "POST",
-                                url: "{{ route('staff.api.update.status-publikasi') }}",
+                                url: "{{ route('staff.api.update.link-output') }}",
                                 headers: {
                                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
                                 },
                                 data: {
                                     id_proses_permohonan: id_proses_permohonan,
-                                    jenis_proses: 'Selesai',
-                                    link_output: link_outputs
+                                    link_output: filteredLinks
                                 },
                                 beforeSend: function() {
                                     $('#btn-selesai').text('Mengirim...').attr('disabled',
                                         true);
+                                    $('btn-kembali').text('Mengirim...').attr('disabled',
+                                        true);
+                                    $('btn-edit').text('Mengirim...').attr('disabled',
+                                        true);
+                                    $('btn-save').text('Mengirim...').attr('disabled',
+                                        true);
+                                    $('btn-cancel').text('Mengirim...').attr('disabled',
+                                        true);
                                 },
                                 success: function(res) {
-                                    localStorage.setItem('selesai_message', res.message);
-                                    localStorage.setItem('message_info', res.message_info);
-                                    window.location.href = "{{ route('staff.home') }}";
+                                    localStorage.setItem('ubahOutput_message', res.message);
+                                    window.location.href = "{{ route('staff.riwayat') }}";
                                 },
                                 error: function(err) {
                                     $('#btn-selesai').text('Selesai').attr('disabled',
+                                        false);
+                                    $('#btn-kembali').text('Kembali').attr('disabled',
+                                        false);
+                                    $('btn-edit').text('Edit Link').attr('disabled',
+                                        false);
+                                    $('btn-save').text('Simpan').attr('disabled',
+                                        false);
+                                    $('btn-cancel').text('Batal').attr('disabled',
                                         false);
                                     alert.fire({
                                         icon: 'error',

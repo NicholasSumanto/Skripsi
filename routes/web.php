@@ -73,12 +73,14 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
         Route::get('/api/get/riwayat', [ApiController::class, 'getRiwayat'])->name('api.get.riwayat');
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/api/update/status-publikasi/', [ApiController::class, 'updateStatusPublikasi'])->name('api.update.status-publikasi');
+        Route::post('/api/update/link-output/', [ApiController::class, 'updateLinkOutput'])->name('api.update.link-output');
         Route::get('/api/get/file-promosi/{id}/{type}/{filename}', [FileController::class, 'getURLPromosi'])
             ->where('filename', '.*')
             ->name('api.get.file-promosi');
         Route::get('/api/get/file-liputan/{id}/{filename}', [FileController::class, 'getURLLiputan'])
             ->where('filename', '.*')
             ->name('api.get.file-liputan');
+
         Route::get('/thumbnail/video/{id}/{type}/{filename}', [FileController::class, 'getVideoThumbnailTemp'])->name('api.get.video-thumbnail-temp');
     });
 // Staff End

@@ -326,7 +326,6 @@
                         }
                     });
 
-
                     Swal.fire({
                         title: 'Selesaikan Permohonan?',
                         html: `Anda akan menyelesaikan permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
@@ -352,6 +351,8 @@
                                 beforeSend: function() {
                                     $('#btn-selesai').text('Mengirim...').attr('disabled',
                                         true);
+                                    $('btn-kembali').text('Mengirim...').attr('disabled',
+                                        true);
                                 },
                                 success: function(res) {
                                     localStorage.setItem('selesai_message', res.message);
@@ -360,6 +361,8 @@
                                 },
                                 error: function(err) {
                                     $('#btn-selesai').text('Selesai').attr('disabled',
+                                        false);
+                                    $('#btn-kembali').text('Kembali').attr('disabled',
                                         false);
                                     alert.fire({
                                         icon: 'error',

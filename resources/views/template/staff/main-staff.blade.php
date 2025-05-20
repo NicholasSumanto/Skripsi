@@ -5,10 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publikasi Biro 4 | @yield(section: 'title')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="{{ asset('js/tailwind.core.js') }}"></script>
     <script src="{{ asset('js/tailwind.js') }}"></script>
+    <script src="{{ asset('js/jQuery.js') }}"></script>
+    <script src="{{ asset('js/alphine.js') }}" defer></script>
     @yield('custom-header')
 </head>
 
@@ -26,8 +29,6 @@
 </body>
 
 <!-- script -->
-<script src="{{ asset('js/jQuery.js') }}"></script>
-<script src="{{ asset('js/alphine.js') }}" defer></script>
 <script src="{{ asset('js/swal.js') }}" defer></script>
 <script src="{{ asset('js/notification.js') }}" defer></script>
 
@@ -77,6 +78,7 @@
         const diproses_message = localStorage.getItem('diproses_message');
         const selesai_message = localStorage.getItem('selesai_message');
         const message_info = localStorage.getItem('message_info');
+        const ubahOutput_message = localStorage.getItem('ubahOutput_message');
 
         if (batal_publikasi) {
             alert.fire({
@@ -118,6 +120,14 @@
             });
             localStorage.removeItem('selesai_message');
             localStorage.removeItem('message_info');
+        }
+
+        if (ubahOutput_message) {
+            alert.fire({
+                icon: 'success',
+                title: ubahOutput_message,
+            });
+            localStorage.removeItem('ubahOutput_message');
         }
     });
 </script>

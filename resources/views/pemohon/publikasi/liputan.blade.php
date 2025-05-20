@@ -2,6 +2,14 @@
 @section('title', 'Form Liputan')
 @section('custom-header')
     <link rel="stylesheet" href="{{ asset('css/chosen.css') }}">
+    <style>
+        .select2-selection__arrow {
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            position: absolute !important;
+            right: 10px !important;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -19,7 +27,8 @@
                     <div>
                         <label class="font-semibold text-lg">Nomor Handphone * :</label>
                         <input type="text" name="nomor_handphone" placeholder="Masukkan nomor handphone"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black" id="nomor_handphone">
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
+                            id="nomor_handphone">
                     </div>
 
                     <div>
@@ -112,13 +121,13 @@
                 </div>
 
                 <div class="flex justify-between mt-6">
-                    <button type="submit"
-                        class="bg-[#FFCC29] hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-full transition duration-300">Kirim</button>
                     <button type="button" id="cancel-button"
                         onclick="document.getElementById('form-liputan').reset(); window.location.href='{{ route('pemohon.home') }}';"
                         class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-full transition duration-300">
                         Batal
                     </button>
+                    <button type="submit"
+                        class="bg-[#FFCC29] hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-full transition duration-300">Kirim</button>
                 </div>
             </form>
         </div>
@@ -128,110 +137,110 @@
 @section('script')
     <script src="{{ asset('js/chosen.js') }}"></script>
     <script>
-            $('.chosen-select').select2();
+        $('.chosen-select').select2();
 
-            const chosenClasses = [
-                'w-full',
-                'rounded-lg',
-                'p-3',
-                'border',
-                'border-gray-300',
-                'shadow-sm',
-                'focus:ring-2',
-                'focus:ring-[#FFCC29]',
-                'focus:outline-none',
-                'text-black',
-                'bg-white',
-            ];
+        const chosenClasses = [
+            'w-full',
+            'rounded-lg',
+            'p-3',
+            'border',
+            'border-gray-300',
+            'shadow-sm',
+            'focus:ring-2',
+            'focus:ring-[#FFCC29]',
+            'focus:outline-none',
+            'text-black',
+            'bg-white',
+        ];
 
-            function applyChosenStylesByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                if (elements.length > 0) {
-                    Array.from(elements).forEach(el => el.classList.add(...chosenClasses));
-                    return true;
-                }
-                return false;
+        function applyChosenStylesByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            if (elements.length > 0) {
+                Array.from(elements).forEach(el => el.classList.add(...chosenClasses));
+                return true;
             }
+            return false;
+        }
 
-            function hideElementsByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                Array.from(elements).forEach(el => {
-                    el.style.setProperty('background', 'transparent', 'important');
-                    el.style.setProperty('border', 'none', 'important');
-                });
-            }
-
-            function changeTextColorByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                Array.from(elements).forEach(el => {
-                    el.style.setProperty('color', '#006034', 'important');
-                    el.style.setProperty('position', 'absolute', 'important');
-                    el.style.setProperty('top', '50%', 'important');
-                    el.style.setProperty('transform', 'translateY(-50%)', 'important');
-                });
-            }
-
-            function removeWidthByClass(className) {
-                const elements = document.getElementsByClassName(className);
-                Array.from(elements).forEach(el => {
-                    el.style.removeProperty('width');
-                });
-            }
-
-            // Observer untuk elemen yang dimunculkan chosen
-            const observer = new MutationObserver(function() {
-                const ready1 = applyChosenStylesByClass('select2');
-                const ready2 = hideElementsByClass('select2-selection');
-                const ready3 = changeTextColorByClass('select2-selection__rendered');
-                const ready4 = changeTextColorByClass('select2-selection__arrow');
-                const ready5 = removeWidthByClass('select2');
-                if (ready1 && ready2 && ready3 && ready4) {
-                    observer.disconnect();
-                }
+        function hideElementsByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            Array.from(elements).forEach(el => {
+                el.style.setProperty('background', 'transparent', 'important');
+                el.style.setProperty('border', 'none', 'important');
             });
+        }
 
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true,
+        function changeTextColorByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            Array.from(elements).forEach(el => {
+                el.style.setProperty('color', '#006034', 'important');
+                el.style.setProperty('white-space', 'nowrap', 'important');
+                el.style.setProperty('overflow', 'hidden', 'important');
+                el.style.setProperty('text-overflow', 'ellipsis', 'important');
             });
+        }
 
-            $('#unit').on('change', function() {
-                var unitID = $(this).val();
-                $('#id_sub_unit').empty().append('<option value="">Loading...</option>').trigger(
+        function removeWidthByClass(className) {
+            const elements = document.getElementsByClassName(className);
+            Array.from(elements).forEach(el => {
+                el.style.removeProperty('width');
+            });
+        }
+
+        // Observer untuk elemen yang dimunculkan chosen
+        const observer = new MutationObserver(function() {
+            const ready1 = applyChosenStylesByClass('select2');
+            const ready2 = hideElementsByClass('select2-selection');
+            const ready3 = changeTextColorByClass('select2-selection__rendered');
+            const ready4 = changeTextColorByClass('select2-selection__arrow');
+            const ready5 = removeWidthByClass('select2');
+            if (ready1 && ready2 && ready3 && ready4) {
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+
+        $('#unit').on('change', function() {
+            var unitID = $(this).val();
+            $('#id_sub_unit').empty().append('<option value="">Loading...</option>').trigger(
+                "chosen:updated");
+
+            if (unitID) {
+                $.ajax({
+                    url: '{{ route('pemohon.api.get.sub-units') }}',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    type: 'POST',
+                    data: {
+                        id_unit: unitID
+                    },
+                    success: function(data) {
+                        $('#id_sub_unit').empty().append(
+                            '<option value="">Pilih Sub Unit</option>');
+                        $.each(data, function(index, sub) {
+                            $('#id_sub_unit').append(
+                                '<option value="' + sub.id_sub_unit + '">' + sub
+                                .nama_sub_unit + '</option>'
+                            );
+                        });
+                        $('#id_sub_unit').trigger("chosen:updated");
+                    },
+                    error: function() {
+                        $('#id_sub_unit').empty().append(
+                            '<option value="">Gagal memuat Sub Unit</option>'
+                        ).trigger("chosen:updated");
+                    }
+                });
+            } else {
+                $('#id_sub_unit').empty().append('<option value="">Pilih Sub Unit</option>').trigger(
                     "chosen:updated");
-
-                if (unitID) {
-                    $.ajax({
-                        url: '{{ route('pemohon.api.get.sub-units') }}',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        type: 'POST',
-                        data: {
-                            id_unit: unitID
-                        },
-                        success: function(data) {
-                            $('#id_sub_unit').empty().append(
-                                '<option value="">Pilih Sub Unit</option>');
-                            $.each(data, function(index, sub) {
-                                $('#id_sub_unit').append(
-                                    '<option value="' + sub.id_sub_unit + '">' + sub
-                                    .nama_sub_unit + '</option>'
-                                );
-                            });
-                            $('#id_sub_unit').trigger("chosen:updated");
-                        },
-                        error: function() {
-                            $('#id_sub_unit').empty().append(
-                                '<option value="">Gagal memuat Sub Unit</option>'
-                            ).trigger("chosen:updated");
-                        }
-                    });
-                } else {
-                    $('#id_sub_unit').empty().append('<option value="">Pilih Sub Unit</option>').trigger(
-                        "chosen:updated");
-                }
-            });
+            }
+        });
     </script>
 
     <script>
@@ -290,6 +299,15 @@
                     }
                 });
 
+                if (!isValid) {
+                    alert.fire({
+                        icon: 'error',
+                        title: 'Formulir tidak lengkap',
+                        text: 'Harap lengkapi semua kolom bertanda bintang (*).'
+                    });
+                    return;
+                }
+
                 if (!$('input[name="wartawan"]:checked').val()) {
                     isValid = false;
                     alert.fire({
@@ -306,15 +324,6 @@
                         icon: 'warning',
                         title: 'Output wajib dipilih',
                         text: 'Pilih minimal satu jenis output.'
-                    });
-                    return;
-                }
-
-                if (!isValid) {
-                    alert.fire({
-                        icon: 'error',
-                        title: 'Formulir tidak lengkap',
-                        text: 'Harap lengkapi semua kolom bertanda bintang (*).'
                     });
                     return;
                 }
@@ -364,7 +373,7 @@
         });
     </script>
 
-     <script>
+    <script>
         document.getElementById('nomor_handphone').addEventListener('input', function() {
             let value = this.value;
 

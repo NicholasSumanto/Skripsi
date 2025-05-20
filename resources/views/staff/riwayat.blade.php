@@ -68,7 +68,7 @@
                             <td class="border py-2 px-1" x-text="item.unit"></td>
                             <td class="border py-2 px-1" x-text="item.subUnit"></td>
                             <td class="border py-2 px-1 text-blue-500 underline">
-                                <a :href="item.tautan" target="_blank">Lihat</a>
+                                <button @click="openLinkModal(item.tautan)" class="underline text-blue-500">Lihat</button>
                             </td>
                             <td class="border py-2 px-1">
                                 <a :href="`{{ route('staff.detail-riwayat', ':id') }}`.replace(':id', item.kode)"
@@ -295,7 +295,59 @@
                     link.setAttribute("href", url);
                     link.setAttribute("download", "riwayat_publikasi.csv");
                     link.click();
+                },
+
+                openLinkModal(tautan) {
+                    if (!tautan || tautan.length === 0 || tautan === '-' || tautan === '["-"]') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Tidak ada tautan tersedia',
+                            confirmButtonText: 'Tutup',
+                            customClass: {
+                                popup: 'rounded-xl shadow-lg p-6',
+                                title: 'text-gray-800 text-xl font-semibold',
+                                confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md focus:outline-none'
+                            }
+                        });
+                        return;
+                    }
+
+                    let links = [];
+
+                    try {
+                        links = JSON.parse(tautan);
+                    } catch (e) {
+                        links = tautan.split(',').map(t => t.trim());
+                    }
+
+                    const htmlList = links.map(link => {
+                        return `
+                        <li class="mb-2">
+                            <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline transition duration-150 ease-in-out">
+                                ${link}
+                            </a>
+                        </li>`;
+                    }).join('');
+
+                    Swal.fire({
+                        title: '📎 Daftar Tautan',
+                        html: `
+                            <ul class="text-left text-base text-gray-700 list-disc list-inside space-y-2">
+                                ${htmlList}
+                            </ul>
+                        `,
+                        confirmButtonText: 'Tutup',
+                        width: 600,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    });
                 }
+
+
             }
         }
     </script>

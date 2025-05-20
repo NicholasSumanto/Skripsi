@@ -617,6 +617,95 @@ class ApiController extends Controller
         }
     }
 
+    public function updateLinkOutput(Request $request)
+    {
+        if (!Auth::check() && Auth::user()->role != 'staff') {
+            return response()->json(['error' => 'Pengguna tidak memiliki hak.'], 401);
+        }
+        $id_proses_permohonan = $request->validate(
+            [
+                'id_proses_permohonan' => [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) {
+                        $existsInPromosi = DB::table('promosi')->where('id_proses_permohonan', $value)->exists();
+                        $existsInLiputan = DB::table('liputan')->where('id_proses_permohonan', $value)->exists();
+
+                        if (!($existsInPromosi || $existsInLiputan)) {
+                            $fail('Kode proses publikasi tidak ditemukan.');
+                        }
+                    },
+                ],
+                'link_output' => 'nullable|array',
+                'link_output.*' => 'nullable|url',
+            ],
+            [
+                'id_proses_permohonan.required' => 'Kode proses publikasi wajib diisi.',
+                'id_proses_permohonan.string' => 'Kode proses publikasi harus berupa teks.',
+                'link_output.*.url' => 'Setiap link output harus berupa URL yang valid.',
+            ],
+        );
+
+        try {
+            $split = explode('-', $id_proses_permohonan['id_proses_permohonan']);
+            $tipe = $split[0];
+
+            if ($tipe == 'LIPUTAN') {
+                $terima_liputan = Liputan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                if ($terima_liputan) {
+                    $terima_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                    if ($terima_proses_permohonan->status !== 'Selesai') {
+                        return response()->json(['error' => 'Perubahan link output permohonan publikasi hanya dapat dilakukan jika status Selesai.'], 403);
+                    }
+
+                    $terima_liputan['tautan_liputan'] = json_encode(array_values($id_proses_permohonan['link_output']));
+                    $terima_liputan->save();
+
+                    $emailController = new EmailController();
+                    $response = $emailController->kirimPerubahanOutput($id_proses_permohonan['id_proses_permohonan']);
+
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
+
+                    return response()->json(['message' => 'Perubahan link output berhasil.']);
+                } else {
+                    return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+                }
+            } elseif ($tipe == 'PROMOSI') {
+                $terima_promosi = Promosi::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                if ($terima_promosi) {
+                    $terima_proses_permohonan = ProsesPermohonan::where('id_proses_permohonan', $id_proses_permohonan['id_proses_permohonan'])->first();
+
+                    if ($terima_proses_permohonan->status !== 'Selesai') {
+                        return response()->json(['error' => 'Perubahan link output permohonan publikasi hanya dapat dilakukan jika status Selesai.'], 403);
+                    }
+
+                    $terima_promosi['tautan_promosi'] = json_encode(array_values($id_proses_permohonan['link_output']));
+                    $terima_promosi->save();
+
+                    $emailController = new EmailController();
+                    $response = $emailController->kirimPerubahanOutput($id_proses_permohonan['id_proses_permohonan']);
+
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
+
+                    return response()->json(['message' => 'Perubahan link output berhasil.']);
+                } else {
+                    return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+                }
+            } else {
+                return response()->json(['error' => 'Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan.'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function getRiwayat(Request $request)
     {
         $sort = $request->input('sort', 'asc');

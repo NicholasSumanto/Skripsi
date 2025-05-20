@@ -47,8 +47,6 @@
 @section('script')
     <!-- JS Addon -->
     <script src="{{ asset('js/calendar.js') }}"></script>
-    <script src="{{ asset('js/swal.js') }}" defer></script>
-    <script src="{{ asset('js/notification.js') }}" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const options = {
@@ -119,18 +117,4 @@
             });
         }
     </script>
-
-    <script>
-        $(document).ready(function() {
-            const logout_message = localStorage.getItem('logout_message');
-            if (logout_message) {
-                alert.fire({
-                    icon: 'success',
-                    title: logout_message,
-                });
-                localStorage.removeItem('logout_message');
-            }
-        });
-    </script>
-
 @endsection
