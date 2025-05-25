@@ -314,6 +314,97 @@ class ApiController extends Controller
         }
     }
 
+    public function getTanggalJadwal(Request $request)
+    {
+        $tanggalPromosi = DB::table('promosi')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
+            ->select(DB::raw('DATE(promosi.tanggal) as tanggal'), DB::raw('"Promosi" as jenis'))
+            ->get()
+            ->toArray();
+
+        $tanggalLiputan = DB::table('liputan')
+            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
+            ->select(DB::raw('DATE(liputan.tanggal) as tanggal'), DB::raw('"Liputan" as jenis'))
+            ->get()
+            ->toArray();
+
+        $tanggalGabungan = array_merge($tanggalPromosi, $tanggalLiputan);
+
+        return response()->json($tanggalGabungan);
+    }
+
+
+
+    public function getJadwalPublikasi(Request $request)
+    {
+        $validatedData = $request->validate(
+            [
+                'tanggal' => 'required|date',
+            ],
+            [
+                'tanggal.required' => 'Tanggal wajib diisi.',
+                'tanggal.date' => 'Tanggal tidak valid.',
+            ],
+        );
+
+        $inputDate = Carbon::parse($validatedData['tanggal'])->startOfDay();
+
+        $promosi = DB::table('promosi')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
+            ->select(
+                'promosi.judul as nama',
+                'promosi.tempat',
+                'promosi.tanggal',
+                'proses_permohonan.status',
+            )
+            ->get()
+            ->filter(function ($item) use ($inputDate) {
+                $eventDate = Carbon::parse($item->tanggal);
+                return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
+            })
+            ->map(function ($item) use ($inputDate) {
+                return [
+                    'nama' => $item->nama,
+                    'tempat' => $item->tempat,
+                    'jenis' => 'Promosi',
+                    'status' => $item->status,
+                    'hari_h' => Carbon::parse($item->tanggal)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
+                ];
+            });
+
+        $liputan = DB::table('liputan')
+            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
+            ->select(
+                'liputan.judul as nama',
+                'liputan.tempat',
+                'liputan.waktu',
+                'proses_permohonan.status',
+            )
+            ->get()
+            ->filter(function ($item) use ($inputDate) {
+                $eventDate = Carbon::parse($item->waktu);
+                return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
+            })
+            ->map(function ($item) use ($inputDate) {
+                return [
+                    'nama' => $item->nama,
+                    'tempat' => $item->tempat,
+                    'waktu' => $item->waktu,
+                    'jenis' => 'Liputan',
+                    'status' => $item->status,
+                    'hari_h' => Carbon::parse($item->waktu)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
+                ];
+            });
+
+        $data = $promosi->merge($liputan)->values();
+
+        return response()->json($data);
+    }
+
     // Ambil data unit dan sub-unit untuk dropdown
     public function getSubUnits(Request $request)
     {
@@ -734,6 +825,7 @@ class ApiController extends Controller
                 'id' => $item->id,
                 'tanggal' => $item->tanggal,
                 'nama' => $item->nama,
+                'status' => $item->status,
                 'unit' => $item->unit,
                 'subUnit' => $item->subUnit,
                 'jenis' => 'Promosi',
@@ -763,6 +855,7 @@ class ApiController extends Controller
                 'id' => $item->id,
                 'tanggal' => $item->tanggal,
                 'nama' => $item->nama,
+                'status' => $item->status,
                 'unit' => $item->unit,
                 'subUnit' => $item->subUnit,
                 'jenis' => 'Liputan',

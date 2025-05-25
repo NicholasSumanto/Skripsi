@@ -44,19 +44,13 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:pemohon'])
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/email/verifikasi-publikasi', [EmailController::class, 'verifikasiPublikasi'])->name('api.email.verifikasi-publikasi');
     });
+
 Route::middleware(['redirectIfNotAuthencicated', 'role:pemohon'])
     ->prefix('/pemohon')
     ->name('pemohon.')
     ->group(function () {
         Route::get('/lacak', [PemohonController::class, 'lacak'])->name('lacak');
         Route::get('/verifikasi/{token}', [PemohonController::class, 'verifikasi'])->name('verifikasi');
-    });
-
-Route::prefix('umum/pemohon')
-    ->name('umum.pemohon.')
-    ->group(function () {
-        Route::get('/home', [PemohonController::class, 'home'])->name('home');
-        Route::get('/agenda', [PemohonController::class, 'agenda'])->name('agenda');
     });
 // Pemohon End
 
@@ -86,6 +80,9 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
 // Staff End
 
 // API
+Route::post('/api/get/jadwal-publikasi', [ApiController::class, 'getJadwalPublikasi'])->name('api.get.jadwal-publikasi');
+Route::get('/api/get/tanggal-jadwal', [ApiController::class, 'getTanggalJadwal'])->name('api.get.tanggal-jadwal');
+
 // Route::get('auth/google/callback', [AccountController::class, 'handleProvidersCallback'])->name('google.callback');
 Route::middleware('guest')
     ->prefix('/auth')

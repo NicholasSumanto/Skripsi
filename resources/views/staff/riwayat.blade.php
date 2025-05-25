@@ -67,6 +67,7 @@
                         <th class="border py-2 px-1">Nama Publikasi</th>
                         <th class="border py-2 px-1">Unit</th>
                         <th class="border py-2 px-1">Sub Unit</th>
+                        <th class="border py-2 px-1">Status</th>
                         <th class="border py-2 px-1">Tautan</th>
                         <th class="border py-2 px-1">Detail</th>
                     </tr>
@@ -80,6 +81,7 @@
                             <td class="border py-2 px-1" x-text="item.nama"></td>
                             <td class="border py-2 px-1" x-text="item.unit"></td>
                             <td class="border py-2 px-1" x-text="item.subUnit"></td>
+                            <td class="border py-2 px-1" x-text="item.status"></td>
                             <td class="border py-2 px-1 text-blue-500 underline">
                                 <button @click="openLinkModal(item.tautan)" class="underline text-blue-500">Lihat</button>
                             </td>
@@ -165,6 +167,7 @@
                             nama: item.nama,
                             unit: item.unit,
                             subUnit: item.subUnit,
+                            status: item.status,
                             jenis: item.jenis,
                             tautan: item.tautan ?? '-',
                         }));
