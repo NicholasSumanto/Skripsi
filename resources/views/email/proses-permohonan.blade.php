@@ -181,6 +181,13 @@
                 @endforeach
             </table>
 
+            @if ($publikasi->keterangan)
+                <h3 style="color: #0B4D1E; margin-top: 0; margin-bottom: 0;">Keterangan Pembatalan Publikasi:</h3>
+                <div class="alert-container" style="margin-bottom: 0.5rem;">
+                    <p class="alert-text">{{ $publikasi->keterangan ?? '-' }}</p>
+                </div>
+            @endif
+
             @if ($publikasi->link_output)
                 @php
                     $link_Output = json_decode($publikasi->link_output, true);

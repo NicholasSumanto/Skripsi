@@ -239,15 +239,28 @@
 
                 Swal.fire({
                     title: 'Batalkan Permohonan?',
-                    html: `Anda membatalkan permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span>`,
+                    html: `
+                        <p>Anda membatalkan permohonan publikasi ini.</p>
+                        <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p>
+                        <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-5" placeholder="Tuliskan alasan pembatalan" required></textarea>
+                    `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
                     confirmButtonText: 'Ya, Batalkan',
-                    cancelButtonText: 'Tidak'
+                    cancelButtonText: 'Tidak',
+                    preConfirm: () => {
+                        const keterangan = document.getElementById('alasanBatal').value.trim();
+                        if (!keterangan) {
+                            Swal.showValidationMessage('Alasan pembatalan wajib diisi');
+                        }
+                        return keterangan;
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        const keterangan = result.value;
+
                         $.ajax({
                             type: "POST",
                             url: "{{ route('staff.api.delete.publikasi') }}",
@@ -256,20 +269,29 @@
                             },
                             data: {
                                 id_proses_permohonan: id_proses_permohonan,
+                                keterangan: keterangan
                             },
                             beforeSend: function() {
                                 $('[data-batal]').text('Proses Batal Berlangsung').attr(
                                     'disabled', true);
                                 $(this).text('Membatalkan...').attr('disabled', true);
+
+                                Swal.fire({
+                                    title: 'Loading',
+                                    text: 'Permintaan Anda sedang diproses...',
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
                             },
                             success: function(res) {
                                 localStorage.setItem('batalkan_message', res.message);
                                 location.reload();
                             },
                             error: function(err) {
-                                $('[data-batal]').text('Batal').attr(
-                                    'disabled', false);
-                                alert.fire({
+                                $('[data-batal]').text('Batal').attr('disabled', false);
+                                Swal.fire({
                                     icon: 'error',
                                     title: err.responseJSON.error ?? err
                                         .responseJSON.message,
@@ -307,9 +329,19 @@
                                 jenis_proses: 'Diterima',
                             },
                             beforeSend: function() {
-                                $('[data-terima]').text('Proses Terima Berlangsung').attr(
-                                    'disabled', true);
+                                $('[data-terima]').text('Proses Terima Berlangsung')
+                                    .attr(
+                                        'disabled', true);
                                 $(this).text('Menerima...').attr('disabled', true);
+
+                                Swal.fire({
+                                    title: 'Loading',
+                                    text: 'Permintaan Anda sedang diproses...',
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
                             },
                             success: function(res) {
                                 localStorage.setItem('terima_message', res.message);
@@ -356,9 +388,19 @@
                                 jenis_proses: 'Diproses',
                             },
                             beforeSend: function() {
-                                $('[data-diproses]').text('Proses Diproses Berlangsung').attr(
-                                    'disabled', true);
+                                $('[data-diproses]').text('Proses Diproses Berlangsung')
+                                    .attr(
+                                        'disabled', true);
                                 $(this).text('Memproses...').attr('disabled', true);
+
+                                Swal.fire({
+                                    title: 'Loading',
+                                    text: 'Permintaan Anda sedang diproses...',
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
                             },
                             success: function(res) {
                                 localStorage.setItem('diproses_message', res.message);

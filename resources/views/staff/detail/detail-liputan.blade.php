@@ -83,7 +83,7 @@
                                 $file = json_decode($publikasi->file_liputan, true);
                             @endphp
 
-                            @if ($file[0])
+                            @if ($file[0] && $publikasi->status !== 'Batal')
                                 <a href="{{ route('staff.api.get.file-liputan', ['id' => $publikasi->id_verifikasi_publikasi, 'filename' => $file[0]]) }}"
                                     target="_blank"
                                     class="inline-block bg-yellow-500 text-[#006034] font-semibold py-2 px-4 rounded hover:bg-yellow-600 transition duration-300 mb-2 mr-2">
@@ -267,6 +267,15 @@
                                         true);
                                     $('btn-kembali').text('Mengirim...').attr('disabled',
                                         true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
                                 },
                                 success: function(res) {
                                     localStorage.setItem('selesai_message', res.message);

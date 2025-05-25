@@ -49,6 +49,7 @@ class ProsesPermohonanSeeder extends Seeder
                     'tanggal_diproses' => $tanggalDiproses?->format('Y-m-d'),
                     'tanggal_selesai' => $tanggalSelesai?->format('Y-m-d'),
                     'tanggal_batal' => $tanggalBatal?->format('Y-m-d'),
+                    'keterangan' => $status === 'Batal' ? fake()->sentence() : null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);

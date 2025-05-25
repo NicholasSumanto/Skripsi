@@ -98,7 +98,10 @@
             <h2>Halo, {{ $namaPemohon }}</h2>
             <p>Permohonan <strong>{{ $jenisPermohonan }} "{{ $judulPermohonan }}"</strong> dengan kode <strong>{{ $id_proses_permohonan }}</strong> {{ $pesanBatal }}.
             </p>
-            <div class="alert-container">
+
+            <h3>Keterangan Pembatalan Publikasi: </h3>
+            <p>{{ $keteranganBatal }}</p>
+            <div class="alert-container" style="margin-top: 0.5rem;">
                 <p class="alert-text">Jika Anda merasa tidak melakukan pembatalan permohonan publikasi segera hubungi
                     <span class="alert-text-bolder"> Staff Biro 4 UKDW</span>
             </div>

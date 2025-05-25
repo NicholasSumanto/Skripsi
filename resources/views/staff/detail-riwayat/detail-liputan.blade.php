@@ -79,18 +79,22 @@
                     <div>
                         <label class="font-semibold text-lg">Rundown dan TOR * :</label>
                         <div class="mt-2">
-                            @php
-                                $file = json_decode($publikasi->file_liputan, true);
-                            @endphp
+                            @if ($publikasi->file_liputan && $publikasi->status !== 'Batal')
+                                @php
+                                    $file = json_decode($publikasi->file_liputan, true);
+                                @endphp
 
-                            @if ($file[0])
-                                <a href="{{ route('staff.api.get.file-liputan', ['id' => $publikasi->id_verifikasi_publikasi, 'filename' => $file[0]]) }}"
-                                    target="_blank"
-                                    class="inline-block bg-yellow-500 text-[#006034] font-semibold py-2 px-4 rounded hover:bg-yellow-600 transition duration-300 mb-2 mr-2">
-                                    Lihat File
-                                </a>
+                                @if ($file[0])
+                                    <a href="{{ route('staff.api.get.file-liputan', ['id' => $publikasi->id_verifikasi_publikasi, 'filename' => $file[0]]) }}"
+                                        target="_blank"
+                                        class="inline-block bg-yellow-500 text-[#006034] font-semibold py-2 px-4 rounded hover:bg-yellow-600 transition duration-300 mb-2 mr-2">
+                                        Lihat File
+                                    </a>
+                                @else
+                                    <p class="text-white">Tidak ada file.</p>
+                                @endif
                             @else
-                                <p class="text-white">Tidak ada file.</p>
+                                <p class="text-white">Permohonan Telah Dibatalkan oleh {{$publikasi->batal_is_pemohon ? 'Pemohon' : 'Staff Biro 4'}}.</p>
                             @endif
                         </div>
                     </div>
@@ -161,6 +165,12 @@
                                 </div>
                             @endforeach
                         </div>
+                    </div>
+                @else
+                    <div class="mt-6">
+                        <label class="font-semibold text-lg">Keterangan Pembatalan Publikasi :</label>
+                        <textarea name="keterangan" rows="6" readonly
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">{{ $publikasi->keterangan }}</textarea>
                     </div>
                 @endif
 
@@ -336,6 +346,15 @@
                                         true);
                                     $('btn-cancel').text('Mengirim...').attr('disabled',
                                         true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
                                 },
                                 success: function(res) {
                                     localStorage.setItem('ubahOutput_message', res.message);

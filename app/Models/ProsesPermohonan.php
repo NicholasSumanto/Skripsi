@@ -18,6 +18,7 @@ class ProsesPermohonan extends Model
         'tanggal_diterima',
         'tanggal_diproses',
         'tanggal_selesai',
+        'keterangan',
         'batal_is_pemohon',
         'tanggal_batal',
     ];

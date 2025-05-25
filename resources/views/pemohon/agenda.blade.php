@@ -3,19 +3,24 @@
 @section('title', 'Home')
 
 @section('custom-header')
-    <link rel="stylesheet"href="{{ asset('css/calendar.core.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/custom-calendar.css') }}">
+    <link rel="stylesheet"href="{{ asset('css/calendar_v2.core.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/custom-calendar_v2.css') }}">
     <style>
         .bg-hijau {
             background-color: #28a745 !important;
+            color: white !important;
+            font-weight: bold !important;
         }
 
         .bg-kuning {
             background-color: #ffc107 !important;
+            font-weight: bold !important;
         }
 
         .bg-ungu {
             background-color: #6f42c1 !important;
+            color: white !important;
+            font-weight: bold !important;
         }
     </style>
 @endsection
@@ -26,19 +31,26 @@
 
             <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Agenda Publikasi</h1>
 
-            <div id="calendar" class="w-full min-h-[400px] p-0 mb-12"></div>
+            <div id="calendar" class="w-full min-h-[400px] p-0 mb-6"></div>
+            <hr class="h-px my-3 bg-gray-800 border-0 dark:bg-gray-700 w-full">
+            <p class="text-sm text-gray-600 w-full">
+                <span class="font-semibold mb-2 block">Keterangan :</span>
+                <span class="bg-hijau text-white px-2 py-1 rounded-md mb-2 inline-block">Liputan</span> : Hari
+                Pelaksanaan Kegiatan Publikasi Liputan. <br>
+                <span class="bg-kuning text-white px-2 py-1 rounded-md mb-2 inline-block">Promosi</span> : Hari
+                Pelaksanaan Kegiatan Publikasi Promosi. <br>
+                <span class="bg-ungu text-white px-2 py-1 rounded-md mb-2 inline-block">Liputan & Promosi</span> : Hari
+                Pelaksanaan Kegiatan Publikasi Liputan dan Promosi.
+            </p>
         </div>
     </main>
 @endsection
 
 @section('script')
     <!-- JS Addon -->
-    <script src="{{ asset('js/calendar.core.js') }}" defer></script>
+    <script src="{{ asset('js/calendar_v2.core.js') }}" defer></script>
     <script>
         $(document).ready(function() {
-            const {
-                Calendar
-            } = window.VanillaCalendarPro;
             const today = '{{ \Carbon\Carbon::now()->format('Y-m-d') }}';
 
             $.ajax({
@@ -74,66 +86,78 @@
                         };
                     });
 
-                    const calendar = new Calendar('#calendar', {
+                    const calendar = new VanillaCalendar('#calendar', {
                         settings: {
                             selection: {
                                 day: 'single',
                             },
                             visibility: {
                                 daysOutside: false,
-                            },
-                            range: {
-                                min: today,
-                            },
+                            }
                         },
                         popups: popups,
-                        onClickDate(self) {
-                            const selectedDate = self.context.selectedDates[0];
-                            if (!selectedDate) return;
+                        actions: {
+                            clickDay(event, self) {
+                                const selectedDate = self.selectedDates[0];
+                                if (!selectedDate) return;
 
-                            $.ajax({
-                                url: `{{ route('api.get.jadwal-publikasi') }}`,
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                                },
-                                data: {
-                                    tanggal: selectedDate
-                                },
-                                dataType: 'json',
-                                success: function(data) {
-                                    if (data.length === 0) {
+                                $.ajax({
+                                    url: `{{ route('api.get.jadwal-publikasi') }}`,
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                    },
+                                    data: {
+                                        tanggal: selectedDate
+                                    },
+                                    dataType: 'json',
+                                    beforeSend: function() {
                                         Swal.fire({
-                                            icon: 'info',
-                                            title: 'Tidak ada jadwal',
-                                            text: `Tidak ada kegiatan pada tanggal ${selectedDate}.`
+                                            title: 'Loading',
+                                            text: 'Memuat Jadwal...',
+                                            allowOutsideClick: false,
+                                            didOpen: () => {
+                                                Swal.showLoading();
+                                            }
                                         });
-                                    } else {
-                                        let htmlContent =
-                                            `<div style="text-align:left; max-height:400px; overflow-y:auto;">`;
+                                    },
+                                    success: function(data) {
+                                        if (data.length === 0) {
+                                            Swal.fire({
+                                                icon: 'info',
+                                                title: 'Tidak ada jadwal',
+                                                text: `Tidak ada kegiatan pada tanggal ${selectedDate}.`
+                                            });
+                                        } else {
+                                            let htmlContent =
+                                                `<div style="text-align:left; max-height:400px; overflow-y:auto;">`;
 
-                                        const liputanList = data.filter(item => item
-                                            .jenis === 'Liputan');
-                                        const promosiList = data.filter(item => item
-                                            .jenis === 'Promosi');
+                                            const liputanList = data.filter(item =>
+                                                item
+                                                .jenis === 'Liputan');
+                                            const promosiList = data.filter(item =>
+                                                item
+                                                .jenis === 'Promosi');
 
-                                        function renderSection(judul, list) {
-                                            if (list.length === 0) return '';
+                                            function renderSection(judul, list) {
+                                                if (list.length === 0) return '';
 
-                                            let sectionHTML =
-                                                `<h3 style="font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #444;">${judul}</h3>`;
+                                                let sectionHTML =
+                                                    `<h3 style="font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #444;">${judul}</h3>`;
 
-                                            list.forEach((item, index) => {
-                                                const statusClass = item
-                                                    .status === 'Diproses' ?
-                                                    'text-yellow-600' :
-                                                    'text-red-600';
+                                                list.forEach((item, index) => {
+                                                    const statusClass = item
+                                                        .status ===
+                                                        'Diproses' ?
+                                                        'text-yellow-600' :
+                                                        'text-red-600';
 
-                                                const hariPelaksanaan = item
-                                                    .hariPelaksanaan ??
-                                                    'text-green-500'
+                                                    const hariPelaksanaan =
+                                                        item
+                                                        .hariPelaksanaan ??
+                                                        'text-green-500'
 
-                                                sectionHTML += `
+                                                    sectionHTML += `
                                                     <div style="
                                                         border: 1px solid #e0e0e0;
                                                         border-radius: 8px;
@@ -153,46 +177,47 @@
                                                         </div>
                                                     </div>
                                                 `;
+                                                });
+
+                                                return sectionHTML;
+                                            }
+
+                                            htmlContent += renderSection('Liputan',
+                                                liputanList);
+                                            htmlContent += renderSection('Promosi',
+                                                promosiList);
+
+                                            htmlContent += `</div>`;
+
+                                            Swal.fire({
+                                                title: `Jadwal Tanggal ${selectedDate}`,
+                                                html: htmlContent,
+                                                width: 700,
+                                                confirmButtonText: 'Tutup',
+                                                confirmButtonColor: '#6c757d',
                                             });
 
-                                            return sectionHTML;
                                         }
+                                    },
 
-                                        htmlContent += renderSection('Liputan',
-                                            liputanList);
-                                        htmlContent += renderSection('Promosi',
-                                            promosiList);
-
-                                        htmlContent += `</div>`;
-
-                                        Swal.fire({
-                                            title: `Jadwal Tanggal ${selectedDate}`,
-                                            html: htmlContent,
-                                            width: 700,
-                                            confirmButtonText: 'Tutup',
-                                            confirmButtonColor: '#6c757d',
+                                    error: function(xhr) {
+                                        let message =
+                                            'Terjadi kesalahan. Silakan coba lagi.';
+                                        if (xhr.responseJSON?.error) {
+                                            message = xhr.responseJSON.error;
+                                        } else if (xhr.responseJSON?.errors) {
+                                            message = Object.values(xhr.responseJSON
+                                                .errors).flat().join('\n');
+                                        }
+                                        alert.fire({
+                                            icon: 'error',
+                                            title: 'Gagal',
+                                            text: message,
+                                            timer: 7000,
                                         });
-
                                     }
-                                },
-
-                                error: function(xhr) {
-                                    let message =
-                                        'Terjadi kesalahan. Silakan coba lagi.';
-                                    if (xhr.responseJSON?.error) {
-                                        message = xhr.responseJSON.error;
-                                    } else if (xhr.responseJSON?.errors) {
-                                        message = Object.values(xhr.responseJSON
-                                            .errors).flat().join('\n');
-                                    }
-                                    alert.fire({
-                                        icon: 'error',
-                                        title: 'Gagal',
-                                        text: message,
-                                        timer: 7000,
-                                    });
-                                }
-                            });
+                                });
+                            }
                         }
                     });
 

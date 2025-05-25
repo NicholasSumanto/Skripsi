@@ -44,13 +44,14 @@ class UmumController extends Controller
     {
         // Cari apakah publikasi atau permohonan dengan token ini
         $split = explode('-', $token);
+        $after15minutes = Carbon::now()->subMinutes(16);
 
         try {
             if ($split[0] === 'PROMO') {
                 $promosi = Promosi::where('id_verifikasi_publikasi', $token)->first();
                 $tanggalDiajukan = Promosi::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
 
-                if ($promosi) {
+                if ($promosi && $tanggalDiajukan->created_at < $after15minutes) {
                     if ($promosi->id_proses_permohonan) {
                         $data = [
                             'status' => 'success',
@@ -91,7 +92,7 @@ class UmumController extends Controller
                 $tanggalDiajukan = Liputan::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
 
                 if ($liputan) {
-                    if ($liputan->id_proses_permohonan) {
+                    if ($liputan->id_proses_permohonan && $tanggalDiajukan->created_at < $after15minutes) {
                         $data = [
                             'status' => 'success',
                             'publikasi' => 'Liputan',

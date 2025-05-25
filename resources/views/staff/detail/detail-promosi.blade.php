@@ -353,6 +353,15 @@
                                         true);
                                     $('btn-kembali').text('Mengirim...').attr('disabled',
                                         true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
                                 },
                                 success: function(res) {
                                     localStorage.setItem('selesai_message', res.message);

@@ -30,7 +30,7 @@ class HapusVerifikasiKedaluwarsa extends Command
     {
         // Hapus data liputan invalid
         $liputan_invalid = Liputan::where('status_verifikasi', 'Tidak Terverifikasi')
-            ->where('created_at', '<=', now()->subMinutes(15))
+            ->where('created_at', '>', now()->subMinutes(15))
             ->get();
 
         // Hapus File yang sudah kedaluwarsa
@@ -48,7 +48,7 @@ class HapusVerifikasiKedaluwarsa extends Command
 
         // Hapus data promosi invalid
         $promosi_invalid = Promosi::where('status_verifikasi', 'Tidak Terverifikasi')
-            ->where('created_at', '<=', now()->subMinutes(15))
+            ->where('created_at', '>', now()->subMinutes(15))
             ->get();
 
         // Hapus File yang sudah kedaluwarsa

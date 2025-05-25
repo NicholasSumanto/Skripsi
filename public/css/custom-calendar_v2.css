@@ -1,0 +1,26 @@
+/* Header bulan */
+.vanilla-calendar-header {
+    background-color: #28a745;
+    font-weight: bold;
+    padding: 12px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    justify-content: center;
+}
+
+[data-calendar-theme="light"] .vanilla-calendar-header__content,
+[data-calendar-theme="light"] .vanilla-calendar-month,
+[data-calendar-theme="light"] .vanilla-calendar-year {
+    color: white;
+}
+
+/* Panah Kiri */
+[data-calendar-theme="light"] .vanilla-calendar-arrow:before {
+    background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCc+PHBhdGggZmlsbD0nd2hpdGUnIGQ9J00xMiAxNmMtLjMgMC0uNS0uMS0uNy0uM2wtNi02Yy0uNC0uNC0uNC0xIDAtMS40czEtLjQgMS40IDBsNS4zIDUuMyA1LjMtNS4zYy40LS40IDEtLjQgMS40IDBzLjQgMSAwIDEuNGwtNiA2Yy0uMi4yLS40LjMtLjcuM3onLz48L3N2Zz4=");
+}
+
+@media (max-width: 640px) {
+    .vanilla-calendar {
+        font-size: 14px;
+    }
+}

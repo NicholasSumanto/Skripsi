@@ -174,15 +174,28 @@
 
                     Swal.fire({
                         title: 'Batalkan Permohonan?',
-                        html: `Anda membatalkan permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span>`,
+                        html: `
+                        <p>Anda membatalkan permohonan publikasi ini.</p>
+                        <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p>
+                        <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-5" placeholder="Tuliskan alasan pembatalan" required></textarea>
+                    `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#3085d6',
                         confirmButtonText: 'Ya, Batalkan',
-                        cancelButtonText: 'Tidak'
+                        cancelButtonText: 'Tidak',
+                        preConfirm: () => {
+                            const keterangan = document.getElementById('alasanBatal').value.trim();
+                            if (!keterangan) {
+                                Swal.showValidationMessage('Alasan pembatalan wajib diisi');
+                            }
+                            return keterangan;
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            const keterangan = result.value;
+
                             $.ajax({
                                 type: "POST",
                                 url: "{{ route('pemohon.api.delete.publikasi') }}",
@@ -191,10 +204,20 @@
                                 },
                                 data: {
                                     id_proses_permohonan: id_proses_permohonan,
+                                    keterangan: keterangan
                                 },
                                 beforeSend: function() {
                                     $('#btn-batalkan').text('Membatalkan...').attr(
                                         'disabled', true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
                                 },
                                 success: function(res) {
                                     localStorage.setItem('batalkan_message', res.message);

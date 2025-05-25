@@ -139,13 +139,26 @@ class StaffController extends Controller
                     'sub_unit.nama_sub_unit',
                     'unit.nama_unit',
                     'proses_permohonan.status',
+                    'proses_permohonan.tanggal_batal',
+                    'proses_permohonan.keterangan',
+                    'proses_permohonan.batal_is_pemohon',
                     'promosi.tautan_promosi as link_output'
                 )
                 ->first();
 
             return view('staff.detail-riwayat.detail-promosi', compact('publikasi'));
         } elseif ($split === 'LIPUTAN') {
-            $publikasi = DB::table('liputan')->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')->where('liputan.id_proses_permohonan', $id)->select('liputan.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status',  'liputan.tautan_liputan as link_output')->first();
+            $publikasi = DB::table('liputan')->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')->where('liputan.id_proses_permohonan', $id)->select(
+                'liputan.*',
+                'pengguna.email',
+                'sub_unit.nama_sub_unit',
+                'unit.nama_unit',
+                'proses_permohonan.status',
+                'proses_permohonan.tanggal_batal',
+                'proses_permohonan.keterangan',
+                'proses_permohonan.batal_is_pemohon',
+                'liputan.tautan_liputan as link_output'
+            )->first();
 
             return view('staff.detail-riwayat.detail-liputan', compact('publikasi'));
         }

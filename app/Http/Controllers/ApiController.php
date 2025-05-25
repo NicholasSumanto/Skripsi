@@ -335,8 +335,6 @@ class ApiController extends Controller
         return response()->json($tanggalGabungan);
     }
 
-
-
     public function getJadwalPublikasi(Request $request)
     {
         $validatedData = $request->validate(
@@ -454,10 +452,14 @@ class ApiController extends Controller
                         }
                     },
                 ],
+                'keterangan' => 'required|string|max:255',
             ],
             [
                 'id_proses_permohonan.required' => 'Kode proses publikasi wajib diisi.',
                 'id_proses_permohonan.string' => 'Kode proses publikasi harus berupa teks.',
+                'keterangan.required' => 'Keterangan batal wajib diisi.',
+                'keterangan.string' => 'Keterangan batal harus berupa teks.',
+                'keterangan.max' => 'Keterangan batal tidak boleh lebih dari 255 karakter.',
             ],
         );
 
@@ -481,6 +483,10 @@ class ApiController extends Controller
                         Storage::disk('local')->deleteDirectory('liputan/' . $batalkan_liputan->id_verifikasi_publikasi);
                     }
 
+                    $batalkan_liputan->update([
+                        'file_liputan' => null
+                    ]);
+
                     $batalkan_proses_permohonan->update([
                         'status' => 'Batal',
                         'tanggal_batal' => Carbon::now(),
@@ -489,17 +495,19 @@ class ApiController extends Controller
                     if (Auth::user()->role == 'staff') {
                         $batalkan_proses_permohonan->update([
                             'batal_is_pemohon' => false,
+                            'keterangan' => $id_proses_permohonan['keterangan'],
                         ]);
                         $pesanBatal = 'dibatalkan oleh staff';
                     } else {
                         $batalkan_proses_permohonan->update([
                             'batal_is_pemohon' => true,
+                            'keterangan' => $id_proses_permohonan['keterangan'],
                         ]);
                         $pesanBatal = 'telah dibatalkan';
                     }
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
+                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal, $id_proses_permohonan['keterangan']);
 
                     if ($response->getStatusCode() !== 200) {
                         return $response;
@@ -534,20 +542,28 @@ class ApiController extends Controller
                         'tanggal_batal' => Carbon::now(),
                     ]);
 
+                    $batalkan_promosi->update([
+                        'file_stories' => null,
+                        'file_poster' => null,
+                        'file_video' => null,
+                    ]);
+
                     if (Auth::user()->role == 'staff') {
                         $batalkan_proses_permohonan->update([
                             'batal_is_pemohon' => false,
+                            'keterangan' => $id_proses_permohonan['keterangan'],
                         ]);
                         $pesanBatal = 'dibatalkan oleh staff';
                     } else {
                         $batalkan_proses_permohonan->update([
                             'batal_is_pemohon' => true,
+                            'keterangan' => $id_proses_permohonan['keterangan'],
                         ]);
                         $pesanBatal = 'telah dibatalkan';
                     }
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal);
+                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal, $id_proses_permohonan['keterangan']);
 
                     if ($response->getStatusCode() !== 200) {
                         return $response;

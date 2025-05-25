@@ -96,7 +96,12 @@
                             }
                         @endphp
 
-                        @if ($publikasi->file_stories)
+                        @if ($publikasi->status === 'Batal')
+                            <p class="text-green-700">Permohonan Telah Dibatalkan oleh
+                                {{ $publikasi->batal_is_pemohon ? 'Pemohon' : 'Staff Biro 4' }}.</p>
+                        @endif
+
+                        @if ($publikasi->file_stories && $publikasi->status !== 'Batal')
                             <div>
                                 <label class="block font-semibold text-green-700 mb-2">Instagram Stories</label>
                                 <div id="nanoGallery-stories">
@@ -117,7 +122,7 @@
                         @endif
 
                         {{-- file_poster --}}
-                        @if ($publikasi->file_poster)
+                        @if ($publikasi->file_poster && $publikasi->status !== 'Batal')
                             <div>
                                 <label class="block font-semibold text-green-700 mb-2">Instagram Post</label>
                                 <div id="nanoGallery-poster">
@@ -138,7 +143,7 @@
                         @endif
 
                         {{-- file_video --}}
-                        @if ($publikasi->file_video)
+                        @if ($publikasi->file_video && $publikasi->status !== 'Batal')
                             <div>
                                 <label class="block font-semibold text-green-700 mb-2">Videotron</label>
                                 <div id="nanoGallery-videotron">
@@ -193,6 +198,12 @@
                                 </div>
                             @endforeach
                         </div>
+                    </div>
+                @else
+                    <div class="mt-6">
+                        <label class="font-semibold text-lg">Keterangan Pembatalan Publikasi :</label>
+                        <textarea name="keterangan" rows="6" readonly
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">{{ $publikasi->keterangan }}</textarea>
                     </div>
                 @endif
 
@@ -422,6 +433,15 @@
                                         true);
                                     $('btn-cancel').text('Mengirim...').attr('disabled',
                                         true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
                                 },
                                 success: function(res) {
                                     localStorage.setItem('ubahOutput_message', res.message);
