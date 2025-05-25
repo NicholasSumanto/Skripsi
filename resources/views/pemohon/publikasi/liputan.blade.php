@@ -377,10 +377,10 @@
         document.getElementById('nomor_handphone').addEventListener('input', function() {
             let value = this.value;
 
-            if (value.startsWith('08')) {
+            if (value.startsWith('0')) {
                 this.value = '+62' + value.substring(2);
-            } else if (value.startsWith('08') || value.startsWith('+62')) {
-                this.value = value.replace(/^08/, '+62');
+            } else if (value.startsWith('0') || value.startsWith('+62')) {
+                this.value = value.replace(/^0/, '+62');
             }
         });
     </script>

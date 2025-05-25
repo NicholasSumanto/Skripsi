@@ -1,14 +1,17 @@
 @extends('template.staff.main-staff')
 @section('title', 'Riwayat Publikasi')
 
+
 @section('content')
     <div x-data="riwayatPublikasi()" class="p-6 bg-white rounded shadow relative">
         <h2 class="text-2xl font-bold text-center mb-4 text-blue-900">Riwayat Publikasi</h2>
 
         <form class="mb-4 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-2 md:justify-start justify-center flex-1 min-w-[300px]">
-                <!-- Filter urutan, jenis, search, reset -->
-                <label class="text-lg font-semibold text-green-700">Urutan:</label>
+            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 flex-1 min-w-[300px]">
+                <!-- Label Sortir -->
+                <label class="text-lg font-semibold text-green-700 md:mr-2">Sortir:</label>
+
+                <!-- Urutan Tanggal -->
                 <select x-model="sortOrder"
                     class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
                     <option value="">-- Semua Urutan --</option>
@@ -16,6 +19,7 @@
                     <option value="desc">Tanggal Terjauh</option>
                 </select>
 
+                <!-- Jenis -->
                 <select x-model="selectedJenis"
                     class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
                     <option value="">-- Semua Jenis --</option>
@@ -23,12 +27,16 @@
                     <option value="Promosi">Promosi</option>
                 </select>
 
+                <!-- Search -->
                 <input type="text" x-model="search" placeholder="Cari nama publikasi..."
-                    class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
+                    class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900 w-full md:w-auto">
 
+                <!-- Tombol Reset -->
                 <button type="button" @click="resetFilter"
                     class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md whitespace-nowrap">Reset</button>
             </div>
+
+
 
             <!-- Bagian range tanggal dan export -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto min-w-[280px] justify-end">
@@ -81,7 +89,19 @@
                             <td class="border py-2 px-1" x-text="item.nama"></td>
                             <td class="border py-2 px-1" x-text="item.unit"></td>
                             <td class="border py-2 px-1" x-text="item.subUnit"></td>
-                            <td class="border py-2 px-1" x-text="item.status"></td>
+                            <td class="border py-2 px-1 text-center">
+                                <span class="text-sm font-semibold px-2 py-1 rounded-full"
+                                    :class="{
+                                        'bg-green-100 text-green-700': item.status === 'Selesai',
+                                        'bg-red-100 text-red-700': item.status === 'Batal',
+                                        'bg-yellow-100 text-yellow-700': item.status !== 'Selesai' && item
+                                            .status !== 'Batal'
+                                    }"
+                                    x-text="item.status">
+                                </span>
+                            </td>
+
+
                             <td class="border py-2 px-1 text-blue-500 underline">
                                 <button @click="openLinkModal(item.tautan)" class="underline text-blue-500">Lihat</button>
                             </td>
@@ -146,7 +166,7 @@
                 endDate: '',
                 selectedData: {},
                 currentPage: 1,
-                pageSize: 10,
+                pageSize: 20,
                 originalData: [],
 
                 async init() {
@@ -295,12 +315,28 @@
 
                 convertToCSV(data) {
                     const header = ['Kode', 'Jenis', 'Tanggal', 'Nama', 'Unit', 'Sub Unit', 'Tautan'];
-                    const rows = data.map(item => [item.kode, item.jenis, item.tanggal, item.nama, item
-                        .unit, item.subUnit,
-                        item.tautan
+
+                    // Fungsi untuk escape tanda kutip di data dan bungkus dengan tanda kutip
+                    const escapeCSV = (text) => {
+                        if (text === null || text === undefined) return '""';
+                        let str = text.toString();
+                        str = str.replace(/"/g, '""'); // double quotes ganti dengan double double quotes
+                        return `"${str}"`;
+                    }
+
+                    const rows = data.map(item => [
+                        escapeCSV(item.kode),
+                        escapeCSV(item.jenis),
+                        escapeCSV(item.tanggal),
+                        escapeCSV(item.nama),
+                        escapeCSV(item.unit),
+                        escapeCSV(item.subUnit),
+                        escapeCSV(item.tautan)
                     ]);
-                    return [header, ...rows].map(e => e.join(",")).join("\n");
+
+                    return [header.map(escapeCSV), ...rows].map(e => e.join(",")).join("\n");
                 },
+
 
                 downloadCSV(csv) {
                     const blob = new Blob([csv], {

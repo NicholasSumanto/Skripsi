@@ -90,7 +90,7 @@ class StaffController extends Controller
         $merged = $sort === 'asc' ? $merged->sortBy('tanggal') : $merged->sortByDesc('tanggal');
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 3;
+        $perPage = 4;
         $currentItems = $merged->slice(($currentPage - 1) * $perPage, $perPage)->values();
         $publikasi = new LengthAwarePaginator($currentItems, $merged->count(), $perPage, $currentPage, [
             'path' => $request->url(),

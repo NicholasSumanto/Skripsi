@@ -38,26 +38,42 @@ class ApiController extends Controller
         }
 
         // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi (10)
-        $kuota = Liputan::where('google_id', Auth::user()->google_id)
+        $kuotaLiputanTidakTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
             ->where('status_verifikasi', 'Tidak Terverifikasi')
             ->count();
-        if ($kuota >= 10) {
+
+        $kuotaPromosiTidakTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
+            ->where('status_verifikasi', 'Tidak Terverifikasi')
+            ->count();
+
+        $kuotaTidakTerverifikasi = $kuotaLiputanTidakTerverifikasi + $kuotaPromosiTidakTerverifikasi;
+
+        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
+        $kuotaLiputTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
+            ->whereHas('prosesPermohonan', function ($query) {
+                $query->where('status', '=', 'Diajukan');
+            })->count();
+
+        $kuotaPromosiTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
+            ->whereHas('prosesPermohonan', function ($query) {
+                $query->where('status', '=', 'Diajukan');
+            })->count();
+
+        $kuotaTerverifikasi = $kuotaLiputTerverifikasi + $kuotaPromosiTerverifikasi;
+
+        if($kuotaTerverifikasi + $kuotaTidakTerverifikasi >= 6) {
             return response()->json(
                 [
-                    'error' => 'Kuota permohonan publikasi liputan tidak terverifikasi sudah mencapai batas maksimum (10).',
+                    'error' => 'Kuota total permohonan publikasi sudah mencapai batas maksimum (6). Tunggu hingga status publikasi diterima atau dibatalkan verifikasi.',
                 ],
                 400,
             );
         }
 
-        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
-        $kuotaTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
-            ->where('status_verifikasi', 'Terverifikasi')
-            ->count();
-        if ($kuotaTerverifikasi >= 4) {
+        if ($kuotaTidakTerverifikasi >= 4) {
             return response()->json(
                 [
-                    'error' => 'Kuota permohonan publikasi liputan terverifikasi sudah mencapai batas maksimum (4). Tunggu hingga staff menyelesaikan verifikasi.',
+                    'error' => 'Kuota permohonan publikasi sudah mencapai batas maksimum (4).',
                 ],
                 400,
             );
@@ -167,26 +183,42 @@ class ApiController extends Controller
         }
 
         // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi (10)
-        $kuota = Promosi::where('google_id', Auth::user()->google_id)
+        $kuotaLiputanTidakTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
             ->where('status_verifikasi', 'Tidak Terverifikasi')
             ->count();
-        if ($kuota >= 10) {
+
+        $kuotaPromosiTidakTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
+            ->where('status_verifikasi', 'Tidak Terverifikasi')
+            ->count();
+
+        $kuotaTidakTerverifikasi = $kuotaLiputanTidakTerverifikasi + $kuotaPromosiTidakTerverifikasi;
+
+        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
+        $kuotaLiputTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
+            ->whereHas('prosesPermohonan', function ($query) {
+                $query->where('status', '=', 'Diajukan');
+            })->count();
+
+        $kuotaPromosiTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
+            ->whereHas('prosesPermohonan', function ($query) {
+                $query->where('status', '=', 'Diajukan');
+            })->count();
+
+        $kuotaTerverifikasi = $kuotaLiputTerverifikasi + $kuotaPromosiTerverifikasi;
+
+        if($kuotaTerverifikasi + $kuotaTidakTerverifikasi >= 6) {
             return response()->json(
                 [
-                    'error' => 'Kuota permohonan publikasi promosi tidak terverifikasi sudah mencapai batas maksimum (10).',
+                    'error' => 'Kuota total permohonan publikasi sudah mencapai batas maksimum (6). Tunggu hingga status publikasi diterima atau dibatalkan verifikasi.',
                 ],
                 400,
             );
         }
 
-        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan terverifikasi (4)
-        $kuotaTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
-            ->where('status_verifikasi', 'Terverifikasi')
-            ->count();
-        if ($kuotaTerverifikasi >= 4) {
+        if ($kuotaTidakTerverifikasi >= 4) {
             return response()->json(
                 [
-                    'error' => 'Kuota permohonan publikasi promosi terverifikasi sudah mencapai batas maksimum (4). Tunggu hingga staff menyelesaikan verifikasi.',
+                    'error' => 'Kuota permohonan publikasi sudah mencapai batas maksimum (4).',
                 ],
                 400,
             );
@@ -352,12 +384,7 @@ class ApiController extends Controller
         $promosi = DB::table('promosi')
             ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
-            ->select(
-                'promosi.judul as nama',
-                'promosi.tempat',
-                'promosi.tanggal',
-                'proses_permohonan.status',
-            )
+            ->select('promosi.judul as nama', 'promosi.tempat', 'promosi.tanggal', 'proses_permohonan.status')
             ->get()
             ->filter(function ($item) use ($inputDate) {
                 $eventDate = Carbon::parse($item->tanggal);
@@ -376,12 +403,7 @@ class ApiController extends Controller
         $liputan = DB::table('liputan')
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
-            ->select(
-                'liputan.judul as nama',
-                'liputan.tempat',
-                'liputan.waktu',
-                'proses_permohonan.status',
-            )
+            ->select('liputan.judul as nama', 'liputan.tempat', 'liputan.waktu', 'proses_permohonan.status')
             ->get()
             ->filter(function ($item) use ($inputDate) {
                 $eventDate = Carbon::parse($item->waktu);
@@ -484,7 +506,7 @@ class ApiController extends Controller
                     }
 
                     $batalkan_liputan->update([
-                        'file_liputan' => null
+                        'file_liputan' => null,
                     ]);
 
                     $batalkan_proses_permohonan->update([
@@ -645,7 +667,7 @@ class ApiController extends Controller
                     } elseif ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
                         if ($terima_proses_permohonan->status === 'Selesai') {
                             return response()->json(['error' => 'Proses permohonan publikasi sudah selesai.'], 403);
-                        } else if ($terima_proses_permohonan->status !== 'Diproses') {
+                        } elseif ($terima_proses_permohonan->status !== 'Diproses') {
                             return response()->json(['error' => 'Proses permohonan publikasi tidak valid.'], 403);
                         }
 
@@ -690,7 +712,7 @@ class ApiController extends Controller
                     } elseif ($id_proses_permohonan['jenis_proses'] === 'Selesai') {
                         if ($terima_proses_permohonan->status === 'Selesai') {
                             return response()->json(['error' => 'Proses permohonan publikasi sudah selesai.'], 403);
-                        } else if ($terima_proses_permohonan->status !== 'Diproses') {
+                        } elseif ($terima_proses_permohonan->status !== 'Diproses') {
                             return response()->json(['error' => 'Proses permohonan publikasi tidak valid.'], 403);
                         }
 
@@ -825,29 +847,21 @@ class ApiController extends Controller
             ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
             ->when($proses, fn($q) => $q->where('proses_permohonan.status', $proses))
-            ->select(
-                'promosi.id_proses_permohonan as id',
-                'promosi.tanggal',
-                'promosi.judul as nama',
-                'promosi.nama_pemohon',
-                'proses_permohonan.status',
-                'unit.nama_unit as unit',
-                'sub_unit.nama_sub_unit as subUnit',
-                'promosi.id_proses_permohonan',
-                'promosi.tautan_promosi as tautan'
-            )
+            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul as nama', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan')
             ->get()
-            ->map(fn($item) => [
-                'id' => $item->id,
-                'tanggal' => $item->tanggal,
-                'nama' => $item->nama,
-                'status' => $item->status,
-                'unit' => $item->unit,
-                'subUnit' => $item->subUnit,
-                'jenis' => 'Promosi',
-                'tautan' => $item->tautan,
-                'id_proses_permohonan' => $item->id_proses_permohonan,
-            ]);
+            ->map(
+                fn($item) => [
+                    'id' => $item->id,
+                    'tanggal' => $item->tanggal,
+                    'nama' => $item->nama,
+                    'status' => $item->status,
+                    'unit' => $item->unit,
+                    'subUnit' => $item->subUnit,
+                    'jenis' => 'Promosi',
+                    'tautan' => $item->tautan,
+                    'id_proses_permohonan' => $item->id_proses_permohonan,
+                ],
+            );
 
         $liputan = DB::table('liputan')
             ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
@@ -855,29 +869,21 @@ class ApiController extends Controller
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
             ->when($proses, fn($q) => $q->where('proses_permohonan.status', $proses))
-            ->select(
-                'liputan.id_proses_permohonan as id',
-                'liputan.tanggal',
-                'liputan.judul as nama',
-                'liputan.nama_pemohon',
-                'proses_permohonan.status',
-                'unit.nama_unit as unit',
-                'sub_unit.nama_sub_unit as subUnit',
-                'liputan.id_proses_permohonan',
-                'liputan.tautan_liputan as tautan'
-            )
+            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul as nama', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan')
             ->get()
-            ->map(fn($item) => [
-                'id' => $item->id,
-                'tanggal' => $item->tanggal,
-                'nama' => $item->nama,
-                'status' => $item->status,
-                'unit' => $item->unit,
-                'subUnit' => $item->subUnit,
-                'jenis' => 'Liputan',
-                'tautan' => $item->tautan,
-                'id_proses_permohonan' => $item->id_proses_permohonan,
-            ]);
+            ->map(
+                fn($item) => [
+                    'id' => $item->id,
+                    'tanggal' => $item->tanggal,
+                    'nama' => $item->nama,
+                    'status' => $item->status,
+                    'unit' => $item->unit,
+                    'subUnit' => $item->subUnit,
+                    'jenis' => 'Liputan',
+                    'tautan' => $item->tautan,
+                    'id_proses_permohonan' => $item->id_proses_permohonan,
+                ],
+            );
 
         $data = match ($pub) {
             'promosi' => $promosi,
@@ -885,9 +891,7 @@ class ApiController extends Controller
             default => $promosi->merge($liputan),
         };
 
-        $data = $sort === 'asc'
-            ? $data->sortBy('tanggal')->values()
-            : $data->sortByDesc('tanggal')->values();
+        $data = $sort === 'asc' ? $data->sortBy('tanggal')->values() : $data->sortByDesc('tanggal')->values();
 
         return response()->json($data);
     }

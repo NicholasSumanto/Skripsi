@@ -26,8 +26,6 @@
         @yield('content')
     </div>
 
-    <!-- Footer -->
-    @include('template.footer')
 </body>
 
 <!-- script -->

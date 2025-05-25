@@ -47,9 +47,9 @@
 
             <!-- Bagian Calendar -->
             <div class="basis-2/3 bg-white p-8 sm:p-2 flex flex-col justify-center">
-                <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e] text-center md:text-center">Agenda
+                <h1 class="text-3xl font-bold mb-6 text-[#1a237e] text-center md:text-center">Agenda
                     Publikasi</h1>
-                <div id="calendar" class="w-full min-h-[400px] p-0 mb-12"></div>
+                <div id="calendar" class="w-full min-h-[400px] p-0 mb-4"></div>
                 <p class="text-sm text-gray-600">
                     <span class="font-semibold mb-2 block">Keterangan :</span>
                     <span class="bg-hijau text-white px-2 py-1 rounded-md mb-2 inline-block">Liputan</span> : Hari
@@ -61,8 +61,8 @@
                 </p>
                 <hr class="h-px my-3 bg-gray-800 border-0 dark:bg-gray-700">
                 <p class="text-sm text-gray-600">
-                    <span class="font-semibold">Catatan :</span> Untuk pengajuan permohonan liputan atau promosi event
-                    silahkan membuat surat permohonan publikasi terlebih dahulu. Form permohonan publikasi terdapat di
+                    <span class="font-semibold">Catatan :</span> Untuk pengajuan permohonan liputan silahkan membuat surat
+                    permohonan publikasi terlebih dahulu. Form permohonan publikasi terdapat di
                     <a href="{{ route('umum.unduhan') }}" class="text-primary hover:underline font-medium">Unduhan</a>
                 </p>
             </div>
