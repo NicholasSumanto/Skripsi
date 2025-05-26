@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             ProsesPermohonanSeeder::class,
             SubUnitSeeder::class,
-            LiputanSeeder::class,
-            PromosiSeeder::class,
         ]);
     }
 }
