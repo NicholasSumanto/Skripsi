@@ -6,6 +6,7 @@ use App\Models\Liputan;
 use App\Models\Promosi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class HapusVerifikasiKedaluwarsa extends Command
 {
@@ -30,7 +31,7 @@ class HapusVerifikasiKedaluwarsa extends Command
     {
         // Hapus data liputan invalid
         $liputan_invalid = Liputan::where('status_verifikasi', 'Tidak Terverifikasi')
-            ->where('created_at', '>', now()->subMinutes(15))
+            ->where('created_at', '<', now()->subMinutes(15))
             ->get();
 
         // Hapus File yang sudah kedaluwarsa
@@ -42,13 +43,14 @@ class HapusVerifikasiKedaluwarsa extends Command
             });
 
             foreach ($liputan_invalid as $liputan) {
+                // Log::info('Menghapus liputan dengan ID: ' . $liputan->id_verifikasi_publikasi);
                 $liputan->delete();
             }
         }
 
         // Hapus data promosi invalid
         $promosi_invalid = Promosi::where('status_verifikasi', 'Tidak Terverifikasi')
-            ->where('created_at', '>', now()->subMinutes(15))
+            ->where('created_at', '<', now()->subMinutes(15))
             ->get();
 
         // Hapus File yang sudah kedaluwarsa
@@ -60,6 +62,7 @@ class HapusVerifikasiKedaluwarsa extends Command
             });
 
             foreach ($promosi_invalid as $promosi) {
+                // Log::info('Menghapus promosi dengan ID: ' . $promosi->id_verifikasi_publikasi);
                 $promosi->delete();
             }
         }
