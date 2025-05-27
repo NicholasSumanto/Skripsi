@@ -16,6 +16,10 @@
                 class="text-white hover:text-gray-200 {{ request()->routeIs('staff.riwayat') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">
                 Riwayat
             </a>
+            <a href="{{ route('staff.unit') }}"
+                class="text-white hover:text-gray-200 {{ request()->routeIs('staff.unit*') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">
+                Unit
+            </a>
             <a href="" class="text-white hover:text-gray-200 logout-btn">
                 <img class="w-8 h-8" src="{{ asset('img/logout.png') }}" alt="Logout Icon">
             </a>
@@ -36,7 +40,7 @@
 
             <!-- Mobile Menu Dropdown -->
             <div x-show="open" @click.away="open = false"
-                class="absolute top-16 right-4 bg-primary rounded-md shadow-lg flex flex-col items-start py-2 w-40 p-2">
+                class="absolute top-16 z-50 right-4 bg-primary rounded-md shadow-lg flex flex-col items-start py-2 w-40 p-2">
 
                 <a href="{{ route('staff.home') }}"
                     class="w-full px-4 py-2 rounded-md
@@ -52,6 +56,13 @@
               ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
               : 'text-white hover:bg-primary-dark' }}">
                     Riwayat
+                </a>
+                <a href="{{ route('staff.unit') }}"
+                    class="w-full px-4 py-2 rounded-md
+          {{ request()->routeIs('staff.unit')
+              ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400 bg-primary-dark text-white'
+              : 'text-white hover:bg-primary-dark' }}">
+                    Unit
                 </a>
 
                 <a href="#"

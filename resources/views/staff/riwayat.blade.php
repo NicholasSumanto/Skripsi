@@ -4,14 +4,12 @@
 
 @section('content')
     <div x-data="riwayatPublikasi()" class="p-6 bg-white rounded shadow relative">
-        <h2 class="text-2xl font-bold text-center mb-4 text-blue-900">Riwayat Publikasi</h2>
+        <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Riwayat Publikasi</h2>
 
         <form class="mb-4 flex flex-wrap items-center justify-between gap-4">
             <div class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 flex-1 min-w-[300px]">
-                <!-- Label Sortir -->
                 <label class="text-lg font-semibold text-green-700 md:mr-2">Sortir:</label>
 
-                <!-- Urutan Tanggal -->
                 <select x-model="sortOrder"
                     class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
                     <option value="">-- Semua Urutan --</option>
@@ -100,8 +98,6 @@
                                     x-text="item.status">
                                 </span>
                             </td>
-
-
                             <td class="border py-2 px-1 text-blue-500 underline">
                                 <button @click="openLinkModal(item.tautan)" class="underline text-blue-500">Lihat</button>
                             </td>
@@ -316,11 +312,10 @@
                 convertToCSV(data) {
                     const header = ['Kode', 'Jenis', 'Tanggal', 'Nama', 'Unit', 'Sub Unit', 'Tautan'];
 
-                    // Fungsi untuk escape tanda kutip di data dan bungkus dengan tanda kutip
                     const escapeCSV = (text) => {
                         if (text === null || text === undefined) return '""';
                         let str = text.toString();
-                        str = str.replace(/"/g, '""'); // double quotes ganti dengan double double quotes
+                        str = str.replace(/"/g, '""');
                         return `"${str}"`;
                     }
 
@@ -398,8 +393,6 @@
                         }
                     });
                 }
-
-
             }
         }
     </script>

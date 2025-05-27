@@ -63,7 +63,17 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
         Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
         Route::get('/riwayat/{id}', [StaffController::class, 'detailRiwayat'])->name('detail-riwayat');
         Route::get('/detail-publikasi/{id}', [StaffController::class, 'detailPublikasi'])->name('detail-publikasi');
+        Route::get('/unit', [StaffController::class, 'unit'])->name('unit');
+        Route::get('/unit/{id_unit}', [StaffController::class, 'subunit'])->name('unit.subUnit');
 
+        //API Stuff
+        Route::get('/api/get/unit', [ApiController::class, 'getUnit'])->name('api.get.unit');
+        Route::post('/api/post/unit', [ApiController::class, 'postUnit'])->name('api.post.unit');
+        Route::post('/api/post/sub-unit', [ApiController::class, 'postSubUnit'])->name('api.post.sub-unit');
+        Route::post('/api/update/unit', [ApiController::class, 'updateUnit'])->name('api.update.unit');
+        Route::post('/api/update/sub-unit', [ApiController::class, 'updateSubUnit'])->name('api.update.sub-unit');
+        Route::post('/api/delete/unit', [ApiController::class, 'deleteUnit'])->name('api.delete.unit');
+        Route::post('/api/delete/sub-unit', [ApiController::class, 'deleteSubUnit'])->name('api.delete.sub-unit');
         Route::get('/api/get/riwayat', [ApiController::class, 'getRiwayat'])->name('api.get.riwayat');
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/api/update/status-publikasi/', [ApiController::class, 'updateStatusPublikasi'])->name('api.update.status-publikasi');
@@ -75,6 +85,7 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
             ->where('filename', '.*')
             ->name('api.get.file-liputan');
 
+        // Thumbnail
         Route::get('/thumbnail/video/{id}/{type}/{filename}', [FileController::class, 'getVideoThumbnailTemp'])->name('api.get.video-thumbnail-temp');
     });
 // Staff End

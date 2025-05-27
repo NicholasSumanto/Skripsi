@@ -127,7 +127,10 @@ class PemohonController extends Controller
 
     public function liputan()
     {
-        $unit = Unit::with('subUnits')->get();
+        $unit = Unit::with(['subUnits' => function ($query) {
+            $query->orderBy('nama_sub_unit', 'asc'); 
+        }])->orderBy('nama_unit', 'asc')->get();
+
         $subUnit = [];
         foreach ($unit as $u) {
             foreach ($u->subUnits as $sub) {
@@ -146,7 +149,10 @@ class PemohonController extends Controller
 
     public function promosi()
     {
-        $unit = Unit::with('subUnits')->get();
+        $unit = Unit::with(['subUnits' => function ($query) {
+            $query->orderBy('nama_sub_unit', 'asc');
+        }])->orderBy('nama_unit', 'asc')->get();
+
         $subUnit = [];
         foreach ($unit as $u) {
             foreach ($u->subUnits as $sub) {
@@ -171,7 +177,7 @@ class PemohonController extends Controller
         try {
             if ($split[0] === 'PROMO') {
                 $promosi = Promosi::where('id_verifikasi_publikasi', $token)->first();
-                $tanggalDiajukan= Promosi::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
+                $tanggalDiajukan = Promosi::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
 
                 if ($promosi) {
                     if ($promosi->id_proses_permohonan) {
@@ -211,7 +217,7 @@ class PemohonController extends Controller
                 return view('pemohon.verifikasi')->with('data', $data);
             } elseif ($split[0] === 'LIPUT') {
                 $liputan = Liputan::where('id_verifikasi_publikasi', $token)->first();
-                $tanggalDiajukan= Liputan::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
+                $tanggalDiajukan = Liputan::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
 
                 if ($liputan) {
                     if ($liputan->id_proses_permohonan) {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengguna;
 use App\Models\Promosi;
 use App\Models\ProsesPermohonan;
+use App\Models\SubUnit;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Models\Liputan;
@@ -32,7 +33,6 @@ class ApiController extends Controller
     // Simpan Data Form
     public function postLiputan(Request $request)
     {
-        // Pastikan pengguna sudah terautentikasi
         if (!Auth::check()) {
             return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
         }
@@ -52,16 +52,18 @@ class ApiController extends Controller
         $kuotaLiputTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
             ->whereHas('prosesPermohonan', function ($query) {
                 $query->where('status', '=', 'Diajukan');
-            })->count();
+            })
+            ->count();
 
         $kuotaPromosiTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
             ->whereHas('prosesPermohonan', function ($query) {
                 $query->where('status', '=', 'Diajukan');
-            })->count();
+            })
+            ->count();
 
         $kuotaTerverifikasi = $kuotaLiputTerverifikasi + $kuotaPromosiTerverifikasi;
 
-        if($kuotaTerverifikasi + $kuotaTidakTerverifikasi >= 6) {
+        if ($kuotaTerverifikasi + $kuotaTidakTerverifikasi >= 6) {
             return response()->json(
                 [
                     'error' => 'Kuota total permohonan publikasi sudah mencapai batas maksimum (6). Tunggu hingga status publikasi diterima atau dibatalkan verifikasi.',
@@ -177,7 +179,6 @@ class ApiController extends Controller
 
     public function postPromosi(Request $request)
     {
-        // Pastikan pengguna sudah terautentikasi
         if (!Auth::check()) {
             return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
         }
@@ -197,16 +198,18 @@ class ApiController extends Controller
         $kuotaLiputTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
             ->whereHas('prosesPermohonan', function ($query) {
                 $query->where('status', '=', 'Diajukan');
-            })->count();
+            })
+            ->count();
 
         $kuotaPromosiTerverifikasi = Promosi::where('google_id', Auth::user()->google_id)
             ->whereHas('prosesPermohonan', function ($query) {
                 $query->where('status', '=', 'Diajukan');
-            })->count();
+            })
+            ->count();
 
         $kuotaTerverifikasi = $kuotaLiputTerverifikasi + $kuotaPromosiTerverifikasi;
 
-        if($kuotaTerverifikasi + $kuotaTidakTerverifikasi >= 6) {
+        if ($kuotaTerverifikasi + $kuotaTidakTerverifikasi >= 6) {
             return response()->json(
                 [
                     'error' => 'Kuota total permohonan publikasi sudah mencapai batas maksimum (6). Tunggu hingga status publikasi diterima atau dibatalkan verifikasi.',
@@ -894,5 +897,213 @@ class ApiController extends Controller
         $data = $sort === 'asc' ? $data->sortBy('tanggal')->values() : $data->sortByDesc('tanggal')->values();
 
         return response()->json($data);
+    }
+
+    public function getUnit(Request $request)
+    {
+        $sort = $request->input('sort', 'asc');
+
+        $unit = DB::table('unit')->get()->map(
+            fn($item) => [
+                'detail_url' => route('staff.unit.subUnit', ['id_unit' => $item->id_unit]),
+                'id_unit' => $item->id_unit,
+                'nama_unit' => $item->nama_unit,
+                'deskripsi' => $item->deskripsi,
+            ],
+        );
+
+        $data = $sort === 'asc' ? $unit->sortBy('nama_unit')->values() : $unit->sortByDesc('nama_unit')->values();
+
+        return response()->json($data);
+    }
+
+    public function getSubUnit(Request $request)
+    {
+        $id_unit = $request->input('id_unit');
+
+        if (!$id_unit) {
+            return response()->json(['error' => 'ID unit tidak valid.'], 400);
+        }
+
+        $subUnits = SubUnit::where('id_unit', $id_unit)->get();
+
+        if ($subUnits->isEmpty()) {
+            return response()->json(['error' => 'Sub-unit tidak ditemukan.'], 404);
+        }
+
+        $subUnits = $subUnits->map(function ($sub) {
+            return [
+                'id_sub_unit' => $sub->id_sub_unit,
+                'nama_sub_unit' => $sub->nama_sub_unit,
+                'deskripsi' => $sub->deskripsi,
+            ];
+        });
+
+        $data = $request->input('sort', 'asc') === 'asc' ? $subUnits->sortBy('nama_sub_unit')->values() : $subUnits->sortByDesc('nama_sub_unit')->values();
+
+        return response()->json($data);
+    }
+
+    public function postUnit(Request $request)
+    {
+        $request->validate(
+            [
+                'nama_unit' => 'required|string|max:255|unique:unit,nama_unit',
+                'deskripsi' => 'nullable|string|max:1000',
+            ],
+            [
+                'nama_unit.required' => 'Nama unit wajib diisi.',
+                'nama_unit.string' => 'Nama unit harus berupa teks.',
+                'nama_unit.max' => 'Nama unit tidak boleh lebih dari 255 karakter.',
+                'nama_unit.unique' => 'Nama unit sudah ada.',
+                'deskripsi.string' => 'Deskripsi harus berupa teks.',
+                'deskripsi.max' => 'Deskripsi tidak boleh lebih dari 1000 karakter.',
+            ],
+        );
+
+        Unit::create([
+            'nama_unit' => $request->nama_unit,
+            'deskripsi' => $request->deskripsi,
+        ]);
+
+        return response()->json([
+            'message' => 'Unit berhasil ditambahkan.',
+        ]);
+    }
+
+    public function postSubUnit(Request $request)
+    {
+        $request->validate(
+            [
+                'id_unit' => 'required|exists:unit,id_unit',
+                'nama_sub_unit' => 'required|string|max:255|unique:sub_unit,nama_sub_unit',
+                'deskripsi' => 'nullable|string|max:1000',
+            ],
+            [
+                'id_unit.required' => 'ID unit wajib diisi.',
+                'id_unit.exists' => 'ID unit tidak valid.',
+                'nama_sub_unit.required' => 'Nama sub-unit wajib diisi.',
+                'nama_sub_unit.string' => 'Nama sub-unit harus berupa teks.',
+                'nama_sub_unit.max' => 'Nama sub-unit tidak boleh lebih dari 255 karakter.',
+                'nama_sub_unit.unique' => 'Nama sub-unit sudah ada.',
+                'deskripsi.string' => 'Deskripsi harus berupa teks.',
+                'deskripsi.max' => 'Deskripsi tidak boleh lebih dari 1000 karakter.',
+            ],
+        );
+
+        SubUnit::create([
+            'id_unit' => $request->id_unit,
+            'nama_sub_unit' => $request->nama_sub_unit,
+            'deskripsi' => $request->deskripsi,
+        ]);
+
+        return response()->json([
+            'message' => 'Sub Unit berhasil ditambahkan.',
+        ]);
+    }
+
+    public function updateUnit(Request $request)
+    {
+        $request->validate(
+            [
+                'id_unit' => 'required|exists:unit,id_unit',
+                'nama_unit' => 'required|string|max:255|unique:unit,nama_unit,' . $request->id_unit . ',id_unit',
+                'deskripsi' => 'nullable|string|max:1000',
+            ],
+            [
+                'id_unit.required' => 'ID unit wajib diisi.',
+                'id_unit.exists' => 'ID unit tidak valid.',
+                'nama_unit.required' => 'Nama unit wajib diisi.',
+                'nama_unit.string' => 'Nama unit harus berupa teks.',
+                'nama_unit.max' => 'Nama unit tidak boleh lebih dari 255 karakter.',
+                'nama_unit.unique' => 'Nama unit sudah ada.',
+                'deskripsi.string' => 'Deskripsi harus berupa teks.',
+                'deskripsi.max' => 'Deskripsi tidak boleh lebih dari 1000 karakter.',
+            ],
+        );
+
+        $unit = Unit::find($request->id_unit);
+        if (!$unit) {
+            return response()->json(['error' => 'Unit tidak ditemukan.'], 404);
+        }
+
+        $unit->update([
+            'nama_unit' => $request->nama_unit,
+            'deskripsi' => $request->deskripsi,
+        ]);
+
+        return response()->json([
+            'message' => 'Unit berhasil diperbarui.',
+        ]);
+    }
+
+    public function updateSubUnit(Request $request)
+    {
+        $request->validate(
+            [
+                'id_sub_unit' => 'required|exists:sub_unit,id_sub_unit',
+                'nama_sub_unit' => 'required|string|max:255|unique:sub_unit,nama_sub_unit' . ',' . $request->id_sub_unit . ',id_sub_unit',
+                'deskripsi' => 'nullable|string|max:1000',
+            ],
+            [
+                'id_sub_unit.required' => 'ID sub-unit wajib diisi.',
+                'id_sub_unit.exists' => 'ID sub-unit tidak valid.',
+                'nama_sub_unit.required' => 'Nama sub-unit wajib diisi.',
+                'nama_sub_unit.string' => 'Nama sub-unit harus berupa teks.',
+                'nama_sub_unit.max' => 'Nama sub-unit tidak boleh lebih dari 255 karakter.',
+                'nama_sub_unit.unique' => 'Nama sub-unit sudah ada.',
+                'deskripsi.string' => 'Deskripsi harus berupa teks.',
+                'deskripsi.max' => 'Deskripsi tidak boleh lebih dari 1000 karakter.',
+            ],
+        );
+
+        $subUnit = SubUnit::find($request->id_sub_unit);
+        if (!$subUnit) {
+            return response()->json(['error' => 'Sub-unit tidak ditemukan.'], 404);
+        }
+
+        $subUnit->update([
+            'nama_sub_unit' => $request->nama_sub_unit,
+            'deskripsi' => $request->deskripsi,
+        ]);
+
+        return response()->json([
+            'message' => 'Sub Unit berhasil diperbarui.',
+        ]);
+    }
+
+    public function deleteUnit(Request $request)
+    {
+        $request->validate(
+            [
+                'id_unit' => 'required|exists:unit,id_unit',
+            ],
+            [
+                'id_unit.required' => 'ID unit wajib diisi.',
+                'id_unit.exists' => 'ID unit tidak valid.',
+            ],
+        );
+
+        Unit::where('id_unit', $request->id_unit)->delete();
+
+        return response()->json(['message' => 'Unit berhasil dihapus.']);
+    }
+
+    public function deleteSubUnit(Request $request)
+    {
+        $request->validate(
+            [
+                'id_sub_unit' => 'required|exists:sub_unit,id_sub_unit',
+            ],
+            [
+                'id_sub_unit.required' => 'ID sub-unit wajib diisi.',
+                'id_sub_unit.exists' => 'ID sub-unit tidak valid.',
+            ],
+        );
+
+        $subUnit = SubUnit::find($request->id_sub_unit);
+        $subUnit->delete();
+
+        return response()->json(['message' => 'Sub Unit berhasil dihapus.']);
     }
 }

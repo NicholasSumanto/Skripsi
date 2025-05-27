@@ -80,6 +80,24 @@
         const selesai_message = localStorage.getItem('selesai_message');
         const message_info = localStorage.getItem('message_info');
         const ubahOutput_message = localStorage.getItem('ubahOutput_message');
+        const unit_message = localStorage.getItem('unit_message');
+        const subunit_message = localStorage.getItem('subunit_message');
+
+        if (subunit_message) {
+            alert.fire({
+                icon: 'success',
+                title: subunit_message,
+            });
+            localStorage.removeItem('subunit_message');
+        }
+
+        if (unit_message) {
+            alert.fire({
+                icon: 'success',
+                title: unit_message,
+            });
+            localStorage.removeItem('unit_message');
+        }
 
         if (batal_publikasi) {
             alert.fire({
