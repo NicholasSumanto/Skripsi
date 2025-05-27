@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publikasi Biro 4 | @yield(section: 'title')</title>
-    <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('img/LOGO-UKDW-WEB_32x32.webp') }}" sizes="32x32">
+    <link rel="icon" href="{{ asset('img/LOGO-UKDW-WEB_192x192.webp') }}" sizes="192x192">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="{{ asset('js/tailwind.core.js') }}"></script>
