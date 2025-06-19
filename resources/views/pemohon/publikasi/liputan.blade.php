@@ -110,6 +110,8 @@
                                 class="mr-2"> Foto</label>
                         <label class="flex items-center"><input type="checkbox" name="output[]" value="video"
                                 class="mr-2"> Video</label>
+                        <label class="flex items-center"><input type="checkbox" name="output[]" value="video"
+                                class="mr-2"> Koran</label>
                     </div>
                 </div>
 

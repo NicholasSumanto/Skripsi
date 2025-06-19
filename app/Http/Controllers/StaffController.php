@@ -15,10 +15,12 @@ class StaffController extends Controller
 {
     public function home(Request $request)
     {
-        // Ambil parameter filter
+
         $sort = $request->input('sort', 'asc');
         $pub = $request->input('pub');
         $proses = $request->input('proses');
+        $search = $request->input('search');
+
 
         $promosi = DB::table('promosi')
             ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
@@ -29,6 +31,13 @@ class StaffController extends Controller
             ->when($proses, function ($query, $proses) {
                 return $query->where('proses_permohonan.status', $proses);
             })
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('promosi.judul', 'like', "%$search%")
+                        ->orWhere('promosi.nama_pemohon', 'like', "%$search%");
+                });
+            })
+
             ->select('promosi.id_promosi as id', 'promosi.id_proses_permohonan', 'promosi.tanggal', 'promosi.judul', 'promosi.nama_pemohon', 'proses_permohonan.status', 'proses_permohonan.tanggal_diajukan', 'proses_permohonan.tanggal_diterima', 'proses_permohonan.tanggal_diproses', 'proses_permohonan.tanggal_selesai', 'proses_permohonan.tanggal_batal', 'unit.nama_unit', 'sub_unit.nama_sub_unit', 'promosi.created_at')
             ->get()
             ->map(function ($item) {
@@ -60,6 +69,13 @@ class StaffController extends Controller
             ->when($proses, function ($query, $proses) {
                 return $query->where('proses_permohonan.status', $proses);
             })
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('liputan.judul', 'like', "%$search%")
+                        ->orWhere('liputan.nama_pemohon', 'like', "%$search%");
+                });
+            })
+
             ->select('liputan.id_liputan as id', 'liputan.id_proses_permohonan', 'liputan.tanggal', 'liputan.judul', 'liputan.nama_pemohon', 'proses_permohonan.status', 'proses_permohonan.tanggal_diajukan', 'proses_permohonan.tanggal_diterima', 'proses_permohonan.tanggal_diproses', 'proses_permohonan.tanggal_selesai', 'proses_permohonan.tanggal_batal', 'unit.nama_unit', 'sub_unit.nama_sub_unit', 'liputan.created_at')
             ->get()
             ->map(function ($item) {
