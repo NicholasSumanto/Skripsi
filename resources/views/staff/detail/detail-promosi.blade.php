@@ -259,43 +259,62 @@
     @if ($publikasi->status === 'Diproses')
         <script>
             $(document).ready(function() {
-                $(document).ready(function() {
-                    $('.control-form').on('click', '.btn-add', function(e) {
-                        e.preventDefault();
-                        let controlForm = $(this).closest('.control-form');
-                        let lastEntry = controlForm.find('.entry').last();
-                        let newEntry = lastEntry.clone();
+                function updateButtonState() {
+                    let entries = $('.control-form .entry');
+                    let total = entries.length;
 
-                        newEntry.find('input').val('');
+                    entries.find('button')
+                        .removeClass('btn-add bg-green-500 hover:bg-green-600 text-white')
+                        .removeClass('btn-remove bg-red-500 hover:bg-red-600 text-white')
+                        .removeClass('bg-gray-400 cursor-not-allowed')
+                        .prop('disabled', false)
+                        .text('–');
 
-                        lastEntry.find('button')
-                            .removeClass('btn-add bg-green-500 hover:bg-green-600')
-                            .addClass('btn-remove bg-red-500 hover:bg-red-600')
-                            .text('–');
-
-                        controlForm.append(newEntry);
+                    entries.slice(0, -1).each(function() {
+                        $(this).find('button')
+                            .addClass('btn-remove bg-red-500 hover:bg-red-600 text-white');
                     });
 
-                    $('.control-form').on('click', '.btn-remove', function(e) {
-                        e.preventDefault();
-                        $(this).closest('.entry').remove();
+                    let lastButton = entries.last().find('button');
 
-                        let entries = $('.control-form .entry');
-                        if (entries.length === 1) {
-                            entries.find('button')
-                                .removeClass('btn-remove bg-red-500 hover:bg-red-600')
-                                .addClass('btn-add bg-green-500 hover:bg-green-600')
-                                .text('+');
-                        } else {
-                            entries.find('button').removeClass('btn-add').addClass('btn-remove').text(
-                                '–');
-                            entries.last().find('button')
-                                .removeClass('btn-remove bg-red-500 hover:bg-red-600')
-                                .addClass('btn-add bg-green-500 hover:bg-green-600')
-                                .text('+');
-                        }
-                    });
+                    if (total >= 5) {
+                        lastButton
+                            .removeClass('btn-remove bg-red-500 hover:bg-red-600')
+                            .addClass('btn-add bg-gray-400 text-white cursor-not-allowed')
+                            .prop('disabled', true)
+                            .text('+');
+                    } else {
+                        lastButton
+                            .removeClass('btn-remove bg-red-500 hover:bg-red-600')
+                            .addClass('btn-add bg-green-500 hover:bg-green-600 text-white')
+                            .prop('disabled', false)
+                            .text('+');
+                    }
+                }
+
+                $('.control-form').on('click', '.btn-add', function(e) {
+                    e.preventDefault();
+
+                    let controlForm = $(this).closest('.control-form');
+                    let count = controlForm.find('.entry').length;
+
+                    if (count >= 5) return;
+
+                    let lastEntry = controlForm.find('.entry').last();
+                    let newEntry = lastEntry.clone();
+                    newEntry.find('input').val('');
+                    controlForm.append(newEntry);
+
+                    updateButtonState();
                 });
+
+                $('.control-form').on('click', '.btn-remove', function(e) {
+                    e.preventDefault();
+                    $(this).closest('.entry').remove();
+                    updateButtonState();
+                });
+
+                updateButtonState();
             });
         </script>
         <script>

@@ -30,7 +30,7 @@ class AccountController extends Controller
                 $isPemohon = $hasUkdwDomain;
 
                 // Cek Staff
-                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com']);
+                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com', 'barasatyaradi@gmail.com']);
 
                 if (!$user) {
                     if ($isStaff) {

@@ -6,148 +6,160 @@
     <div x-data="riwayatPublikasi()" class="p-6 bg-white rounded shadow relative">
         <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Riwayat Publikasi</h2>
 
-        <form class="mb-4 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 flex-1 min-w-[300px]">
-                <label class="text-lg font-semibold text-green-700 md:mr-2">Sortir:</label>
+            <form class="mb-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 flex-1 min-w-[300px]">
+                    <label class="text-lg font-semibold text-green-700 md:mr-2">Sortir:</label>
 
-                <select x-model="sortOrder"
-                    class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
-                    <option value="">-- Semua Urutan --</option>
-                    <option value="asc">Tanggal Terdekat</option>
-                    <option value="desc">Tanggal Terjauh</option>
-                </select>
+                    <select x-model="sortOrder"
+                        class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
+                        <option value="">-- Semua Urutan --</option>
+                        <option value="asc">Tanggal Terdekat</option>
+                        <option value="desc">Tanggal Terjauh</option>
+                    </select>
 
-                <!-- Jenis -->
-                <select x-model="selectedJenis"
-                    class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
-                    <option value="">-- Semua Jenis --</option>
-                    <option value="Liputan">Liputan</option>
-                    <option value="Promosi">Promosi</option>
-                </select>
+                    <!-- Jenis -->
+                    <select x-model="selectedJenis"
+                        class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
+                        <option value="">-- Semua Jenis --</option>
+                        <option value="Liputan">Liputan</option>
+                        <option value="Promosi">Promosi</option>
+                    </select>
 
-                <!-- Search -->
-                <input type="text" x-model="search" placeholder="Cari nama publikasi..."
-                    class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900 w-full md:w-auto">
+                    <select x-model="selectedStatus"
+                        class="form-select bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900">
+                        <option value="">-- Semua Status --</option>
+                        <option value="Selesai">Selesai</option>
+                        <option value="Batal">Batal</option>
+                    </select>
 
-                <!-- Tombol Reset -->
-                <button type="button" @click="resetFilter"
-                    class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md whitespace-nowrap">Reset</button>
-            </div>
+                    <!-- Search -->
+                    <input type="text" x-model="search" placeholder="Cari nama publikasi..."
+                        class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900 w-full md:w-auto">
 
-
-
-            <!-- Bagian range tanggal dan export -->
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto min-w-[280px] justify-end">
-
-                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
-
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Dari:</label>
-                        <input type="date" x-model="startDate" :max="computedMaxStartDate" @change="adjustEndDateRange"
-                            class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto">
-                    </div>
-
-                    <div class="flex items-center gap-2 mt-3 sm:mt-0">
-                        <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Sampai:</label>
-                        <input type="date" x-model="endDate" :min="computedMinEndDate" @change="adjustStartDateRange"
-                            class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto">
-                    </div>
+                    <!-- Tombol Reset -->
+                    <button type="button" @click="resetFilter"
+                        class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md whitespace-nowrap">Reset</button>
                 </div>
 
-                <button type="button" @click="exportData"
-                    class="px-4 py-2 bg-green-700 text-white text-sm rounded-md whitespace-nowrap w-full sm:w-auto">
-                    Export to CSV
-                </button>
-            </div>
-        </form>
+
+
+                <!-- Bagian range tanggal dan export -->
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto min-w-[280px] justify-end">
+
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Dari:</label>
+                            <input type="date" x-model="startDate" :max="computedMaxStartDate"
+                                @change="adjustEndDateRange"
+                                class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto">
+                        </div>
+
+                        <div class="flex items-center gap-2 mt-3 sm:mt-0">
+                            <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Sampai:</label>
+                            <input type="date" x-model="endDate" :min="computedMinEndDate" @change="adjustStartDateRange"
+                                class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto">
+                        </div>
+                    </div>
+
+                    <button type="button" @click="exportData"
+                        class="px-4 py-2 bg-green-700 text-white text-sm rounded-md whitespace-nowrap w-full sm:w-auto">
+                        Export to CSV
+                    </button>
+                </div>
+            </form>
 
 
 
-        <div class="overflow-x-auto">
-            <table class="w-full border text-sm text-center">
-                <thead class="bg-gray-200 text-green-700">
-                    <tr>
-                        <th class="border py-2 px-1">Kode</th>
-                        <th class="border py-2 px-1">Jenis</th>
-                        <th class="border py-2 px-1">Tanggal</th>
-                        <th class="border py-2 px-1">Nama Publikasi</th>
-                        <th class="border py-2 px-1">Unit</th>
-                        <th class="border py-2 px-1">Sub Unit</th>
-                        <th class="border py-2 px-1">Status</th>
-                        <th class="border py-2 px-1">Tautan</th>
-                        <th class="border py-2 px-1">Detail</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template x-for="item in paginatedData" :key="item.id">
-                        <tr class="bg-gray-100">
-                            <td class="border py-2 px-1" x-text="item.kode"></td>
-                            <td class="border py-2 px-1" x-text="item.jenis"></td>
-                            <td class="border py-2 px-1" x-text="item.tanggal"></td>
-                            <td class="border py-2 px-1" x-text="item.nama"></td>
-                            <td class="border py-2 px-1" x-text="item.unit"></td>
-                            <td class="border py-2 px-1" x-text="item.subUnit"></td>
-                            <td class="border py-2 px-1 text-center">
-                                <span class="text-sm font-semibold px-2 py-1 rounded-full"
-                                    :class="{
-                                        'bg-green-100 text-green-700': item.status === 'Selesai',
-                                        'bg-red-100 text-red-700': item.status === 'Batal',
-                                        'bg-yellow-100 text-yellow-700': item.status !== 'Selesai' && item
-                                            .status !== 'Batal'
-                                    }"
-                                    x-text="item.status">
-                                </span>
-                            </td>
-                            <td class="border py-2 px-1 text-blue-500 underline">
-                                <button @click="openLinkModal(item.tautan)" class="underline text-blue-500">Lihat</button>
-                            </td>
-                            <td class="border py-2 px-1">
-                                <a :href="`{{ route('staff.detail-riwayat', ':id') }}`.replace(':id', item.kode)"
-                                    class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-900">
-                                    Detail
-                                </a>
-                            </td>
-                        </tr>
-                    </template>
-
-                    <template x-if="paginatedData.length === 0">
+            <div class="overflow-x-auto">
+                <table class="w-full border text-sm text-center">
+                    <thead class="bg-gray-200 text-green-700">
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-gray-500">Data tidak ditemukan.</td>
+                            <th class="border py-2 px-1">Kode</th>
+                            <th class="border py-2 px-1">Jenis</th>
+                            <th class="border py-2 px-1">Tanggal</th>
+                            <th class="border py-2 px-1">Nama Publikasi</th>
+                            <th class="border py-2 px-1">Unit</th>
+                            <th class="border py-2 px-1">Sub Unit</th>
+                            <th class="border py-2 px-1">Status</th>
+                            <th class="border py-2 px-1">Tautan</th>
+                            <th class="border py-2 px-1">Detail</th>
                         </tr>
-                    </template>
+                    </thead>
+                    <tbody>
+                        <template x-for="item in paginatedData" :key="item.id">
+                            <tr class="bg-gray-100">
+                                <td class="border py-2 px-1" x-text="item.kode"></td>
+                                <td class="border py-2 px-1" x-text="item.jenis"></td>
+                                <td class="border py-2 px-1" x-text="item.tanggal"></td>
+                                <td class="border py-2 px-1" x-text="item.nama"></td>
+                                <td class="border py-2 px-1" x-text="item.unit"></td>
+                                <td class="border py-2 px-1" x-text="item.subUnit"></td>
+                                <td class="border py-2 px-1 text-center">
+                                    <span class="text-sm font-semibold px-2 py-1 rounded-full"
+                                        :class="{
+                                            'bg-green-100 text-green-700': item.status === 'Selesai',
+                                            'bg-red-100 text-red-700': item.status === 'Batal',
+                                            'bg-yellow-100 text-yellow-700': item.status !== 'Selesai' && item
+                                                .status !== 'Batal'
+                                        }"
+                                        x-text="item.status">
+                                    </span>
+                                </td>
+                                <td class="border py-2 px-1 text-blue-500 underline">
+                                    <button @click="openLinkModal(item.tautan)"
+                                        class="underline text-blue-500">Lihat</button>
+                                </td>
+                                <td class="border py-2 px-1">
+                                    <a :href="`{{ route('staff.detail-riwayat', ':id') }}`.replace(':id', item.kode)"
+                                        class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-900">
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        </template>
 
-                    <template x-for="item in paginatedData" :key="item.id">
-                        <tr class="bg-gray-100">
-                            ...
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-        </div>
+                        <template x-if="paginatedData.length === 0">
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-gray-500">Data tidak ditemukan.</td>
+                            </tr>
+                        </template>
 
-        <div class="mt-8 flex flex-wrap justify-center gap-2 text-sm sm:text-base border-none">
-            <button :disabled="currentPage === 1" @click="currentPage = 1"
-                :class="currentPage === 1 ? 'bg-gray-300 text-gray-600' : 'bg-green-700 text-white hover:bg-blue-700'"
-                class="px-3 py-1 rounded">&laquo;</button>
+                        <template x-for="item in paginatedData" :key="item.id">
+                            <tr class="bg-gray-100">
+                                ...
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
 
-            <button :disabled="currentPage === 1" @click="currentPage--"
-                :class="currentPage === 1 ? 'bg-gray-300 text-gray-600' : 'bg-green-700 text-white hover:bg-blue-700'"
-                class="px-3 py-1 rounded">Prev</button>
+            <div class="mt-8 flex flex-wrap justify-center gap-2 text-sm sm:text-base border-none">
+                <button :disabled="currentPage === 1" @click="currentPage = 1"
+                    :class="currentPage === 1 ? 'bg-gray-300 text-gray-600' : 'bg-green-700 text-white hover:bg-blue-700'"
+                    class="px-3 py-1 rounded">&laquo;</button>
 
-            <template x-for="page in totalPages" :key="page">
-                <button @click="currentPage = page"
-                    :class="currentPage === page ? 'bg-blue-100 text-yellow-700 hover:bg-blue-200' : 'bg-green-700 text-white'"
-                    class="px-3 py-1 rounded" x-text="page"></button>
-            </template>
+                <button :disabled="currentPage === 1" @click="currentPage--"
+                    :class="currentPage === 1 ? 'bg-gray-300 text-gray-600' : 'bg-green-700 text-white hover:bg-blue-700'"
+                    class="px-3 py-1 rounded">Prev</button>
 
-            <button :disabled="currentPage === totalPages" @click="currentPage++"
-                :class="currentPage === totalPages ? 'bg-gray-300 text-gray-600' : 'bg-green-700 text-white hover:bg-blue-700'"
-                class="px-3 py-1 rounded">Next</button>
+                <template x-for="page in totalPages" :key="page">
+                    <button @click="currentPage = page"
+                        :class="currentPage === page ? 'bg-blue-100 text-yellow-700 hover:bg-blue-200' :
+                            'bg-green-700 text-white'"
+                        class="px-3 py-1 rounded" x-text="page"></button>
+                </template>
 
-            <button :disabled="currentPage === totalPages" @click="currentPage = totalPages"
-                :class="currentPage === totalPages ? 'bg-gray-300 text-gray-600' : 'bg-green-700 text-white hover:bg-blue-700'"
-                class="px-3 py-1 rounded">&raquo;</button>
-        </div>
+                <button :disabled="currentPage === totalPages" @click="currentPage++"
+                    :class="currentPage === totalPages ? 'bg-gray-300 text-gray-600' :
+                        'bg-green-700 text-white hover:bg-blue-700'"
+                    class="px-3 py-1 rounded">Next</button>
+
+                <button :disabled="currentPage === totalPages" @click="currentPage = totalPages"
+                    :class="currentPage === totalPages ? 'bg-gray-300 text-gray-600' :
+                        'bg-green-700 text-white hover:bg-blue-700'"
+                    class="px-3 py-1 rounded">&raquo;</button>
+            </div>
     </div>
 @endsection
 
@@ -157,6 +169,7 @@
             return {
                 search: '',
                 selectedJenis: '',
+                selectedStatus: '',
                 sortOrder: '',
                 startDate: '',
                 endDate: '',
@@ -198,6 +211,7 @@
                             (this.search === '' || item.nama.toLowerCase().includes(this.search
                                 .toLowerCase())) &&
                             (this.selectedJenis === '' || item.jenis === this.selectedJenis) &&
+                            (this.selectedStatus === '' || item.status === this.selectedStatus) &&
                             (this.startDate === '' || new Date(item.tanggal) >= new Date(this.startDate)) &&
                             (this.endDate === '' || new Date(item.tanggal) <= new Date(this.endDate))
                         );
@@ -227,6 +241,7 @@
                 resetFilter() {
                     this.search = '';
                     this.selectedJenis = '';
+                    this.selectedStatus = '';
                     this.sortOrder = '';
                     this.startDate = '';
                     this.endDate = '';

@@ -287,42 +287,110 @@
     @if ($publikasi->status === 'Selesai')
         <script>
             $(document).ready(function() {
-                $(document).ready(function() {
-                    $('.control-form').on('click', '.btn-add', function(e) {
-                        e.preventDefault();
-                        let controlForm = $(this).closest('.control-form');
-                        let lastEntry = controlForm.find('.entry').last();
-                        let newEntry = lastEntry.clone();
+                let formIsDisabled = true;
 
-                        newEntry.find('input').val('');
+                function updateButtonState(isDisabled = formIsDisabled) {
+                    let entries = $('.control-form .entry');
+                    let total = entries.length;
 
-                        lastEntry.find('button')
-                            .removeClass('btn-add bg-green-500 hover:bg-green-600')
-                            .addClass('btn-remove bg-red-500 hover:bg-red-600')
+                    entries.find('button')
+                        .removeClass('btn-add bg-green-500 hover:bg-green-600 text-white')
+                        .removeClass('btn-remove bg-red-500 hover:bg-red-600 text-white')
+                        .removeClass('bg-gray-400 cursor-not-allowed opacity-50')
+                        .prop('disabled', false)
+                        .text('–');
+
+                    if (isDisabled) {
+                        entries.find('button')
+                            .addClass('bg-gray-400 text-white opacity-50 cursor-not-allowed')
+                            .prop('disabled', true)
                             .text('–');
+                        return;
+                    }
 
-                        controlForm.append(newEntry);
+                    entries.slice(0, -1).each(function() {
+                        $(this).find('button')
+                            .addClass('btn-remove bg-red-500 hover:bg-red-600 text-white')
+                            .prop('disabled', false)
+                            .text('–');
                     });
 
-                    $('.control-form').on('click', '.btn-remove', function(e) {
-                        e.preventDefault();
-                        $(this).closest('.entry').remove();
+                    let lastButton = entries.last().find('button');
 
-                        let entries = $('.control-form .entry');
-                        if (entries.length === 1) {
-                            entries.find('button')
-                                .removeClass('btn-remove bg-red-500 hover:bg-red-600')
-                                .addClass('btn-add bg-green-500 hover:bg-green-600')
-                                .text('+');
-                        } else {
-                            entries.find('button').removeClass('btn-add').addClass('btn-remove').text(
-                                '–');
-                            entries.last().find('button')
-                                .removeClass('btn-remove bg-red-500 hover:bg-red-600')
-                                .addClass('btn-add bg-green-500 hover:bg-green-600')
-                                .text('+');
-                        }
+                    if (total >= 5) {
+                        lastButton
+                            .addClass('btn-add bg-gray-400 text-white cursor-not-allowed opacity-50')
+                            .prop('disabled', true)
+                            .text('+');
+                    } else {
+                        lastButton
+                            .addClass('btn-add bg-green-500 hover:bg-green-600 text-white')
+                            .prop('disabled', false)
+                            .text('+');
+                    }
+                }
+
+                $('.control-form').on('click', '.btn-add', function(e) {
+                    e.preventDefault();
+                    if (formIsDisabled) return;
+
+                    let controlForm = $(this).closest('.control-form');
+                    let count = controlForm.find('.entry').length;
+
+                    if (count >= 5) return;
+
+                    let lastEntry = controlForm.find('.entry').last();
+                    let newEntry = lastEntry.clone();
+                    newEntry.find('input').val('');
+                    controlForm.append(newEntry);
+
+                    updateButtonState(false);
+                });
+
+                $('.control-form').on('click', '.btn-remove', function(e) {
+                    e.preventDefault();
+                    if (formIsDisabled) return;
+
+                    $(this).closest('.entry').remove();
+                    updateButtonState(false);
+                });
+
+                // Inisialisasi kondisi awal
+                updateButtonState(true);
+
+                // Edit, Cancel, dan Save logika
+                const originalLinks = Array.isArray(@json(json_decode($publikasi->link_output, true))) ?
+                    @json(json_decode($publikasi->link_output, true)) : [];
+
+                const originalHTML = $('.control-form').html();
+
+                function setDisabled(state) {
+                    $('#output-form input[name="link_output[]"]').prop('disabled', state);
+                    $('#output-form input[name="link_output[]"]').toggleClass('bg-gray-100', state);
+                }
+
+                $('#btn-edit').on('click', function(e) {
+                    e.preventDefault();
+                    formIsDisabled = false;
+                    setDisabled(false);
+                    updateButtonState(false);
+                    $('#btn-edit').addClass('hidden');
+                    $('#btn-save, #btn-cancel').removeClass('hidden');
+                });
+
+                $('#btn-cancel').on('click', function(e) {
+                    e.preventDefault();
+                    formIsDisabled = true;
+                    $('.control-form').html(originalHTML);
+
+                    $('#output-form input[name="link_output[]"]').each(function(i) {
+                        $(this).val(originalLinks[i]);
                     });
+
+                    setDisabled(true);
+                    updateButtonState(true);
+                    $('#btn-edit').removeClass('hidden');
+                    $('#btn-save, #btn-cancel').addClass('hidden');
                 });
             });
         </script>

@@ -27,7 +27,7 @@ class StaffController extends Controller
             ->where('proses_permohonan.status', '!=', 'Selesai')
             ->where('proses_permohonan.status', '!=', 'Batal')
             ->when($proses, function ($query, $proses) {
-                return $query->where('proses_permohonan.status', $proses); 
+                return $query->where('proses_permohonan.status', $proses);
             })
             ->select('promosi.id_promosi as id', 'promosi.id_proses_permohonan', 'promosi.tanggal', 'promosi.judul', 'promosi.nama_pemohon', 'proses_permohonan.status', 'proses_permohonan.tanggal_diajukan', 'proses_permohonan.tanggal_diterima', 'proses_permohonan.tanggal_diproses', 'proses_permohonan.tanggal_selesai', 'proses_permohonan.tanggal_batal', 'unit.nama_unit', 'sub_unit.nama_sub_unit', 'promosi.created_at')
             ->get()
