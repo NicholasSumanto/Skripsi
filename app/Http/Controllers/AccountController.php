@@ -30,7 +30,7 @@ class AccountController extends Controller
                 $isPemohon = $hasUkdwDomain;
 
                 // Cek Staff
-                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com', 'barasatyaradi@gmail.com']);
+                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com']);
 
                 if (!$user) {
                     if ($isStaff) {
@@ -64,7 +64,7 @@ class AccountController extends Controller
                     try {
                         Auth::login($user, true);
 
-                        $redirect = $user->role === 'pemohon' ? route('pemohon.home') : route('staff.home');
+                        $redirect = $user->role === 'pemohon' ? route('pemohon.home') : route('staff.dashboard');
 
                         return response()->json([
                             'name' => $user->name,

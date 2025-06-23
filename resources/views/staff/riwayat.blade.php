@@ -64,7 +64,7 @@
 
                     <button type="button" @click="exportData"
                         class="px-4 py-2 bg-green-700 text-white text-sm rounded-md whitespace-nowrap w-full sm:w-auto">
-                        Export to CSV
+                        Export
                     </button>
                 </div>
             </form>
@@ -72,8 +72,8 @@
 
 
             <div class="overflow-x-auto">
-                <table class="w-full border text-sm text-center">
-                    <thead class="bg-gray-200 text-green-700">
+                <table class="w-full border text-base text-left">
+                    <thead class="bg-gray-200 text-green-700 text-center">
                         <tr>
                             <th class="border py-2 px-1">Kode</th>
                             <th class="border py-2 px-1">Jenis</th>
@@ -106,11 +106,11 @@
                                         x-text="item.status">
                                     </span>
                                 </td>
-                                <td class="border py-2 px-1 text-blue-500 underline">
+                                <td class="border py-2 px-1 text-blue-500 underline text-center">
                                     <button @click="openLinkModal(item.tautan)"
                                         class="underline text-blue-500">Lihat</button>
                                 </td>
-                                <td class="border py-2 px-1">
+                                <td class="border py-2 px-1 text-center">
                                     <a :href="`{{ route('staff.detail-riwayat', ':id') }}`.replace(':id', item.kode)"
                                         class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-900">
                                         Detail
@@ -181,10 +181,11 @@
                 async init() {
                     try {
                         const params = new URLSearchParams({
-                            pub: this.selectedJenis,
+                            pub: this.selectedJenis.toLowerCase(),
                             sort: this.sortOrder,
                             tanggal_mulai: this.startDate,
                             tanggal_selesai: this.endDate,
+                            status: this.selectedStatus
                         });
 
                         const response = await fetch(`{{ route('staff.api.get.riwayat') }}?${params.toString()}`);
@@ -319,44 +320,17 @@
 
 
                 exportData() {
-                    const data = this.filteredData;
-                    const csv = this.convertToCSV(data);
-                    this.downloadCSV(csv);
-                },
-
-                convertToCSV(data) {
-                    const header = ['Kode', 'Jenis', 'Tanggal', 'Nama', 'Unit', 'Sub Unit', 'Tautan'];
-
-                    const escapeCSV = (text) => {
-                        if (text === null || text === undefined) return '""';
-                        let str = text.toString();
-                        str = str.replace(/"/g, '""');
-                        return `"${str}"`;
-                    }
-
-                    const rows = data.map(item => [
-                        escapeCSV(item.kode),
-                        escapeCSV(item.jenis),
-                        escapeCSV(item.tanggal),
-                        escapeCSV(item.nama),
-                        escapeCSV(item.unit),
-                        escapeCSV(item.subUnit),
-                        escapeCSV(item.tautan)
-                    ]);
-
-                    return [header.map(escapeCSV), ...rows].map(e => e.join(",")).join("\n");
-                },
-
-
-                downloadCSV(csv) {
-                    const blob = new Blob([csv], {
-                        type: 'text/csv;charset=utf-8;'
+                    const params = new URLSearchParams({
+                        pub: this.selectedJenis.toLowerCase(),
+                        sort: this.sortOrder,
+                        tanggal_mulai: this.startDate,
+                        tanggal_selesai: this.endDate,
+                        status: this.selectedStatus
                     });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", "riwayat_publikasi.csv");
-                    link.click();
+
+                    const url = `{{ route('staff.riwayat.export') }}?${params.toString()}`;
+
+                    window.open(url, '_blank');
                 },
 
                 openLinkModal(tautan) {

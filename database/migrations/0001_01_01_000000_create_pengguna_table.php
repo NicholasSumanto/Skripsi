@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pengguna', function (Blueprint $table) {
             $table->string('google_id')->primary();
             $table->string('email')->unique();
-            $table->string('token')->nullable();
+            $table->text('token')->nullable();
             $table->string('name');
             $table->string('avatar')->nullable();
             $table->enum('role', ['pemohon', 'staff'])->default('pemohon');

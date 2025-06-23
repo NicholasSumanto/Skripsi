@@ -21,8 +21,8 @@ Route::middleware(['redirectIfAuthenticated', 'guest'])
         Route::get('/verifikasi/{token}', [UmumController::class, 'verifikasi'])->name('verifikasi');
         Route::get('/verifikasi-halaman', [UmumController::class, 'verifikasiHalaman'])->name('verifikasi-halaman');
         Route::get('/lacak', [UmumController::class, 'lacak'])->name('lacak');
-        Route::get('/check-session', [UmumController::class, 'checkSession'])->name('check-session'); // <-- Jangan lupa dihapus kalau sudah mau di upload, HANYA UNTUK TESTING SESSION GOOGLE
-        Route::get('/email-test', [EmailController::class, 'kirimEmailStatus'])->name('email-test');
+        // Route::get('/check-session', [UmumController::class, 'checkSession'])->name('check-session'); // <-- Jangan lupa dihapus kalau sudah mau di upload, HANYA UNTUK TESTING SESSION GOOGLE
+        // Route::get('/email-test', [EmailController::class, 'kirimEmailStatus'])->name('email-test');
     });
 // Umum End
 
@@ -59,10 +59,12 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
     ->prefix('/staff')
     ->name('staff.')
     ->group(function () {
-        Route::get('/home', [StaffController::class, 'home'])->name('home');
+        Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
+        Route::get('/publikasi', [StaffController::class, 'home'])->name('home');
         Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
+        Route::GET('/riwayat/export', [ApiController::class, 'exportRiwayat'])->name('riwayat.export');
         Route::get('/riwayat/{id}', [StaffController::class, 'detailRiwayat'])->name('detail-riwayat');
-        Route::get('/detail-publikasi/{id}', [StaffController::class, 'detailPublikasi'])->name('detail-publikasi');
+        Route::get('/publikasi/detail/{id}', [StaffController::class, 'detailPublikasi'])->name('detail-publikasi');
         Route::get('/unit', [StaffController::class, 'unit'])->name('unit');
         Route::get('/unit/{id_unit}', [StaffController::class, 'subunit'])->name('unit.subUnit');
 
@@ -74,7 +76,10 @@ Route::middleware(['redirectIfNotAuthencicated', 'auth', 'role:staff'])
         Route::post('/api/update/sub-unit', [ApiController::class, 'updateSubUnit'])->name('api.update.sub-unit');
         Route::post('/api/delete/unit', [ApiController::class, 'deleteUnit'])->name('api.delete.unit');
         Route::post('/api/delete/sub-unit', [ApiController::class, 'deleteSubUnit'])->name('api.delete.sub-unit');
+
         Route::get('/api/get/riwayat', [ApiController::class, 'getRiwayat'])->name('api.get.riwayat');
+        Route::get('/api/get/publikasi', [ApiController::class, 'getPublikasi'])->name('api.get.publikasi');
+
         Route::post('/api/delete/publikasi/', [ApiController::class, 'deletePublikasi'])->name('api.delete.publikasi');
         Route::post('/api/update/status-publikasi/', [ApiController::class, 'updateStatusPublikasi'])->name('api.update.status-publikasi');
         Route::post('/api/update/link-output/', [ApiController::class, 'updateLinkOutput'])->name('api.update.link-output');

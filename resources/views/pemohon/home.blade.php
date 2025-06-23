@@ -18,7 +18,7 @@
                     <p class="text-lg leading-relaxed">
                         <b>Ingin kegiatan Anda diliput dan didokumentasikan oleh kami?</b><br><br>
                         Pilihan ini ditujukan bagi Anda yang ingin kegiatan internal atau eksternal
-                        didokumentasikan dalam bentuk artikel, foto, maupun video untuk dipublikasikan
+                        didokumentasikan dalam bentuk artikel, foto, koran maupun video untuk dipublikasikan
                         melalui kanal resmi kami.
                     </p>
                 </div>

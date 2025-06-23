@@ -14,7 +14,8 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Exports\ExportRiwayat;
+use Maatwebsite\Excel\Facades\Excel;
 
 use Carbon\Carbon;
 
@@ -838,6 +839,57 @@ class ApiController extends Controller
         }
     }
 
+    public function getPublikasi()
+    {
+        $promosi = DB::table('promosi')
+            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereNotIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul as nama', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan')
+            ->get()
+            ->map(
+                fn($item) => [
+                    'id' => $item->id,
+                    'tanggal' => $item->tanggal,
+                    'nama' => $item->nama,
+                    'status' => $item->status,
+                    'unit' => $item->unit,
+                    'subUnit' => $item->subUnit,
+                    'jenis' => 'Promosi',
+                    'tautan' => $item->tautan,
+                    'id_proses_permohonan' => $item->id_proses_permohonan,
+                ],
+            );
+
+        $liputan = DB::table('liputan')
+            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereNotIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul as nama', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan')
+            ->get()
+            ->map(
+                fn($item) => [
+                    'id' => $item->id,
+                    'tanggal' => $item->tanggal,
+                    'nama' => $item->nama,
+                    'status' => $item->status,
+                    'unit' => $item->unit,
+                    'subUnit' => $item->subUnit,
+                    'jenis' => 'Liputan',
+                    'tautan' => $item->tautan,
+                    'id_proses_permohonan' => $item->id_proses_permohonan,
+                ],
+            );
+
+        $data = $promosi->merge($liputan);
+
+        $data = $data->sortByDesc('tanggal')->take(5)->values();
+
+        return response()->json($data);
+    }
+
     public function getRiwayat(Request $request)
     {
         $sort = $request->input('sort', 'asc');
@@ -1105,5 +1157,18 @@ class ApiController extends Controller
         $subUnit->delete();
 
         return response()->json(['message' => 'Sub Unit berhasil dihapus.']);
+    }
+
+    // Download file riwayat
+
+    public function exportRiwayat(Request $request)
+    {
+        $request->validate([
+            'sort' => 'in:asc,desc',
+            'pub' => 'nullable|in:promosi,liputan',
+            'proses' => 'nullable|string',
+        ]);
+
+        return Excel::download(new ExportRiwayat($request), 'riwayat.xlsx');
     }
 }

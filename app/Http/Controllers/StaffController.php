@@ -13,14 +13,157 @@ use Session;
 
 class StaffController extends Controller
 {
+    // Fungsi bantu menghitung persentase dan status
+    private function hitungPersentase($kemarin, $hariIni)
+    {
+        if ($kemarin == 0 && $hariIni == 0) {
+            return ['persen' => 0, 'status' => 'sama'];
+        } elseif ($kemarin == 0) {
+            return ['persen' => 100, 'status' => 'bertambah'];
+        }
+
+        $selisih = $hariIni - $kemarin;
+        $persen = ($selisih / $kemarin) * 100;
+
+        if ($selisih > 0) {
+            $status = 'bertambah';
+        } elseif ($selisih < 0) {
+            $status = 'berkurang';
+        } else {
+            $status = 'sama';
+        }
+
+        return ['persen' => round($persen, 1), 'status' => $status];
+    }
+
+    public function dashboard()
+    {
+        // Data card
+        $pemohonCount = DB::table('pengguna')->count();
+        $pemohonTodayCount = DB::table('pengguna')
+            ->whereDate('created_at', now()->format('Y-m-d'))
+            ->count();
+        $pemohonYesterday = DB::table('pengguna')
+            ->whereDate('created_at', now()->subDay()->format('Y-m-d'))
+            ->count();
+
+        $promosiCount = Promosi::whereHas('ProsesPermohonan', function ($query) {
+            $query->whereNotIn('status', ['Selesai', 'Batal']);
+        })->count();
+        $promosiTodayCount = Promosi::whereDate('created_at', now()->format('Y-m-d'))
+            ->whereHas('ProsesPermohonan', function ($query) {
+                $query->whereNotIn('status', ['Selesai', 'Batal']);
+            })
+            ->count();
+        $promosiYesterday = Promosi::whereDate('created_at', now()->subDay()->format('Y-m-d'))
+            ->whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
+            ->count();
+
+        $liputanCount = Liputan::whereHas('ProsesPermohonan', function ($query) {
+            $query->whereNotIn('status', ['Selesai', 'Batal']);
+        })->count();
+        $liputanTodayCount = Liputan::whereDate('created_at', now()->format('Y-m-d'))
+            ->whereHas('ProsesPermohonan', function ($query) {
+                $query->whereNotIn('status', ['Selesai', 'Batal']);
+            })
+            ->count();
+        $liputanYesterday = Liputan::whereDate('created_at', now()->subDay()->format('Y-m-d'))
+            ->whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
+            ->count();
+
+        $riwayatPromosi = DB::table('promosi')
+            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->count();
+        $riwayatPromosiYesterday = DB::table('promosi')
+            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereDate('promosi.updated_at', now()->subDay()->format('Y-m-d'))
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->count();
+        $riwayatPromosiToday = DB::table('promosi')
+            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereDate('promosi.updated_at', now()->format('Y-m-d'))
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->count();
+
+        $riwayatLiputan = DB::table('liputan')
+            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->count();
+        $riwayatLiputanYesterday = DB::table('liputan')
+            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereDate('liputan.updated_at', now()->subDay()->format('Y-m-d'))
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->count();
+        $riwayatLiputanToday = DB::table('liputan')
+            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereDate('liputan.updated_at', now()->format('Y-m-d'))
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->count();
+
+        $riwayatCount = $riwayatPromosi + $riwayatLiputan;
+        $riwayatYesterday = $riwayatPromosiYesterday + $riwayatLiputanYesterday;
+        $riwayatToday = $riwayatPromosiToday + $riwayatLiputanToday;
+
+        // Hitung persentase dan status
+        $pemohonStat = $this->hitungPersentase($pemohonYesterday, $pemohonTodayCount);
+        $promosiStat = $this->hitungPersentase($promosiYesterday, $promosiTodayCount);
+        $liputanStat = $this->hitungPersentase($liputanYesterday, $liputanTodayCount);
+        $riwayatStat = $this->hitungPersentase($riwayatYesterday, $riwayatToday);
+
+        $cards = [
+            [
+                'title' => 'Total User',
+                'iconColor' => 'purple',
+                'count' => $pemohonCount,
+                'stat' => $pemohonStat,
+                'icon' => 'user',
+            ],
+            [
+                'title' => 'Total Promosi',
+                'iconColor' => 'blue',
+                'count' => $promosiCount,
+                'stat' => $promosiStat,
+                'icon' => 'megaphone',
+            ],
+            [
+                'title' => 'Total Liputan',
+                'iconColor' => 'green',
+                'count' => $liputanCount,
+                'stat' => $liputanStat,
+                'icon' => 'camera',
+            ],
+            [
+                'title' => 'Permohonan Selesai',
+                'iconColor' => 'teal',
+                'count' => $riwayatCount,
+                'stat' => $riwayatStat,
+                'icon' => 'check-circle',
+            ],
+        ];
+
+
+        return view('staff.dashboard', compact('cards'));
+    }
+
     public function home(Request $request)
     {
-
         $sort = $request->input('sort', 'asc');
         $pub = $request->input('pub');
         $proses = $request->input('proses');
         $search = $request->input('search');
-
 
         $promosi = DB::table('promosi')
             ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
@@ -33,8 +176,7 @@ class StaffController extends Controller
             })
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
-                    $q->where('promosi.judul', 'like', "%$search%")
-                        ->orWhere('promosi.nama_pemohon', 'like', "%$search%");
+                    $q->where('promosi.judul', 'like', "%$search%")->orWhere('promosi.nama_pemohon', 'like', "%$search%");
                 });
             })
 
@@ -71,8 +213,7 @@ class StaffController extends Controller
             })
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
-                    $q->where('liputan.judul', 'like', "%$search%")
-                        ->orWhere('liputan.nama_pemohon', 'like', "%$search%");
+                    $q->where('liputan.judul', 'like', "%$search%")->orWhere('liputan.nama_pemohon', 'like', "%$search%");
                 });
             })
 

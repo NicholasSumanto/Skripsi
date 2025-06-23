@@ -107,7 +107,6 @@
                             @endif
 
                             @php
-                                // Jika sudah lewat titik batal, semua langkah selanjutnya dianggap tidak dijalankan
                                 $isAfterCancelled = $publikasi->status === 'Batal' && $afterCancelledStep;
                                 $isActive = !$isAfterCancelled && $stepReached;
                                 if ($label === $activeStep) {
@@ -115,23 +114,33 @@
                                 }
                             @endphp
 
+                            @php
+                                if ($isAfterCancelled) {
+                                    $statusClass = 'bg-gray-400 text-white';
+                                    $iconClass = 'fas fa-times';
+                                    $textColor = 'text-white/60';
+                                } elseif ($isActive) {
+                                    $statusClass = 'bg-[#00FF6A] text-white';
+                                    $iconClass = 'fas fa-check';
+                                    $textColor = 'text-white';
+                                } else {
+                                    $statusClass = 'bg-yellow-400 text-white';
+                                    $iconClass = 'far fa-clock';
+                                    $textColor = 'text-white/70';
+                                }
+                            @endphp
+
                             <div
                                 class="flex sm:flex-col flex-row sm:items-center items-start sm:w-1/4 w-full gap-4 sm:gap-0">
                                 <div
-                                    class="w-16 h-16 mb-5 rounded-full flex items-center justify-center border-4 border-white
-                                    @if ($isAfterCancelled) bg-gray-400 text-white
-                                    @elseif ($isActive)
-                                        bg-[#00FF6A] text-white
-                                    @else
-                                        bg-yellow-400 text-white @endif">
-                                    <i
-                                        class="@if ($isAfterCancelled) fas fa-times @elseif($isActive) fas fa-check @else far fa-clock @endif"></i>
+                                    class="w-16 h-16 mb-5 rounded-full flex items-center justify-center border-4 border-white {{ $statusClass }}">
+                                    <i class="{{ $iconClass }}"></i>
                                 </div>
                                 <div class="flex flex-col sm:items-center items-start text-white">
-                                    <span
-                                        class="text-lg font-semibold {{ $isAfterCancelled ? 'text-white/60' : ($isActive ? 'text-white' : 'text-white/70') }}">
+                                    <span class="text-lg font-semibold {{ $textColor }}">
                                         {{ $label }}
                                     </span>
+
                                     @if ($date)
                                         <span class="text-sm text-white/70 mt-1 leading-tight text-left sm:text-center">
                                             {!! str_replace(' ', '<br>', \Carbon\Carbon::parse($date)->translatedFormat('l, d/m/Y')) !!}
@@ -139,6 +148,7 @@
                                     @endif
                                 </div>
                             </div>
+
 
                             @php
                                 // Kalau sudah tampilkan titik dibatalkan, maka semua langkah berikutnya harus dianggap tidak dikerjakan

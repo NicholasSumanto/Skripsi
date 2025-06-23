@@ -30,7 +30,7 @@ class RedirectIfAuthenticated
                     }
                     return redirect()->route('pemohon.home');
                 case 'staff':
-                    return redirect()->route('staff.home');
+                    return redirect()->route('staff.dashboard');
                 default:
                     return redirect('/');
             }

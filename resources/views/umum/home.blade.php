@@ -24,6 +24,49 @@
 @endsection
 
 @section('content')
+    <main class="container mx-auto px-4 sm:px-2 py-24 flex-grow">
+
+        <!-- Sambutan -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-bold text-[#1a237e]">Selamat Datang di Website Publikasi Kegiatan UKDW</h1>
+        </div>
+
+        <!-- Card Login -->
+        <div class="flex flex-col items-center space-y-8">
+            <div class="bg-white bg-opacity-95 p-8 rounded-xl shadow-lg w-full max-w-md">
+                <h2 class="text-2xl font-bold text-[#1a237e] mb-6 text-center">Ada Kegiatan Apa Kali Ini?</h2>
+
+                <div class="flex justify-center mb-8">
+                    <button id="custom-google-button"
+                        class="flex items-center space-x-2 border rounded-lg px-6 py-3 hover:bg-gray-50 shadow-sm bg-white transition-colors">
+                        <img src="{{ asset('img/g-logo.png') }}" alt="Google" class="h-5 w-5">
+                        <span class="text-gray-700 font-medium">Sign in with Google</span>
+                    </button>
+                </div>
+
+                <p class="text-sm text-gray-600 text-center">
+                    Untuk permohonan liputan atau promosi event di UKDW, silahkan login menggunakan akun Gmail dengan domain
+                    <span class="font-semibold">ukdw.ac.id</span>.
+                </p>
+            </div>
+
+            <!-- Catatan -->
+            <div class="max-w-2xl text-center px-4">
+                <p class="text-sm text-gray-600">
+                    <span class="font-semibold">Catatan:</span> Untuk pengajuan permohonan liputan silahkan membuat surat
+                    permohonan publikasi terlebih dahulu. Form permohonan publikasi terdapat di
+                    <a href="{{ route('umum.unduhan') }}" class="text-primary hover:underline font-medium">Unduhan</a>.
+                </p>
+            </div>
+        </div>
+
+    </main>
+@endsection
+
+
+
+
+@section('content')
     <main class="container mx-auto px-4 sm:px-2 py-16 flex-grow">
         <div class="flex flex-col md:flex-row gap-12 max-w-10xl mx-auto w-full items-stretch">
 
