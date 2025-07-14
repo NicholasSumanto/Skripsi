@@ -3,20 +3,25 @@
 
         <!-- Logo -->
         <div class="flex items-center space-x-2">
-            <img src="{{ asset('img/Duta_Wacana.png') }}" alt="UKDW Logo" class="h-12 mt-2 mb-3">
+            <a href="{{ route('umum.home') }}">
+                <img src="{{ asset('img/Duta_Wacana.png') }}" alt="UKDW Logo" class="h-12 mt-2 mb-3">
+            </a>
         </div>
 
         <!-- Desktop Menu -->
         <nav class="hidden md:flex items-center space-x-6">
             <a href="{{ route('pemohon.home') }}"
-                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.home') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">Publikasi</a>
+                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.home') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">PUBLIKASI</a>
             <a href="{{ route('pemohon.agenda') }}"
-                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.agenda') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">Agenda</a>
+                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.agenda') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">AGENDA</a>
             <a href="{{ route('pemohon.lacak') }}"
-                class="px-4 py-2 rounded-md {{ request()->routeIs('pemohon.lacak') ? 'text-white' : 'text-black' }}"
+                class="px-4 py-2 rounded-md font-bold {{ request()->routeIs('pemohon.lacak') ? 'text-white' : 'text-black' }}"
                 style="{{ request()->routeIs('pemohon.lacak') ? 'background-color: #1a237e;' : 'background-color: #fbbf24;' }}"
                 onmouseover="this.style.backgroundColor='{{ request()->routeIs('pemohon.lacak') ? '#1a237e' : '#d97706' }}'"
-                onmouseout="this.style.backgroundColor='{{ request()->routeIs('pemohon.lacak') ? '#1a237e' : '#fbbf24' }}'">Lacak</a>
+                onmouseout="this.style.backgroundColor='{{ request()->routeIs('pemohon.lacak') ? '#1a237e' : '#fbbf24' }}'">
+                LACAK
+            </a>
+
             <a href="" class="text-white hover:text-gray-200 logout-btn"><img class="w-8 h-8"
                     src="{{ asset('img/logout.png') }}" alt="Logout Icon"></a>
         </nav>

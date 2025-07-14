@@ -677,7 +677,7 @@ class SubUnitSeeder extends Seeder
             // sub-unit Fakultas Teknologi Informasi
             [
                 'id_unit' => $units['Fakultas Teknologi Informasi'],
-                'nama_sub_unit' => 'Administratif Fakultass Teknologi Informasi',
+                'nama_sub_unit' => 'Administratif Fakultas Teknologi Informasi',
                 'deskripsi' =>  'Administratif Fakultas Teknologi Informasi.',
                 'created_at' => now(),
                 'updated_at' => now(),

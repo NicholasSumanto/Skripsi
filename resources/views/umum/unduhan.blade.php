@@ -12,7 +12,7 @@
             Silakan unduh form permohonan publikasi berikut, kemudian isi dan kirimkan sesuai prosedur yang berlaku.
         </p>
 
-        <a href="#"
+        <a href="{{ asset('file/test.pdf') }}"
            class="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-lg transition-colors"
            download>
            Download Formulir

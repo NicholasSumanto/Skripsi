@@ -9,21 +9,21 @@ use App\Models\SubUnit;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Session;
 
 class StaffController extends Controller
 {
-    // Fungsi bantu menghitung persentase dan status
-    private function hitungPersentase($kemarin, $hariIni)
+    private function hitungPersentase($sekarang, $dipilih)
     {
-        if ($kemarin == 0 && $hariIni == 0) {
+        if ($sekarang == 0 && $dipilih == 0) {
             return ['persen' => 0, 'status' => 'sama'];
-        } elseif ($kemarin == 0) {
+        } elseif ($sekarang == 0) {
             return ['persen' => 100, 'status' => 'bertambah'];
         }
 
-        $selisih = $hariIni - $kemarin;
-        $persen = ($selisih / $kemarin) * 100;
+        $selisih = $dipilih - $sekarang;
+        $persen = ($selisih / $sekarang) * 100;
 
         if ($selisih > 0) {
             $status = 'bertambah';
@@ -36,110 +36,147 @@ class StaffController extends Controller
         return ['persen' => round($persen, 1), 'status' => $status];
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        // Data card
-        $pemohonCount = DB::table('pengguna')->count();
-        $pemohonTodayCount = DB::table('pengguna')
-            ->whereDate('created_at', now()->format('Y-m-d'))
-            ->count();
-        $pemohonYesterday = DB::table('pengguna')
-            ->whereDate('created_at', now()->subDay()->format('Y-m-d'))
+        $bulan = $request->input('bulan') ?? date('m');
+        $tahun = $request->input('tahun') ?? date('Y');
+
+        $bulanSekarang = date('m');
+        $tahunSekarang = date('Y');
+
+        // Hitung bulan sebelumnya
+        $bulanSebelumnya = (int) $bulanSekarang - 1;
+        $tahunSebelumnya = $tahunSekarang;
+        if ($bulanSebelumnya < 1) {
+            $bulanSebelumnya = 12;
+            $tahunSebelumnya--;
+        }
+        $bulanSebelumnyaStr = str_pad($bulanSebelumnya, 2, '0', STR_PAD_LEFT);
+
+        // Data pemohon
+        $pemohonCount = DB::table('hitung_login')
+            ->where('bulan_tahun', "$tahun-$bulan")
             ->count();
 
-        $promosiCount = Promosi::whereHas('ProsesPermohonan', function ($query) {
-            $query->whereNotIn('status', ['Selesai', 'Batal']);
-        })->count();
-        $promosiTodayCount = Promosi::whereDate('created_at', now()->format('Y-m-d'))
-            ->whereHas('ProsesPermohonan', function ($query) {
-                $query->whereNotIn('status', ['Selesai', 'Batal']);
-            })
+        $pemohonSekarang = DB::table('hitung_login')
+            ->where('bulan_tahun', "$tahunSekarang-$bulanSekarang")
             ->count();
-        $promosiYesterday = Promosi::whereDate('created_at', now()->subDay()->format('Y-m-d'))
+
+        $pemohonSebelumnya = DB::table('hitung_login')
+            ->where('bulan_tahun', "$tahunSebelumnya-$bulanSebelumnyaStr")
+            ->count();
+
+        // Data promosi
+        $promosiCount = Promosi::whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
+            ->whereMonth('created_at', $bulan)
+            ->whereYear('created_at', $tahun)
+            ->count();
+
+        $promosiSekarang = Promosi::whereMonth('created_at', $bulanSekarang)
+            ->whereYear('created_at', $tahunSekarang)
             ->whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
             ->count();
 
-        $liputanCount = Liputan::whereHas('ProsesPermohonan', function ($query) {
-            $query->whereNotIn('status', ['Selesai', 'Batal']);
-        })->count();
-        $liputanTodayCount = Liputan::whereDate('created_at', now()->format('Y-m-d'))
-            ->whereHas('ProsesPermohonan', function ($query) {
-                $query->whereNotIn('status', ['Selesai', 'Batal']);
-            })
-            ->count();
-        $liputanYesterday = Liputan::whereDate('created_at', now()->subDay()->format('Y-m-d'))
+        $promosiSebelumnya = Promosi::whereMonth('created_at', $bulanSebelumnyaStr)
+            ->whereYear('created_at', $tahunSebelumnya)
             ->whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
             ->count();
 
+        // Data liputan
+        $liputanCount = Liputan::whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
+            ->whereMonth('created_at', $bulan)
+            ->whereYear('created_at', $tahun)
+            ->count();
+
+        $liputanSekarang = Liputan::whereMonth('created_at', $bulanSekarang)
+            ->whereYear('created_at', $tahunSekarang)
+            ->whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
+            ->count();
+
+        $liputanSebelumnya = Liputan::whereMonth('created_at', $bulanSebelumnyaStr)
+            ->whereYear('created_at', $tahunSebelumnya)
+            ->whereHas('ProsesPermohonan', fn($q) => $q->whereNotIn('status', ['Selesai', 'Batal']))
+            ->count();
+
+        // Data riwayat promosi
         $riwayatPromosi = DB::table('promosi')
-            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
             ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
-            ->count();
-        $riwayatPromosiYesterday = DB::table('promosi')
-            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
-            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-            ->whereDate('promosi.updated_at', now()->subDay()->format('Y-m-d'))
-            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
-            ->count();
-        $riwayatPromosiToday = DB::table('promosi')
-            ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
-            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-            ->whereDate('promosi.updated_at', now()->format('Y-m-d'))
-            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->whereMonth('promosi.updated_at', $bulan)
+            ->whereYear('promosi.updated_at', $tahun)
             ->count();
 
+        $riwayatPromosiNow = DB::table('promosi')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->whereMonth('promosi.updated_at', $bulanSekarang)
+            ->whereYear('promosi.updated_at', $tahunSekarang)
+            ->count();
+
+        $riwayatPromosiLast = DB::table('promosi')
+            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->whereMonth('promosi.updated_at', $bulanSebelumnyaStr)
+            ->whereYear('promosi.updated_at', $tahunSebelumnya)
+            ->count();
+
+        // Data riwayat liputan
         $riwayatLiputan = DB::table('liputan')
-            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->whereMonth('liputan.updated_at', $bulan)
+            ->whereYear('liputan.updated_at', $tahun)
             ->count();
-        $riwayatLiputanYesterday = DB::table('liputan')
-            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+
+        $riwayatLiputanNow = DB::table('liputan')
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-            ->whereDate('liputan.updated_at', now()->subDay()->format('Y-m-d'))
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->whereMonth('liputan.updated_at', $bulanSekarang)
+            ->whereYear('liputan.updated_at', $tahunSekarang)
             ->count();
-        $riwayatLiputanToday = DB::table('liputan')
-            ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
-            ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+
+        $riwayatLiputanLast = DB::table('liputan')
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-            ->whereDate('liputan.updated_at', now()->format('Y-m-d'))
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
+            ->whereMonth('liputan.updated_at', $bulanSebelumnyaStr)
+            ->whereYear('liputan.updated_at', $tahunSebelumnya)
             ->count();
 
         $riwayatCount = $riwayatPromosi + $riwayatLiputan;
-        $riwayatYesterday = $riwayatPromosiYesterday + $riwayatLiputanYesterday;
-        $riwayatToday = $riwayatPromosiToday + $riwayatLiputanToday;
+        $riwayatNow = $riwayatPromosiNow + $riwayatLiputanNow;
+        $riwayatLast = $riwayatPromosiLast + $riwayatLiputanLast;
 
-        // Hitung persentase dan status
-        $pemohonStat = $this->hitungPersentase($pemohonYesterday, $pemohonTodayCount);
-        $promosiStat = $this->hitungPersentase($promosiYesterday, $promosiTodayCount);
-        $liputanStat = $this->hitungPersentase($liputanYesterday, $liputanTodayCount);
-        $riwayatStat = $this->hitungPersentase($riwayatYesterday, $riwayatToday);
+        // Bandingkan dengan bulan sebelumnya JIKA bulan sekarang yang dipilih
+        if ($bulan == $bulanSekarang && $tahun == $tahunSekarang) {
+            $pemohonStat = $this->hitungPersentase($pemohonSebelumnya, $pemohonSekarang);
+            $promosiStat = $this->hitungPersentase($promosiSebelumnya, $promosiSekarang);
+            $liputanStat = $this->hitungPersentase($liputanSebelumnya, $liputanSekarang);
+            $riwayatStat = $this->hitungPersentase($riwayatLast, $riwayatNow);
+        } else {
+            // Jika bulan lain yang dipilih, tetap bandingkan terhadap bulan sekarang
+            $pemohonStat = $this->hitungPersentase($pemohonSekarang, $pemohonCount);
+            $promosiStat = $this->hitungPersentase($promosiSekarang, $promosiCount);
+            $liputanStat = $this->hitungPersentase($liputanSekarang, $liputanCount);
+            $riwayatStat = $this->hitungPersentase($riwayatNow, $riwayatCount);
+        }
 
         $cards = [
             [
-                'title' => 'Total User',
+                'title' => 'Pemohon Aktif',
                 'iconColor' => 'purple',
                 'count' => $pemohonCount,
                 'stat' => $pemohonStat,
                 'icon' => 'user',
             ],
             [
-                'title' => 'Total Promosi',
+                'title' => 'Permohonan Promosi diterima',
                 'iconColor' => 'blue',
                 'count' => $promosiCount,
                 'stat' => $promosiStat,
                 'icon' => 'megaphone',
             ],
             [
-                'title' => 'Total Liputan',
+                'title' => 'Permohonan Liputan diterima',
                 'iconColor' => 'green',
                 'count' => $liputanCount,
                 'stat' => $liputanStat,
@@ -154,9 +191,11 @@ class StaffController extends Controller
             ],
         ];
 
-
-        return view('staff.dashboard', compact('cards'));
+        return view('staff.dashboard', compact('cards', 'bulan', 'tahun'));
     }
+
+
+
 
     public function home(Request $request)
     {

@@ -28,7 +28,7 @@
 
         <!-- Sambutan -->
         <div class="text-center mb-16">
-            <h1 class="text-4xl font-bold text-[#1a237e]">Selamat Datang di Website Publikasi Kegiatan UKDW</h1>
+            <h1 class="text-4xl font-bold text-[#1a237e]">Selamat Datang di Website Publikasi Kehumasan UKDW</h1>
         </div>
 
         <!-- Card Login -->
@@ -55,15 +55,13 @@
                 <p class="text-sm text-gray-600">
                     <span class="font-semibold">Catatan:</span> Untuk pengajuan permohonan liputan silahkan membuat surat
                     permohonan publikasi terlebih dahulu. Form permohonan publikasi terdapat di
-                    <a href="{{ route('umum.unduhan') }}" class="text-primary hover:underline font-medium">Unduhan</a>.
+                    <a href="{{ route('umum.unduhan') }}" class="text-[#1a237e] hover:underline font-bold">Unduhan</a>.
                 </p>
             </div>
         </div>
 
     </main>
 @endsection
-
-
 
 
 @section('content')
@@ -118,198 +116,6 @@
 
 @section('script')
     <script src="{{ asset('js/calendar_v2.core.js') }}" defer></script>
-    <!-- JS Addon -->
-    <script>
-        $(document).ready(function() {
-            const today = '{{ \Carbon\Carbon::now()->format('Y-m-d') }}';
-
-            $.ajax({
-                url: "{{ route('api.get.tanggal-jadwal') }}",
-                method: 'GET',
-                dataType: 'json',
-                success: function(tanggalList) {
-                    const groupedByTanggal = {};
-
-                    tanggalList.forEach(item => {
-                        if (!groupedByTanggal[item.tanggal]) {
-                            groupedByTanggal[item.tanggal] = [];
-                        }
-                        groupedByTanggal[item.tanggal].push(item.jenis);
-                    });
-
-                    const popups = {};
-
-                    Object.keys(groupedByTanggal).forEach(tanggal => {
-                        const jenisList = groupedByTanggal[tanggal];
-                        const jenisUnik = [...new Set(jenisList)];
-
-                        let modifier = '';
-
-                        if (jenisUnik.length > 1) {
-                            modifier = 'bg-ungu';
-                        } else {
-                            modifier = jenisUnik[0] === 'Liputan' ? 'bg-hijau' : 'bg-kuning';
-                        }
-
-                        popups[tanggal] = {
-                            modifier
-                        };
-                    });
-
-                    const calendar = new VanillaCalendar('#calendar', {
-                        settings: {
-                            selection: {
-                                day: 'single',
-                            },
-                            visibility: {
-                                daysOutside: false,
-                            }
-                        },
-                        popups: popups,
-                        actions: {
-                            clickDay(event, self) {
-                                const selectedDate = self.selectedDates[0];
-                                if (!selectedDate) return;
-
-                                $.ajax({
-                                    url: `{{ route('api.get.jadwal-publikasi') }}`,
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                                    },
-                                    data: {
-                                        tanggal: selectedDate
-                                    },
-                                    dataType: 'json',
-                                    beforeSend: function() {
-                                        Swal.fire({
-                                            title: 'Loading',
-                                            text: 'Memuat Jadwal...',
-                                            allowOutsideClick: false,
-                                            didOpen: () => {
-                                                Swal.showLoading();
-                                            }
-                                        });
-                                    },
-                                    success: function(data) {
-                                        if (data.length === 0) {
-                                            Swal.fire({
-                                                icon: 'info',
-                                                title: 'Tidak ada jadwal',
-                                                text: `Tidak ada kegiatan pada tanggal ${selectedDate}.`
-                                            });
-                                        } else {
-                                            let htmlContent =
-                                                `<div style="text-align:left; max-height:400px; overflow-y:auto;">`;
-
-                                            const liputanList = data.filter(item =>
-                                                item
-                                                .jenis === 'Liputan');
-                                            const promosiList = data.filter(item =>
-                                                item
-                                                .jenis === 'Promosi');
-
-                                            function renderSection(judul, list) {
-                                                if (list.length === 0) return '';
-
-                                                let sectionHTML =
-                                                    `<h3 style="font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #444;">${judul}</h3>`;
-
-                                                list.forEach((item, index) => {
-                                                    const statusClass = item
-                                                        .status ===
-                                                        'Diproses' ?
-                                                        'text-yellow-600' :
-                                                        'text-red-600';
-
-                                                    const hariPelaksanaan =
-                                                        item
-                                                        .hariPelaksanaan ??
-                                                        'text-green-500'
-
-                                                    sectionHTML += `
-                                                    <div style="
-                                                        border: 1px solid #e0e0e0;
-                                                        border-radius: 8px;
-                                                        padding: 12px 16px;
-                                                        margin-bottom: 12px;
-                                                        background-color: #f8f9fa;
-                                                        box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
-                                                    ">
-                                                        <div class="font-bold text-2xl"><span class="${hariPelaksanaan}">${item.hari_h}</span>${item.nama}</div>
-                                                        <div class="${statusClass} text-sm mt-1 font-semibold text-xl">
-                                                            ${item.status}
-                                                        </div>
-
-                                                        <div style="margin-top: 6px;">
-                                                            <strong>Tempat:</strong> ${item.tempat}<br>
-                                                            ${item.waktu ? `<strong>Waktu:</strong> ${item.waktu}` : ''}
-                                                        </div>
-                                                    </div>
-                                                `;
-                                                });
-
-                                                return sectionHTML;
-                                            }
-
-                                            htmlContent += renderSection('Liputan',
-                                                liputanList);
-                                            htmlContent += renderSection('Promosi',
-                                                promosiList);
-
-                                            htmlContent += `</div>`;
-
-                                            Swal.fire({
-                                                title: `Jadwal Tanggal ${selectedDate}`,
-                                                html: htmlContent,
-                                                width: 700,
-                                                confirmButtonText: 'Tutup',
-                                                confirmButtonColor: '#6c757d',
-                                            });
-
-                                        }
-                                    },
-
-                                    error: function(xhr) {
-                                        let message =
-                                            'Terjadi kesalahan. Silakan coba lagi.';
-                                        if (xhr.responseJSON?.error) {
-                                            message = xhr.responseJSON.error;
-                                        } else if (xhr.responseJSON?.errors) {
-                                            message = Object.values(xhr.responseJSON
-                                                .errors).flat().join('\n');
-                                        }
-                                        alert.fire({
-                                            icon: 'error',
-                                            title: 'Gagal',
-                                            text: message,
-                                            timer: 7000,
-                                        });
-                                    }
-                                });
-                            }
-                        }
-                    });
-
-                    calendar.init();
-                },
-                error: function(xhr) {
-                    let message = 'Gagal mengambil daftar tanggal. Silakan coba lagi.';
-                    if (xhr.responseJSON?.error) {
-                        message = xhr.responseJSON.error;
-                    } else if (xhr.responseJSON?.errors) {
-                        message = Object.values(xhr.responseJSON.errors).flat().join('\n');
-                    }
-                    alert.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: message,
-                        timer: 7000,
-                    });
-                }
-            });
-        });
-    </script>
 
     <!-- Google Sign-In -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>

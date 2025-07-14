@@ -208,7 +208,7 @@
                 @endif
 
                 <div class="flex justify-between mt-6">
-                    <a href="{{ route('staff.home') }}" id="btn-kembali"
+                    <a href="{{ route('staff.riwayat') }}" id="btn-kembali"
                         class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
                         Kembali
                     </a>

@@ -96,7 +96,7 @@ class ApiController extends Controller
                 'file_liputan' => 'required|array',
                 'file_liputan.*' => 'file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar,7z|max:15360',
                 'output' => 'required|array',
-                'output.*' => 'required|string|in:artikel,foto,video',
+                'output.*' => 'required|string|in:artikel,foto,video,koran',
                 'catatan' => 'nullable|string',
             ],
             [
@@ -120,7 +120,7 @@ class ApiController extends Controller
                 'output.array' => 'Output harus berupa array.',
                 'output.*.required' => 'Setiap output wajib diisi.',
                 'output.*.string' => 'Setiap output harus berupa teks.',
-                'output.*.in' => 'Setiap output harus berupa artikel, foto, atau video.',
+                'output.*.in' => 'Setiap output harus berupa artikel, foto, video atau koran.',
                 'catatan.string' => 'Catatan harus berupa teks.',
             ],
         );
@@ -533,11 +533,11 @@ class ApiController extends Controller
                     }
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal, $id_proses_permohonan['keterangan']);
+                    // $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Liputan', $batalkan_liputan->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal, $id_proses_permohonan['keterangan']);
 
-                    if ($response->getStatusCode() !== 200) {
-                        return $response;
-                    }
+                    // if ($response->getStatusCode() !== 200) {
+                    //     return $response;
+                    // }
 
                     $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
                     if ($response->getStatusCode() !== 200) {
@@ -589,11 +589,11 @@ class ApiController extends Controller
                     }
 
                     $emailController = new EmailController();
-                    $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal, $id_proses_permohonan['keterangan']);
+                    // $response = $emailController->batalPublikasi($pemohon->email, $pemohon->name, 'Promosi', $batalkan_promosi->judul, $id_proses_permohonan['id_proses_permohonan'], $pesanBatal, $id_proses_permohonan['keterangan']);
 
-                    if ($response->getStatusCode() !== 200) {
-                        return $response;
-                    }
+                    // if ($response->getStatusCode() !== 200) {
+                    //     return $response;
+                    // }
 
                     $response = $emailController->kirimEmailStatus($id_proses_permohonan['id_proses_permohonan']);
                     if ($response->getStatusCode() !== 200) {
@@ -846,7 +846,7 @@ class ApiController extends Controller
             ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
             ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereNotIn('proses_permohonan.status', ['Selesai', 'Batal'])
-            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul as nama', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan')
+            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul as nama', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan', 'promosi.created_at as tanggal_dibuat')
             ->get()
             ->map(
                 fn($item) => [
@@ -859,6 +859,7 @@ class ApiController extends Controller
                     'jenis' => 'Promosi',
                     'tautan' => $item->tautan,
                     'id_proses_permohonan' => $item->id_proses_permohonan,
+                    'tanggal_dibuat' => $item->tanggal_dibuat,
                 ],
             );
 
@@ -867,7 +868,7 @@ class ApiController extends Controller
             ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereNotIn('proses_permohonan.status', ['Selesai', 'Batal'])
-            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul as nama', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan')
+            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul as nama', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan', 'liputan.created_at as tanggal_dibuat')
             ->get()
             ->map(
                 fn($item) => [
@@ -880,12 +881,13 @@ class ApiController extends Controller
                     'jenis' => 'Liputan',
                     'tautan' => $item->tautan,
                     'id_proses_permohonan' => $item->id_proses_permohonan,
+                    'tanggal_dibuat' => $item->tanggal_dibuat,
                 ],
             );
 
         $data = $promosi->merge($liputan);
 
-        $data = $data->sortByDesc('tanggal')->take(5)->values();
+        $data = $data->sortByDesc('tanggal_dibuat')->take(5)->values();
 
         return response()->json($data);
     }

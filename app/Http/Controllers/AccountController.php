@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HitungLogin;
 use App\Models\Pengguna;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class AccountController extends Controller
         if ($response->ok()) {
             $data = $response->json();
 
-            if ((isset($data['hd']) && str_ends_with($data['hd'], '.ukdw.ac.id')) || $data['email'] === 'nicholas.smt234@gmail.com') {
+            if ((isset($data['hd']) && str_ends_with($data['hd'], '.ukdw.ac.id')) || $data['email'] === 'nicholas.smt234@gmail.com' || $data['email'] === 'barasatyaradi@gmail.com') {
                 // Cek user
                 $user = Pengguna::where('google_id', $data['sub'])->orWhere('email', $data['email'])->first();
 
@@ -30,7 +31,7 @@ class AccountController extends Controller
                 $isPemohon = $hasUkdwDomain;
 
                 // Cek Staff
-                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com']);
+                $isStaff = in_array($data['email'], ['nicholas.smt234@gmail.com', 'barasatyaradi@gmail.com']);
 
                 if (!$user) {
                     if ($isStaff) {
@@ -44,9 +45,7 @@ class AccountController extends Controller
                             'role' => 'staff',
                             'token' => $accessToken,
                         ]);
-                    }
-
-                    else if ($isPemohon) {
+                    } else if ($isPemohon) {
                         // Buat user baru
                         $user = Pengguna::create([
                             'google_id' => $data['sub'],
@@ -63,6 +62,27 @@ class AccountController extends Controller
                 if ($user) {
                     try {
                         Auth::login($user, true);
+
+                        $user->update([
+                            'token' => $accessToken,
+                            'avatar' => $data['picture'] ?? null,
+                            "updated_at" => now(),
+                        ]);
+
+                        if ($user->role === 'pemohon') {
+
+                            $is_login = HitungLogin::where('google_id', $user->google_id)
+                                ->where('bulan_tahun', now()->format('Y-m'))
+                                ->first();
+
+                            if (!$is_login) {
+                                HitungLogin::create([
+                                    'google_id' => $user->google_id,
+                                    'bulan_tahun' => now()->format('Y-m'),
+                                    'is_login' => true,
+                                ]);
+                            }
+                        }
 
                         $redirect = $user->role === 'pemohon' ? route('pemohon.home') : route('staff.dashboard');
 

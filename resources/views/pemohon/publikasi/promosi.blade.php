@@ -21,46 +21,47 @@
             <form id="form-promosi" class="space-y-6" enctype="multipart/form-data">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="font-semibold text-lg">Nama Pemohon * :</label>
+                        <label class="font-semibold text-lg">Nama Pemohon <span class="text-red-500">*</span> :</label>
                         <input type="text" name="nama_pemohon" placeholder="Nama Pemohon"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Nomor Handphone * :</label>
+                        <label class="font-semibold text-lg">Nomor Handphone <span class="text-red-500">*</span> :</label>
                         <input type="text" name="nomor_handphone" placeholder="+62"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white"
                             id="nomor_handphone">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Email * :</label>
+                        <label class="font-semibold text-lg">Email <span class="text-red-500">*</span> :</label>
                         <input type="email" name="email" placeholder="email@gmail.com"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034]"
                             value="{{ Auth::user()->email }}" readonly disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Judul Event * :</label>
+                        <label class="font-semibold text-lg">Judul Event <span class="text-red-500">*</span> :</label>
                         <input type="text" name="judul" placeholder="Judul Event"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tempat Pelaksanaan * :</label>
+                        <label class="font-semibold text-lg">Tempat Pelaksanaan <span class="text-red-500">*</span>
+                            :</label>
                         <input type="text" name="tempat" placeholder="Tempat Pelaksanaan"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tanggal Acara * :</label>
+                        <label class="font-semibold text-lg">Tanggal Acara <span class="text-red-500">*</span> :</label>
                         <input type="date" name="tanggal"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white"
                             style="height: 50px;" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Unit * :</label>
+                        <label class="font-semibold text-lg">Unit <span class="text-red-500">*</span> :</label>
                         <select id="unit" name="unit"
                             class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                             <option value="">Pilih Unit</option>
@@ -71,7 +72,7 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Sub Unit * :</label>
+                        <label class="font-semibold text-lg">Sub Unit <span class="text-red-500">*</span> :</label>
                         <select id="id_sub_unit" name="id_sub_unit"
                             class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
                             <option value="">Pilih Sub Unit</option>
@@ -80,28 +81,30 @@
                 </div>
 
                 <div class="mt-6">
-                    <label class="font-semibold text-lg block mb-2">Materi Promosi * :</label>
+                    <label class="font-semibold text-lg block mb-2">Materi Promosi <span class="text-red-500">*</span>
+                        :</label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block mb-1">Instagram Stories</label>
                             <input type="file" name="file_stories[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                            <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
+                            <small class="text-blue-500 block">Format : .jpg, .jpeg, .png, .mp4 <br>Bisa lebih dari 1 file <b>Max : 15MB</b></small>
                         </div>
                         <div>
                             <label class="block mb-1">Instagram Post</label>
                             <input type="file" name="file_poster[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                            <small class="text-white-500">Format file berupa (.jpg,.jpeg,.png,.mp4)</small>
+                            <small class="text-blue-500 block">Format : .jpg, .jpeg, .png, .mp4 <br>Bisa lebih dari 1 file <b>Max : 15MB</b> </small>
                         </div>
                         <div>
                             <label class="block mb-1">Videotron</label>
                             <input type="file" name="file_video[]" multiple accept=".mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                            <small class="text-white-500">Format file berupa (.mp4)</small>
+                            <small class="text-blue-500 block">Format : .mp4 <br>Bisa lebih dari 1 file <b>Max : 15MB</b></small>
                         </div>
                     </div>
                 </div>
+
 
                 <div class="mt-6">
                     <label class="font-semibold text-lg">Catatan :</label>
@@ -316,7 +319,9 @@
                         Swal.fire({
                             icon: 'info',
                             title: 'Mohon Menunggu',
-                            html: 'Permintaan publikasi sedang diproses.<br><b>Proses ini bisa memakan waktu hingga 5 menit</b>.<br>Mohon <b>jangan tutup, reload, atau menekan tombol kembali</b> selama proses berlangsung.',
+                            html: `
+                               Permintaan publikasi sedang diproses.<br><b>Proses ini dapat memakan waktu beberapa menit</b><br><br>tergantung pada ukuran file dan kecepatan koneksi internet Anda.<br><br>.<br>Mohon <b>jangan tutup, reload, atau menekan tombol kembali</b> selama proses berlangsung.
+                            `,
                             allowOutsideClick: false,
                             allowEscapeKey: false,
                             allowEnterKey: false,

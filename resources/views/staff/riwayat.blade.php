@@ -38,7 +38,7 @@
 
                     <!-- Tombol Reset -->
                     <button type="button" @click="resetFilter"
-                        class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md whitespace-nowrap">Reset</button>
+                        class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md whitespace-nowrap hover:bg-blue-800 hover:text-white transition">Reset</button>
                 </div>
 
 
@@ -72,30 +72,30 @@
 
 
             <div class="overflow-x-auto">
-                <table class="w-full border text-base text-left">
+                <table class="w-full border-separate border-spacing-y-1 text-base text-left">
                     <thead class="bg-gray-200 text-green-700 text-center">
                         <tr>
-                            <th class="border py-2 px-1">Kode</th>
-                            <th class="border py-2 px-1">Jenis</th>
-                            <th class="border py-2 px-1">Tanggal</th>
-                            <th class="border py-2 px-1">Nama Publikasi</th>
-                            <th class="border py-2 px-1">Unit</th>
-                            <th class="border py-2 px-1">Sub Unit</th>
-                            <th class="border py-2 px-1">Status</th>
-                            <th class="border py-2 px-1">Tautan</th>
-                            <th class="border py-2 px-1">Detail</th>
+                            <th class="border border-gray-300 py-2 px-2">Kode</th>
+                            <th class="border border-gray-300 py-2 px-2">Jenis</th>
+                            <th class="border border-gray-300 py-2 px-2">Tanggal</th>
+                            <th class="border border-gray-300 py-2 px-2">Nama Publikasi</th>
+                            <th class="border border-gray-300 py-2 px-2">Unit</th>
+                            <th class="border border-gray-300 py-2 px-2">Sub Unit</th>
+                            <th class="border border-gray-300 py-2 px-2">Status</th>
+                            <th class="border border-gray-300 py-2 px-2">Tautan</th>
+                            <th class="border border-gray-300 py-2 px-2">Detail</th>
                         </tr>
                     </thead>
                     <tbody>
                         <template x-for="item in paginatedData" :key="item.id">
-                            <tr class="bg-gray-100">
-                                <td class="border py-2 px-1" x-text="item.kode"></td>
-                                <td class="border py-2 px-1" x-text="item.jenis"></td>
-                                <td class="border py-2 px-1" x-text="item.tanggal"></td>
-                                <td class="border py-2 px-1" x-text="item.nama"></td>
-                                <td class="border py-2 px-1" x-text="item.unit"></td>
-                                <td class="border py-2 px-1" x-text="item.subUnit"></td>
-                                <td class="border py-2 px-1 text-center">
+                            <tr class="bg-gray-50 shadow-sm">
+                                <td class="border border-gray-300 py-2 px-2" x-text="item.kode"></td>
+                                <td class="border border-gray-300 py-2 px-2" x-text="item.jenis"></td>
+                                <td class="border border-gray-300 py-2 px-2" x-text="item.tanggal"></td>
+                                <td class="border border-gray-300 py-2 px-2" x-text="item.nama"></td>
+                                <td class="border border-gray-300 py-2 px-2" x-text="item.unit"></td>
+                                <td class="border border-gray-300 py-2 px-2" x-text="item.subUnit"></td>
+                                <td class="border border-gray-300 py-2 px-2 text-center">
                                     <span class="text-sm font-semibold px-2 py-1 rounded-full"
                                         :class="{
                                             'bg-green-100 text-green-700': item.status === 'Selesai',
@@ -106,11 +106,11 @@
                                         x-text="item.status">
                                     </span>
                                 </td>
-                                <td class="border py-2 px-1 text-blue-500 underline text-center">
+                                <td class="border border-gray-300 py-2 px-2 text-blue-500 underline text-center">
                                     <button @click="openLinkModal(item.tautan)"
                                         class="underline text-blue-500">Lihat</button>
                                 </td>
-                                <td class="border py-2 px-1 text-center">
+                                <td class="border border-gray-300 py-2 px-2 text-center">
                                     <a :href="`{{ route('staff.detail-riwayat', ':id') }}`.replace(':id', item.kode)"
                                         class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-900">
                                         Detail
@@ -121,13 +121,8 @@
 
                         <template x-if="paginatedData.length === 0">
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-gray-500">Data tidak ditemukan.</td>
-                            </tr>
-                        </template>
-
-                        <template x-for="item in paginatedData" :key="item.id">
-                            <tr class="bg-gray-100">
-                                ...
+                                <td colspan="9" class="text-center py-4 text-gray-500 border border-gray-300">Data tidak
+                                    ditemukan.</td>
                             </tr>
                         </template>
                     </tbody>

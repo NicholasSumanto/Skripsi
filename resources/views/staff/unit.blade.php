@@ -2,7 +2,7 @@
 @section('title', 'Daftar Unit')
 
 @section('content')
-    <div x-data="unitPage()" class="p-4 bg-white rounded shadow">
+    <div x-data="unitPage()" class="p-6 bg-white rounded shadow">
         <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Daftar Unit</h2>
 
             <div class="flex flex-col items-start gap-2 mb-4">
@@ -17,10 +17,10 @@
 
             <!-- Table -->
             <div class="overflow-x-auto">
-                <table class="w-full table-auto border text-sm text-center">
+                <table class="w-full table-auto border-separate border-spacing-y-1 text-sm text-center">
                     <thead class="bg-gray-100 text-green-700 font-semibold">
                         <tr>
-                            <th class="border px-2 py-2 cursor-pointer text-center"
+                            <th class="border border-gray-300 py-2 px-2 cursor-pointer text-center"
                                 @click="sortAsc = sortKey === 'nama_unit' ? !sortAsc : true; sortKey = 'nama_unit'">
                                 Nama Unit
                                 <template x-if="sortKey === 'nama_unit'">
@@ -28,17 +28,17 @@
                                 </template>
                             </th>
 
-                            <th class="border px-2 py-2">Deskripsi</th>
-                            <th class="border px-2 py-2">Sub Unit</th>
-                            <th class="border px-2 py-2">Aksi</th>
+                            <th class="border border-gray-300 py-2 px-2">Deskripsi</th>
+                            <th class="border border-gray-300 py-2 px-2">Sub Unit</th>
+                            <th class="border border-gray-300 py-2 px-2">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <template x-for="unit in paginatedData" :key="unit.id_unit">
                             <tr class="odd:bg-white even:bg-gray-50">
-                                <td class="border px-2 py-2 text-left" x-text="unit.nama_unit"></td>
-                                <td class="border px-2 py-2 text-left" x-text="unit.deskripsi"></td>
-                                <td class="border px-2 py-2">
+                                <td class="border border-gray-300 py-2 px-2 text-left" x-text="unit.nama_unit"></td>
+                                <td class="border border-gray-300 py-2 px-2 text-left" x-text="unit.deskripsi"></td>
+                                <td class="border border-gray-300 py-2 px-2">
                                     <a :href="unit.detail_url"
                                         class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-900">
                                         Detail
@@ -48,9 +48,9 @@
                                 <td class="border px-2 py-2">
                                     <div class="flex flex-col sm:flex-row items-center justify-center gap-1">
                                         <a href="" @click.prevent="editUnit(unit)"
-                                            class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 w-full sm:w-auto text-center">Edit</a>
+                                            class="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500 w-full sm:w-auto text-center">Edit</a>
                                         <a href="" @click.prevent="deleteUnit(unit)"
-                                            class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 w-full sm:w-auto text-center">Delete</a>
+                                            class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 w-full sm:w-auto text-center">Hapus</a>
 
                                     </div>
                                 </td>

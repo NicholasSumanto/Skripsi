@@ -28,7 +28,7 @@
     <main class="container mx-auto px-4 sm:px-2 py-16 flex-grow">
         <div class="flex flex-col md:flex-row max-w-10xl mx-auto w-full items-stretch">
             <!-- Bagian Calendar -->
-            <div class="basis-2/3 bg-white p-8 sm:p-2 flex flex-col justify-center">
+            <div class="basis-2/3 bg-white p-8 sm:p-2 flex flex-col justify-center me-2">
                 <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Agenda Publikasi</h1>
                 <div id="calendar" class="w-full min-h-[400px] p-0 mb-4"></div>
                 <p class="text-sm text-gray-600">
@@ -42,8 +42,22 @@
                 </p>
             </div>
 
-            <!-- Bagian Kiri -->
-            <div class="basis-1/3 bg-white p-8 sm:p-2 flex flex-col gap-6">
+            <!-- Bagian Kanan -->
+            <div class="basis-1/3 bg-white p-8 sm:p-6 flex flex-col gap-6 border border-gray-300 rounded-lg ms-2">
+                <div class="items-center text-center">
+                    <label class="text-sm text-gray-700 whitespace-nowrap w-[120px] font-bold text-right me-2">Bulan dan
+                        Tahun:</label>
+                    <input type="month" id="monthPicker"
+                        class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm" />
+                </div>
+
+
+                @php
+                    $bulanIni = date('m');
+                    $tahunIni = date('Y');
+                    $isBulanSekarang = $bulan == $bulanIni && $tahun == $tahunIni;
+                @endphp
+
                 @foreach ($cards as $card)
                     @php
                         $status = $card['stat']['status'];
@@ -52,6 +66,7 @@
                         $arrowDown = $status === 'berkurang';
                         $colorClass = $arrowUp ? 'text-green-600' : ($arrowDown ? 'text-red-600' : 'text-gray-500');
                     @endphp
+
 
                     <div class="bg-gray-200 rounded-xl shadow-md p-6 flex items-center justify-between">
                         <div>
@@ -69,7 +84,8 @@
                                             stroke-linejoin="round" />
                                     </svg>
                                 @endif
-                                {{ abs($persen) }}% {{ ucfirst($status) }} dari kemarin
+                                {{ abs($persen) }}% {{ ucfirst($status) }}
+                                dari {{ $isBulanSekarang ? 'bulan sebelumnya' : 'bulan saat ini' }}
                             </div>
                         </div>
                         <div class="ml-4 bg-{{ $card['iconColor'] }}-100 p-3 rounded-full">
@@ -81,9 +97,7 @@
                                 @break
 
                                 @case('megaphone')
-                                    <svg class="w-6 h-6 text-{{ $card['iconColor'] }}-500" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                        viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 text-{{ $card['iconColor'] }}-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M18.458 3.11A1 1 0 0 1 19 4v16a1 1 0 0 1-1.581.814L12 16.944V7.056l5.419-3.87a1 1 0 0 1 1.039-.076ZM22 12c0 1.48-.804 2.773-2 3.465v-6.93c1.196.692 2 1.984 2 3.465ZM10 8H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6V8Zm0 9H5v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3Z"
                                             clip-rule="evenodd" />
@@ -111,7 +125,6 @@
                                     </svg>
                             @endswitch
                         </div>
-
                     </div>
                 @endforeach
             </div>
@@ -132,7 +145,6 @@
                                 <th class="border py-2 px-1">Unit</th>
                                 <th class="border py-2 px-1">Sub Unit</th>
                                 <th class="border py-2 px-1">Status</th>
-                                <th class="border py-2 px-1">Tautan</th>
                                 <th class="border py-2 px-1">Detail</th>
                             </tr>
                         </thead>
@@ -156,14 +168,10 @@
                                             x-text="item.status">
                                         </span>
                                     </td>
-                                    <td class="border py-2 px-1 text-blue-500 underline">
-                                        <button @click="openLinkModal(item.tautan)"
-                                            class="underline text-blue-500">Lihat</button>
-                                    </td>
                                     <td class="border py-2 px-1">
                                         <a :href="`{{ route('staff.detail-publikasi', ':id') }}`.replace(':id', item.kode)"
                                             class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-900"
-                                            target="_blank" rel="noopener">
+                                            rel="noopener">
                                             Detail
                                         </a>
                                     </td>
@@ -184,13 +192,12 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="flex justify-end mt-4 mb-2">
+                    <a href="{{ route('staff.home') }}" class="text-blue-700 hover:underline font-semibold">
+                        Lihat Daftar Publikasi Lain &rarr;
+                    </a>
+                </div>
             </div>
-            <div class="flex justify-end my-2">
-                <a href="{{ route('staff.home') }}" class="text-blue-700 hover:underline font-semibold">
-                    Lihat Daftar Publikasi Lain &rarr;
-                </a>
-            </div>
-        </div>
     </main>
 @endsection
 
@@ -390,6 +397,38 @@
     </script>
 
     <script>
+        $(document).ready(function() {
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            const bulan = getQueryParam('bulan');
+            const tahun = getQueryParam('tahun');
+
+            if (bulan && tahun) {
+                $('#monthPicker').val(`${tahun}-${bulan}`);
+            } else {
+                const now = new Date();
+                const monthNow = String(now.getMonth() + 1).padStart(2, '0');
+                const yearNow = now.getFullYear();
+                $('#monthPicker').val(`${yearNow}-${monthNow}`);
+            }
+
+            $('#monthPicker').on('change', function() {
+                const value = $(this).val();
+                if (value) {
+                    const parts = value.split("-");
+                    const tahun = parts[0];
+                    const bulan = parts[1];
+                    window.location.href = `{{ route('staff.dashboard') }}?bulan=${bulan}&tahun=${tahun}`;
+                }
+            });
+        });
+    </script>
+
+
+    <script>
         function publikasi() {
             return {
                 search: '',
@@ -397,6 +436,7 @@
                 selectedStatus: '',
                 sortOrder: '',
                 startDate: '',
+                selectedMonthYear: '',
                 endDate: '',
                 selectedData: {},
                 currentPage: 1,
@@ -423,7 +463,6 @@
                             subUnit: item.subUnit,
                             status: item.status,
                             jenis: item.jenis,
-                            tautan: item.tautan ?? '-',
                         }));
                     } catch (error) {
                         console.error('Gagal mengambil data:', error);
@@ -470,55 +509,42 @@
                     return `${year}-${month}-${day}`;
                 },
 
-                openLinkModal(tautan) {
-                    if (!tautan || tautan.length === 0 || tautan === '-' || tautan === '["-"]') {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Tidak ada tautan tersedia',
-                            confirmButtonText: 'Tutup',
-                            customClass: {
-                                popup: 'rounded-xl shadow-lg p-6',
-                                title: 'text-gray-800 text-xl font-semibold',
-                                confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md focus:outline-none'
-                            }
-                        });
-                        return;
-                    }
-
-                    let links = [];
-
-                    try {
-                        links = JSON.parse(tautan);
-                    } catch (e) {
-                        links = tautan.split(',').map(t => t.trim());
-                    }
-
-                    const htmlList = links.map(link => {
-                        return `
-                        <li class="mb-2">
-                            <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline transition duration-150 ease-in-out">
-                                ${link}
-                            </a>
-                        </li>`;
-                    }).join('');
-
-                    Swal.fire({
-                        title: '📎 Daftar Tautan',
-                        html: `
-                            <ul class="text-left text-base text-gray-700 list-disc list-inside space-y-2">
-                                ${htmlList}
-                            </ul>
-                        `,
-                        confirmButtonText: 'Tutup',
-                        width: 600,
-                        showClass: {
-                            popup: 'animate__animated animate__fadeInDown'
-                        },
-                        hideClass: {
-                            popup: 'animate__animated animate__fadeOutUp'
-                        }
+                get monthYearOptions() {
+                    const set = new Set(
+                        this.originalData.map(i => {
+                            const d = new Date(i.tanggal);
+                            return `${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+                        })
+                    );
+                    const arr = Array.from(set).sort((a, b) => {
+                        const [mA, yA] = a.split('-').map(Number);
+                        const [mB, yB] = b.split('-').map(Number);
+                        if (yA !== yB) return yB - yA;
+                        return mB - mA;
                     });
-                }
+                    return arr.map(val => {
+                        const [m, y] = val.split('-');
+                        const date = new Date(`${y}-${m}-01`);
+                        const label = `${date.toLocaleString('id-ID', { month: 'long' })} ${y}`;
+                        return {
+                            value: val,
+                            label
+                        };
+                    });
+                },
+
+                onMonthYearChange() {
+                    if (this.selectedMonthYear) {
+                        const [month, year] = this.selectedMonthYear.split('-');
+                        this.startDate = `${year}-${month}-01`;
+                        this.endDate = `${year}-${month}-${new Date(year, month, 0).getDate()}`;
+                    } else {
+                        this.startDate = '';
+                        this.endDate = '';
+                    }
+                    this.currentPage = 1;
+                },
+
             }
         }
     </script>

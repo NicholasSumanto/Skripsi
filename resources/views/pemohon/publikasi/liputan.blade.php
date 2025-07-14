@@ -19,13 +19,13 @@
             <form id="form-liputan" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="font-semibold text-lg">Nama Pemohon * :</label>
+                        <label class="font-semibold text-lg">Nama Pemohon<span class="text-red-500">*</span> : </label>
                         <input type="text" name="nama_pemohon" placeholder="Masukkan nama pemohon"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Nomor Handphone * :</label>
+                        <label class="font-semibold text-lg">Nomor Handphone <span class="text-red-500">*</span> :</label>
                         <input type="text" name="nomor_handphone" placeholder="Masukkan nomor handphone"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
                             id="nomor_handphone">
@@ -39,32 +39,32 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Judul * :</label>
+                        <label class="font-semibold text-lg">Judul <span class="text-red-500">*</span> :</label>
                         <input type="text" name="judul" placeholder="Masukkan judul acara"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tempat Pelaksanaan * :</label>
+                        <label class="font-semibold text-lg">Tempat Pelaksanaan <span class="text-red-500">*</span> :</label>
                         <input type="text" name="tempat" placeholder="Masukkan tempat pelaksanaan"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tanggal Acara * :</label>
+                        <label class="font-semibold text-lg">Tanggal Acara <span class="text-red-500">*</span> :</label>
                         <input type="date" name="tanggal" placeholder="Pilih tanggal acara"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
                             style="height: 50px;" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Waktu * :</label>
+                        <label class="font-semibold text-lg">Waktu <span class="text-red-500">*</span> :</label>
                         <input type="time" name="waktu" placeholder="Pilih waktu acara"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Unit * :</label>
+                        <label class="font-semibold text-lg">Unit <span class="text-red-500">*</span> :</label>
                         <select id="unit" name="unit"
                             class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-[#FFCC29]">
                             <option value="">Pilih Unit</option>
@@ -75,7 +75,7 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Sub Unit * :</label>
+                        <label class="font-semibold text-lg">Sub Unit <span class="text-red-500">*</span> :</label>
                         <select id="id_sub_unit" name="id_sub_unit"
                             class="chosen-select w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-[#FFCC29]">
                             <option value="">Pilih Sub Unit</option>
@@ -83,16 +83,16 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Rundown dan TOR * :</label>
+                        <label class="font-semibold text-lg">Rundown dan TOR <span class="text-red-500">*</span> :</label>
                         <input type="file" name="file_liputan[]" multiple
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none bg-white text-black"
                             accept=".pdf">
-                        <small class="text-white-500">Format file berupa .pdf (Max 2048 MB).</small>
+                        <small class="text-white">Format file berupa .pdf (Max 2048 MB).</small>
                     </div>
                 </div>
 
                 <div>
-                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media? *</label>
+                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media?<span class="text-red-500">*</span></label>
                     <div class="flex items-center space-x-6 mt-2 text-[#FFCC29]">
                         <label class="flex items-center"><input type="radio" name="wartawan" value="Ya"
                                 class="mr-2"> Ya</label>
@@ -102,16 +102,22 @@
                 </div>
 
                 <div>
-                    <label class="font-semibold text-lg">Output * :</label>
-                    <div class="flex flex-col space-y-2 mt-2 text-[#FFCC29]">
-                        <label class="flex items-center"><input type="checkbox" name="output[]" value="artikel"
-                                class="mr-2"> Artikel</label>
-                        <label class="flex items-center"><input type="checkbox" name="output[]" value="foto"
-                                class="mr-2"> Foto</label>
-                        <label class="flex items-center"><input type="checkbox" name="output[]" value="video"
-                                class="mr-2"> Video</label>
-                        <label class="flex items-center"><input type="checkbox" name="output[]" value="video"
-                                class="mr-2"> Koran</label>
+                    <label class="font-semibold text-lg block mb-1">Output <span class="text-red-500">*</span> :</label>
+                    <p class="text-sm text-white mb-2 italic">*Bisa memilih lebih dari satu</p>
+
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[#FFCC29]">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="output[]" value="artikel" class="mr-2"> Artikel
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="output[]" value="foto" class="mr-2"> Foto
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="output[]" value="video" class="mr-2"> Video
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="output[]" value="koran" class="mr-2"> Koran
+                        </label>
                     </div>
                 </div>
 
@@ -342,7 +348,19 @@
                     headers: {
                         'X-CSRF-TOKEN': "{{ csrf_token() }}"
                     },
+
                     beforeSend: function() {
+
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Sedang mengirim...',
+                            text: 'Mohon tunggu sebentar',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading()
+                            }
+                        });
+
                         $('button[type="submit"]').text('Mengirim...').attr('disabled', true);
                         $('#form-liputan :input').prop('disabled', true);
                         $('#cancel-button').attr('disabled', true);

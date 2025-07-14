@@ -2,7 +2,7 @@
 @section('title', 'Daftar Sub Unit')
 
 @section('content')
-    <div x-data="subUnitPage()" class="p-4 bg-white rounded shadow">
+    <div x-data="subUnitPage()" class="p-6 bg-white rounded shadow">
         <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Daftar Sub Unit {{ $unit->nama_unit }}</h2>
 
             <div class="flex flex-col items-start gap-2 mb-4">
@@ -39,9 +39,9 @@
                                 <td class="border px-2 py-2">
                                     <div class="flex flex-col sm:flex-row items-center justify-center gap-1">
                                         <a href="" @click.prevent="editSubUnit(sub)"
-                                            class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 w-full sm:w-auto text-center">Edit</a>
+                                            class="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500 w-full sm:w-auto text-center">Edit</a>
                                         <a href="" @click.prevent="deleteSubUnit(sub)"
-                                            class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 w-full sm:w-auto text-center">Delete</a>
+                                            class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 w-full sm:w-auto text-center">Hapus</a>
                                     </div>
                                 </td>
                             </tr>
