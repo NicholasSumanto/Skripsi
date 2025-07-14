@@ -21,63 +21,51 @@
             <form id="form-liputan" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="font-semibold text-lg">Nama Pemohon * :</label>
+                        <label class="font-semibold text-lg">Nama Pemohon :</label>
                         <input type="text" name="nama_pemohon" value="{{ $publikasi->nama_pemohon }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Nomor Handphone * :</label>
+                        <label class="font-semibold text-lg">Nomor Handphone :</label>
                         <input type="text" name="nomor_handphone" value="{{ $publikasi->nomor_handphone }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Email :</label>
-                        <input type="email" name="email" value="{{ $publikasi->email }}" readonly
+                        <input type="email" name="email" value="{{ $publikasi->email }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Judul * :</label>
+                        <label class="font-semibold text-lg">Judul :</label>
                         <input type="text" name="judul" value="{{ $publikasi->judul }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tempat Pelaksanaan * :</label>
+                        <label class="font-semibold text-lg">Tempat Pelaksanaan :</label>
                         <input type="text" name="tempat" value="{{ $publikasi->tempat }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tanggal Acara * :</label>
+                        <label class="font-semibold text-lg">Tanggal Acara :</label>
                         <input type="date" name="tanggal"
                             value="{{ \Carbon\Carbon::parse($publikasi->tanggal)->format('Y-m-d') }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Waktu * :</label>
+                        <label class="font-semibold text-lg">Waktu :</label>
                         <input type="time" name="waktu"
                             value="{{ \Carbon\Carbon::parse($publikasi->waktu)->format('H:i') }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Unit * :</label>
-                        <input type="text" name="unit" value="{{ $publikasi->nama_unit }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
-                    </div>
-
-                    <div>
-                        <label class="font-semibold text-lg">Sub Unit * :</label>
-                        <input type="text" name="sub_unit" value="{{ $publikasi->nama_sub_unit }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
-                    </div>
-
-                    <div>
-                        <label class="font-semibold text-lg">Rundown dan TOR * :</label>
+                        <label class="font-semibold text-lg">Rundown dan TOR :</label>
                         <div class="mt-2">
                             @if ($publikasi->file_liputan && $publikasi->status !== 'Batal')
                                 @php
@@ -99,10 +87,22 @@
                             @endif
                         </div>
                     </div>
+
+                    <div>
+                        <label class="font-semibold text-lg">Unit :</label>
+                        <input type="text" name="unit" value="{{ $publikasi->nama_unit }}"
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
+                    </div>
+
+                    <div>
+                        <label class="font-semibold text-lg">Sub Unit :</label>
+                        <input type="text" name="sub_unit" value="{{ $publikasi->nama_sub_unit }}"
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
+                    </div>
                 </div>
 
                 <div>
-                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media? *</label>
+                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media?</label>
                     <div class="mt-2">
                         @if ($publikasi->wartawan == 'Ya')
                             <span class="inline-block bg-green-500 text-white font-semibold py-2 px-4 rounded-full">
@@ -117,7 +117,7 @@
                 </div>
 
                 <div>
-                    <label class="font-semibold text-lg">Output * :</label>
+                    <label class="font-semibold text-lg">Output :</label>
                     <div class="flex flex-wrap gap-2 mt-2">
                         @php
                             $outputList = json_decode($publikasi->output, true);
@@ -137,20 +137,20 @@
 
                 <div>
                     <label class="font-semibold text-lg">Catatan :</label>
-                    <textarea name="catatan" class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" rows="6"
-                        readonly>{{ $publikasi->catatan }}</textarea>
+                    <textarea name="catatan" class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" rows="6"
+                        disabled>{{ $publikasi->catatan }}</textarea>
                 </div>
 
                 @if ($publikasi->status === 'Selesai')
                     <div class="space-y-2" id="output-form">
-                        <label class="font-semibold text-lg text-yellow-400">Link Output * :</label>
+                        <label class="font-semibold text-lg text-yellow-400">Link Output<span class="text-red-500">*</span> :</label>
                         <div class="control-form space-y-2">
                             @php
                                 $linkOutput = json_decode($publikasi->link_output, true);
                             @endphp
                             @foreach ($linkOutput as $link)
                                 <div class="entry flex overflow-hidden rounded-lg border border-gray-300">
-                                    <input type="text" name="link_output[]" class="flex-1 p-3 outline-none text-black"
+                                    <input type="text" name="link_output[]" class="flex-1 p-3 outline-none text-black bg-white"
                                         placeholder="https://..." value="{{ $link }}" disabled>
                                     @if (!$loop->last)
                                         <button type="button" disabled
@@ -170,8 +170,8 @@
                 @else
                     <div class="mt-6">
                         <label class="font-semibold text-lg">Keterangan Pembatalan Publikasi :</label>
-                        <textarea name="keterangan" rows="6" readonly
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">{{ $publikasi->keterangan }}</textarea>
+                        <textarea name="keterangan" rows="6" disabled
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-red-700 bg-white">{{ $publikasi->keterangan }}</textarea>
                     </div>
                 @endif
 

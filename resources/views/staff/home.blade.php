@@ -13,8 +13,12 @@
             <select name="sort" id="sort" onchange="this.form.submit()"
                 class="form-select bg-[#f3f4f6] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#1a237e] focus:outline-none max-w-[200px]">
                 <option value="">-- Semua Urutan --</option>
-                <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Tanggal Terdekat</option>
-                <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Tanggal Terjauh</option>
+                <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Tanggal Terdekat (Jadwal)</option>
+                <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Tanggal Terjauh (Jadwal)</option>
+                <option value="baru_diajukan" {{ request('sort') == 'baru_diajukan' ? 'selected' : '' }}>Terbaru Diajukan
+                </option>
+                <option value="lama_diajukan" {{ request('sort') == 'lama_diajukan' ? 'selected' : '' }}>Terlama Diajukan
+                </option>
             </select>
 
             <select name="pub" id="pub" onchange="this.form.submit()"
@@ -56,7 +60,7 @@
                 @php
                     $isPromosi = $item['jenis'] === 'Publikasi Promosi';
                     $bgClass = $isPromosi
-                        ? 'bg-gray-100 text-green-700 border-2 border-green-500'
+                        ? 'bg-gray-200 text-green-700 border-2 border-green-500'
                         : 'bg-green-900 text-yellow-500 border-2 border-yellow-500';
                     $buttonClass = $isPromosi ? 'bg-yellow-400 text-black' : 'bg-yellow-400 text-black';
                 @endphp
@@ -86,7 +90,7 @@
                                 <table class="w-full bg-[#0B4D1E] text-sm text-center rounded-t-lg">
                                     <thead>
                                         <tr class="font-semibold text-[#FFC107]">
-                                            <th class="py-4 px-5 w-1/5">Kode Kegiatan</th>
+                                            <th class="py-4 px-5 w-1/5">Kode Publikasi</th>
                                             <th class="py-4 px-5 w-1/5">Nama Pemohon</th>
                                             <th class="py-4 px-5 w-1/5">Tanggal</th>
                                             <th class="py-4 px-5 w-1/5">Unit</th>
@@ -255,10 +259,13 @@
                 Swal.fire({
                     title: 'Batalkan Permohonan?',
                     html: `
-                        <p>Anda membatalkan permohonan publikasi ini.</p>
-                        <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p>
-                        <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-5" placeholder="Tuliskan alasan pembatalan" required></textarea>
-                    `,
+                        <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p><br>
+                        <p>Mohon jelaskan alasan Anda agar pemohon dapat memahami keputusan tersebut.</p>
+                        <p class="font-semibold text-left text-lg mt-4">
+                        Alasan Pembatalan <span class="text-red-500">*</span> :
+                        </p>
+                        <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-2" placeholder="Contoh: Jadwal Publikasi berubah, publikasi tidak diperlukan lagi" required></textarea>
+                        `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',

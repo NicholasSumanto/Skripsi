@@ -5,13 +5,13 @@
 @section('content')
     <main class="container mx-auto px-4 py-16">
         <h1 class="text-4xl font-bold text-center text-[#1E285F] mb-10 leading-tight">
-            Lacak Status<br>Publikasi Kegiatan
+            Lacak Status Publikasi
         </h1>
         <div class="max-w-5xl mx-auto bg-white rounded-lg shadow-lg">
 
-            {{-- Form Input Kode Kegiatan --}}
+            {{-- Form Input Kode Publikasi --}}
             <section class="bg-[#C4C4C4] rounded-t-lg pt-6">
-                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Kegiatan</h2>
+                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Publikasi</h2>
                 <form class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 mx-2" method="GET"
                     action="{{ route('umum.lacak') }}">
                     <input id="kode_proses" name="kode_proses" type="text" placeholder="Masukkan kode"
@@ -23,14 +23,14 @@
                     </button>
                 </form>
 
-                {{-- Tabel Informasi Kegiatan --}}
+                {{-- Tabel Informasi Publikasi --}}
                 <div class="overflow-x-auto">
                     <table class="w-full bg-[#0B4D1E] text-sm text-center">
                         <thead>
                             <tr class="font-semibold text-[#FFC107]">
-                                <th class="py-4 px-3">Kode Kegiatan</th>
+                                <th class="py-4 px-3">Kode Publikasi</th>
                                 <th class="py-4 px-3">Nama Pemohon</th>
-                                <th class="py-4 px-3">Nama Kegiatan</th>
+                                <th class="py-4 px-3">Nama Publikasi</th>
                                 <th class="py-4 px-3">Tanggal/Waktu</th>
                                 <th class="py-4 px-3">Unit</th>
                                 <th class="py-4 px-3">Sub Unit</th>

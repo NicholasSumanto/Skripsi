@@ -25,7 +25,22 @@
 @endsection
 
 @section('content')
-    <main class="container mx-auto px-4 sm:px-2 py-16 flex-grow">
+    @php
+        $hour = now()->format('H');
+        if ($hour < 12) {
+            $greeting = 'Selamat pagi';
+        } elseif ($hour < 18) {
+            $greeting = 'Selamat siang';
+        } else {
+            $greeting = 'Selamat malam';
+        }
+    @endphp
+
+    <main class="container mx-auto px-4 sm:px-2 pt-8 pb-16 flex-grow">
+        <h1 class="text-4xl md:text-5xl font-bold text-[#1a237e] mb-6 text-center">
+            {{ $greeting }}, <span class="text-green-700">{{ ucfirst(strtok(Auth::user()->name, ' ')) }}</span>
+        </h1>
+
         <div class="flex flex-col md:flex-row max-w-10xl mx-auto w-full items-stretch">
             <!-- Bagian Calendar -->
             <div class="basis-2/3 bg-white p-8 sm:p-2 flex flex-col justify-center me-2">
@@ -284,54 +299,76 @@
                                                 text: `Tidak ada kegiatan pada tanggal ${selectedDate}.`
                                             });
                                         } else {
+                                            const dateParts = selectedDate.split(
+                                                '-');
+                                            const formattedDate =
+                                                `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
                                             let htmlContent =
                                                 `<div style="text-align:left; max-height:400px; overflow-y:auto;">`;
 
                                             const liputanList = data.filter(item =>
-                                                item
-                                                .jenis === 'Liputan');
+                                                item.jenis === 'Liputan');
                                             const promosiList = data.filter(item =>
-                                                item
-                                                .jenis === 'Promosi');
+                                                item.jenis === 'Promosi');
 
                                             function renderSection(judul, list) {
                                                 if (list.length === 0) return '';
 
-                                                let sectionHTML =
-                                                    `<h3 style="font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #444;">${judul}</h3>`;
+                                                const backgroundColor = judul ===
+                                                    'Liputan' ? '#d0f0c0' :
+                                                    '#fff9c4';
+                                                const textColor = judul ===
+                                                    'Liputan' ? '#256029' :
+                                                    '#8a6d00';
 
-                                                list.forEach((item, index) => {
+                                                let sectionHTML = `
+                                                    <h3 style="
+                                                        font-size: 20px;
+                                                        font-weight: 700;
+                                                        margin: 20px 0 15px;
+                                                        color: ${textColor};
+                                                        text-align: center;
+                                                        background-color: ${backgroundColor};
+                                                        padding: 8px 0;
+                                                        border-radius: 6px;
+                                                        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                                                    ">${judul}</h3>
+                                                `;
+
+                                                list.forEach(item => {
                                                     const statusClass = item
                                                         .status ===
                                                         'Diproses' ?
                                                         'text-yellow-600' :
                                                         'text-red-600';
-
                                                     const hariPelaksanaan =
                                                         item
                                                         .hariPelaksanaan ??
-                                                        'text-green-500'
+                                                        'text-green-500';
 
                                                     sectionHTML += `
-                                                    <div style="
-                                                        border: 1px solid #e0e0e0;
-                                                        border-radius: 8px;
-                                                        padding: 12px 16px;
-                                                        margin-bottom: 12px;
-                                                        background-color: #f8f9fa;
-                                                        box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
-                                                    ">
-                                                        <div class="font-bold text-2xl"><span class="${hariPelaksanaan}">${item.hari_h}</span>${item.nama}</div>
-                                                        <div class="${statusClass} text-sm mt-1 font-semibold text-xl">
-                                                            ${item.status}
+                                                        <div style="
+                                                            border: 1px solid #e0e0e0;
+                                                            border-radius: 8px;
+                                                            padding: 12px 16px;
+                                                            margin-bottom: 12px;
+                                                            background-color: #f8f9fa;
+                                                            box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
+                                                        ">
+                                                            <div class="font-bold text-2xl">
+                                                                <span class="${hariPelaksanaan}">${item.hari_h}</span>${item.nama}
+                                                            </div>
+                                                            <div class="${statusClass} text-sm mt-1 font-semibold text-xl">
+                                                                ${item.status}
+                                                            </div>
+                                                            <div style="margin-top: 6px;">
+                                                                <strong>Tempat:</strong> ${item.tempat}<br>
+                                                                ${item.tanggal ? `<strong>Tanggal:</strong> ${item.tanggal}` : ''}
+                                                                ${item.jam ? ` - ${item.jam}` : ''}
+                                                            </div>
                                                         </div>
-
-                                                        <div style="margin-top: 6px;">
-                                                            <strong>Tempat:</strong> ${item.tempat}<br>
-                                                            ${item.waktu ? `<strong>Waktu:</strong> ${item.waktu}` : ''}
-                                                        </div>
-                                                    </div>
-                                                `;
+                                                    `;
                                                 });
 
                                                 return sectionHTML;
@@ -341,20 +378,17 @@
                                                 liputanList);
                                             htmlContent += renderSection('Promosi',
                                                 promosiList);
-
                                             htmlContent += `</div>`;
 
                                             Swal.fire({
-                                                title: `Jadwal Tanggal ${selectedDate}`,
+                                                title: `Jadwal Tanggal ${formattedDate}`,
                                                 html: htmlContent,
                                                 width: 700,
                                                 confirmButtonText: 'Tutup',
                                                 confirmButtonColor: '#6c757d',
                                             });
-
                                         }
                                     },
-
                                     error: function(xhr) {
                                         let message =
                                             'Terjadi kesalahan. Silakan coba lagi.';

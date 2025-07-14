@@ -12,55 +12,55 @@
         <h1 class="text-5xl font-bold mb-12 text-center" style="color: #1E285F;">Detail Permohonan Publikasi<br>Promosi Acara
         </h1>
 
-        <div class="max-w-4xl mx-auto bg-gray-100 text-[#006034] rounded-xl shadow-xl p-10">
+        <div class="max-w-4xl mx-auto bg-gray-300 text-[#006034] rounded-xl shadow-xl p-10">
             <form id="form-promosi-view" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="font-semibold text-lg">Nama Pemohon :</label>
-                        <input type="text" name="nama_pemohon" value="{{ $publikasi->nama_pemohon }}" readonly
+                        <input type="text" name="nama_pemohon" value="{{ $publikasi->nama_pemohon }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Nomor Handphone :</label>
-                        <input type="text" name="nomor_handphone" value="{{ $publikasi->nomor_handphone }}" readonly
+                        <input type="text" name="nomor_handphone" value="{{ $publikasi->nomor_handphone }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Email :</label>
-                        <input type="email" name="email" value="{{ $publikasi->email }}" readonly
+                        <input type="email" name="email" value="{{ $publikasi->email }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Judul Event :</label>
-                        <input type="text" name="judul" value="{{ $publikasi->judul }}" readonly
+                        <input type="text" name="judul" value="{{ $publikasi->judul }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Tempat Pelaksanaan :</label>
-                        <input type="text" name="tempat" value="{{ $publikasi->tempat }}" readonly
+                        <input type="text" name="tempat" value="{{ $publikasi->tempat }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Tanggal Acara :</label>
-                        <input type="date" name="tanggal" value="{{ $publikasi->tanggal }}" readonly
+                        <input type="date" name="tanggal" value="{{ $publikasi->tanggal }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white"
                             style="height: 50px;">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Unit :</label>
-                        <input type="text" name="unit" value="{{ $publikasi->nama_unit }}" readonly
+                        <input type="text" name="unit" value="{{ $publikasi->nama_unit }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Sub Unit :</label>
-                        <input type="text" name="sub_unit" value="{{ $publikasi->nama_sub_unit }}" readonly
+                        <input type="text" name="sub_unit" value="{{ $publikasi->nama_sub_unit }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
                     </div>
                 </div>
@@ -169,13 +169,13 @@
 
                 <div class="mt-6">
                     <label class="font-semibold text-lg">Catatan :</label>
-                    <textarea name="catatan" rows="6" readonly
+                    <textarea name="catatan" rows="6" disabled
                         class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">{{ $publikasi->catatan }}</textarea>
                 </div>
 
                 @if ($publikasi->status === 'Selesai')
                     <div class="space-y-2" id="output-form">
-                        <label class="font-semibold text-lg text-yellow-400">Link Output * :</label>
+                        <label class="font-semibold text-lg text-yellow-400">Link Output<span class="text-red-500">*</span> :</label>
                         <div class="control-form space-y-2">
                             @php
                                 $linkOutput = json_decode($publikasi->link_output, true);
@@ -202,8 +202,8 @@
                 @else
                     <div class="mt-6">
                         <label class="font-semibold text-lg">Keterangan Pembatalan Publikasi :</label>
-                        <textarea name="keterangan" rows="6" readonly
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">{{ $publikasi->keterangan }}</textarea>
+                        <textarea name="keterangan" rows="6" disabled
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-red-700 bg-white">{{ $publikasi->keterangan }}</textarea>
                     </div>
                 @endif
 

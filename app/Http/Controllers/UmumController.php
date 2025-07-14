@@ -80,6 +80,11 @@ class UmumController extends Controller
 
                     $emailController = new EmailController();
                     $emailController->kodeProsesPublikasi('Promosi', $promosi->judul, $promosi->id_proses_permohonan ?? $key);
+                    $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
+
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
                 } else {
                     $data = [
                         'status' => 'error',
@@ -121,6 +126,11 @@ class UmumController extends Controller
 
                     $emailController = new EmailController();
                     $emailController->kodeProsesPublikasi('Liputan', $liputan->judul, $liputan->id_proses_permohonan ?? $key);
+                    $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
+
+                    if ($response->getStatusCode() !== 200) {
+                        return $response;
+                    }
                 } else {
                     $data = [
                         'status' => 'error',

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Mail\StatusPublikasiMail;
+use App\Models\Pengguna;
 
 class EmailController extends Controller
 {
@@ -69,6 +70,10 @@ class EmailController extends Controller
 
             if ($publikasi) {
                 Mail::to($publikasi->email)->send(new StatusPublikasiMail($publikasi));
+                $staffEmails = Pengguna::where('role', 'staff')->pluck('email');
+                foreach ($staffEmails as $email) {
+                    Mail::to($email)->send(new StatusPublikasiMail($publikasi));
+                }
                 return response()->json(['message' => 'Status publikasi berhasil ' . $publikasi->status . '!']);
             } else {
                 return response()->json(['success' => false, 'message' => 'Data tidak ditemukan atau tidak valid.'], 404);

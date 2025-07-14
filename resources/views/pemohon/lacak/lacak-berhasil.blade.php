@@ -5,13 +5,13 @@
 @section('content')
     <main class="container mx-auto px-4 py-16">
         <h1 class="text-4xl font-bold text-center text-[#1E285F] mb-10 leading-tight">
-            Lacak Status<br>Publikasi Kegiatan
+            Lacak Status Publikasi
         </h1>
         <div class="max-w-5xl mx-auto bg-white rounded-lg shadow-lg">
 
-            {{-- Form Input Kode Kegiatan --}}
+            {{-- Form Input Kode Publikasi --}}
             <section class="bg-[#C4C4C4] rounded-t-lg pt-6">
-                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Lacak Publikasi</h2>
+                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Publikasi</h2>
                 <form class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 mx-2" method="GET"
                     action="{{ route('pemohon.lacak') }}">
                     <input id="kode_proses" name="kode_proses" type="text" placeholder="Masukkan kode"
@@ -23,7 +23,7 @@
                     </button>
                 </form>
 
-                {{-- Tabel Informasi Kegiatan --}}
+                {{-- Tabel Informasi Publikasi --}}
                 <div class="overflow-x-auto">
                     <table class="w-full bg-[#0B4D1E] text-sm text-center">
                         <thead>
@@ -151,15 +151,26 @@
                 </div>
 
                 {{-- Tombol Batalkan --}}
-                @if ($isPemohon && $publikasi->status != 'Batal')
-                    <div class="mt-8 text-right">
-                        <button type="button"
-                            class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-full px-6 py-2 shadow"
-                            id="btn-batalkan" data-id_proses_permohonan="{{ $publikasi->id_proses_permohonan }}">
-                            Batalkan Publikasi
-                        </button>
-                    </div>
-                @endif
+                @if ($isPemohon)
+    @php
+        $isDisabled = in_array($publikasi->status, ['Diproses', 'Selesai']);
+    @endphp
+
+    <div class="mt-8 text-right">
+        <button type="button"
+            class="text-sm font-semibold rounded-full px-6 py-2 shadow transition
+                {{ $isDisabled
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'bg-red-600 hover:bg-red-700 text-white' }}"
+            id="btn-batalkan"
+            {{ $isDisabled ? 'disabled' : '' }}
+            title="{{ $isDisabled ? 'Permohonan tidak dapat dibatalkan karena sudah diproses/selesai' : '' }}"
+            data-id_proses_permohonan="{{ $publikasi->id_proses_permohonan }}">
+            Batalkan Publikasi
+        </button>
+    </div>
+@endif
+
             </section>
         </div>
     </main>
@@ -175,10 +186,13 @@
                     Swal.fire({
                         title: 'Batalkan Permohonan?',
                         html: `
-                        <p>Anda membatalkan permohonan publikasi ini.</p>
-                        <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p>
-                        <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-5" placeholder="Tuliskan alasan pembatalan" required></textarea>
-                    `,
+                            <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p><br>
+                            <p>Mohon jelaskan alasan Anda agar kami dapat memahami keputusan tersebut.</p>
+                            <p class="font-semibold text-left text-lg mt-4">
+                                Alasan Pembatalan <span class="text-red-500">*</span> :
+                            </p>
+                            <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-2" placeholder="Contoh: Jadwal Publikasi berubah, publikasi tidak diperlukan lagi" required></textarea>
+                        `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',

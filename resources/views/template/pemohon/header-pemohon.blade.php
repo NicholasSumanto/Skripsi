@@ -4,14 +4,14 @@
         <!-- Logo -->
         <div class="flex items-center space-x-2">
             <a href="{{ route('umum.home') }}">
-                <img src="{{ asset('img/Duta_Wacana.png') }}" alt="UKDW Logo" class="h-12 mt-2 mb-3">
+                <img src="{{ asset('img/Logo.png') }}" alt="UKDW Logo" class="h-12 mt-2 mb-3">
             </a>
         </div>
 
         <!-- Desktop Menu -->
         <nav class="hidden md:flex items-center space-x-6">
             <a href="{{ route('pemohon.home') }}"
-                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.home') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">PUBLIKASI</a>
+                class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.home') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">PENGAJUAN</a>
             <a href="{{ route('pemohon.agenda') }}"
                 class="text-white hover:text-gray-200 {{ request()->routeIs('pemohon.agenda') ? 'font-bold underline underline-offset-4 decoration-2 decoration-yellow-400' : '' }}">AGENDA</a>
             <a href="{{ route('pemohon.lacak') }}"

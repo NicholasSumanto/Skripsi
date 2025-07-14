@@ -4,7 +4,7 @@
         <!-- Logo -->
         <div class="flex items-center space-x-2">
             <a href="{{ route('umum.home') }}">
-                <img src="{{ asset('img/Duta_Wacana.png') }}" alt="UKDW Logo" class="h-12 mt-2 mb-3">
+                <img src="{{ asset('img/Logo.png') }}" alt="UKDW Logo" class="h-12 mt-2 mb-3">
             </a>
         </div>
 

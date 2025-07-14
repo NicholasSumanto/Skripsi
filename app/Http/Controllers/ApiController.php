@@ -38,7 +38,7 @@ class ApiController extends Controller
             return response()->json(['error' => 'Pengguna tidak terautentikasi.'], 401);
         }
 
-        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi (10)
+        // Cek apakah pengguna masih memiliki kuota permohonan publikasi liputan tidak terverifikasi
         $kuotaLiputanTidakTerverifikasi = Liputan::where('google_id', Auth::user()->google_id)
             ->where('status_verifikasi', 'Tidak Terverifikasi')
             ->count();
@@ -88,7 +88,7 @@ class ApiController extends Controller
                 'judul' => 'required|string|max:255',
                 'id_sub_unit' => 'required|integer|exists:sub_unit,id_sub_unit',
                 'nama_pemohon' => 'required|string|max:255',
-                'nomor_handphone' => 'required|string|max:255',
+                'nomor_handphone' => ['required', 'regex:/^\+628[1-9][0-9]{7,12}$/'],
                 'tempat' => 'required|string',
                 'tanggal' => 'required|date',
                 'waktu' => 'required|date_format:H:i',
@@ -96,7 +96,7 @@ class ApiController extends Controller
                 'file_liputan' => 'required|array',
                 'file_liputan.*' => 'file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar,7z|max:15360',
                 'output' => 'required|array',
-                'output.*' => 'required|string|in:artikel,foto,video,koran',
+                'output.*' => 'required|string|in:media internal,foto,video,media external',
                 'catatan' => 'nullable|string',
             ],
             [
@@ -106,7 +106,7 @@ class ApiController extends Controller
                 'nama_pemohon.required' => 'Nama pemohon wajib diisi.',
                 'nama_pemohon.string' => 'Nama pemohon harus berupa teks.',
                 'nomor_handphone.required' => 'Nomor handphone wajib diisi.',
-                'nomor_handphone.string' => 'Nomor handphone harus berupa teks.',
+                'nomor_handphone.string' => 'Nomor handphone harus berupa angka.',
                 'tempat.string' => 'Tempat harus berupa teks.',
                 'tanggal.date' => 'Tanggal tidak valid.',
                 'waktu.date_format' => 'Waktu harus dalam format Y-m-d H:i:s.',
@@ -120,7 +120,7 @@ class ApiController extends Controller
                 'output.array' => 'Output harus berupa array.',
                 'output.*.required' => 'Setiap output wajib diisi.',
                 'output.*.string' => 'Setiap output harus berupa teks.',
-                'output.*.in' => 'Setiap output harus berupa artikel, foto, video atau koran.',
+                'output.*.in' => 'Setiap output harus berupa media internal, foto, video atau media external.',
                 'catatan.string' => 'Catatan harus berupa teks.',
             ],
         );
@@ -234,7 +234,7 @@ class ApiController extends Controller
                 'judul' => 'required|string|max:255',
                 'id_sub_unit' => 'required|integer|exists:sub_unit,id_sub_unit',
                 'nama_pemohon' => 'required|string|max:255',
-                'nomor_handphone' => 'required|string|max:255',
+                'nomor_handphone' => ['required', 'regex:/^\+628[1-9][0-9]{7,12}$/'],
                 'tempat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'file_liputan' => 'nullable|array',
@@ -253,7 +253,7 @@ class ApiController extends Controller
                 'nama_pemohon.required' => 'Nama pemohon wajib diisi.',
                 'nama_pemohon.string' => 'Nama pemohon harus berupa teks.',
                 'nomor_handphone.required' => 'Nomor handphone wajib diisi.',
-                'nomor_handphone.string' => 'Nomor handphone harus berupa teks.',
+                'nomor_handphone.string' => 'Nomor handphone harus berupa angka.',
                 'tempat.string' => 'Tempat harus berupa teks.',
                 'tanggal.date' => 'Tanggal tidak valid.',
                 'file_stories.mimes' => 'File liputan harus berupa file dengan format jpg, jpeg, png, atau mp4.',
@@ -372,62 +372,65 @@ class ApiController extends Controller
     }
 
     public function getJadwalPublikasi(Request $request)
-    {
-        $validatedData = $request->validate(
-            [
-                'tanggal' => 'required|date',
-            ],
-            [
-                'tanggal.required' => 'Tanggal wajib diisi.',
-                'tanggal.date' => 'Tanggal tidak valid.',
-            ],
-        );
+{
+    $validatedData = $request->validate(
+        [
+            'tanggal' => 'required|date',
+        ],
+        [
+            'tanggal.required' => 'Tanggal wajib diisi.',
+            'tanggal.date' => 'Tanggal tidak valid.',
+        ],
+    );
 
-        $inputDate = Carbon::parse($validatedData['tanggal'])->startOfDay();
+    $inputDate = Carbon::parse($validatedData['tanggal'])->startOfDay();
 
-        $promosi = DB::table('promosi')
-            ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-            ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
-            ->select('promosi.judul as nama', 'promosi.tempat', 'promosi.tanggal', 'proses_permohonan.status')
-            ->get()
-            ->filter(function ($item) use ($inputDate) {
-                $eventDate = Carbon::parse($item->tanggal);
-                return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
-            })
-            ->map(function ($item) use ($inputDate) {
-                return [
-                    'nama' => $item->nama,
-                    'tempat' => $item->tempat,
-                    'jenis' => 'Promosi',
-                    'status' => $item->status,
-                    'hari_h' => Carbon::parse($item->tanggal)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
-                ];
-            });
+    $promosi = DB::table('promosi')
+        ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+        ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
+        ->select('promosi.judul as nama', 'promosi.tempat', 'promosi.tanggal', 'proses_permohonan.status')
+        ->get()
+        ->filter(function ($item) use ($inputDate) {
+            $eventDate = Carbon::parse($item->tanggal);
+            return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
+        })
+        ->map(function ($item) use ($inputDate) {
+            return [
+                'nama' => $item->nama,
+                'tempat' => $item->tempat,
+                'tanggal' => Carbon::parse($item->tanggal)->format('d/m/Y'),
+                'jenis' => 'Promosi',
+                'status' => $item->status,
+                'hari_h' => Carbon::parse($item->tanggal)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
+            ];
+        });
 
-        $liputan = DB::table('liputan')
-            ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
-            ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
-            ->select('liputan.judul as nama', 'liputan.tempat', 'liputan.waktu', 'proses_permohonan.status')
-            ->get()
-            ->filter(function ($item) use ($inputDate) {
-                $eventDate = Carbon::parse($item->waktu);
-                return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
-            })
-            ->map(function ($item) use ($inputDate) {
-                return [
-                    'nama' => $item->nama,
-                    'tempat' => $item->tempat,
-                    'waktu' => $item->waktu,
-                    'jenis' => 'Liputan',
-                    'status' => $item->status,
-                    'hari_h' => Carbon::parse($item->waktu)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
-                ];
-            });
+    $liputan = DB::table('liputan')
+        ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+        ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
+        ->select('liputan.judul as nama', 'liputan.tempat', 'liputan.waktu', 'proses_permohonan.status')
+        ->get()
+        ->filter(function ($item) use ($inputDate) {
+            $eventDate = Carbon::parse($item->waktu);
+            return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
+        })
+        ->map(function ($item) use ($inputDate) {
+            return [
+                'nama' => $item->nama,
+                'tempat' => $item->tempat,
+                'tanggal' => Carbon::parse($item->waktu)->format('d/m/Y'),
+                'jam' => Carbon::parse($item->waktu)->format('H:i'),
+                'jenis' => 'Liputan',
+                'status' => $item->status,
+                'hari_h' => Carbon::parse($item->waktu)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
+            ];
+        });
 
-        $data = $promosi->merge($liputan)->values();
+    $data = $promosi->merge($liputan)->values();
 
-        return response()->json($data);
-    }
+    return response()->json($data);
+}
+
 
     // Ambil data unit dan sub-unit untuk dropdown
     public function getSubUnits(Request $request)

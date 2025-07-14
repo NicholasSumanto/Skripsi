@@ -95,20 +95,24 @@
         }
 
         if (liputan && liputan_email) {
-            alert.fire({
+            Swal.fire({
                 icon: 'success',
                 title: liputan,
                 text: liputan_email,
+                showCloseButton: true,
+                showConfirmButton: false,
             });
             localStorage.removeItem('liputan_message');
             localStorage.removeItem('liputan_email_message');
         }
 
         if (promosi && promosi_email) {
-            alert.fire({
+            Swal.fire({
                 icon: 'success',
                 title: promosi,
                 text: promosi_email,
+                showCloseButton: true,
+                showConfirmButton: false,
             });
             localStorage.removeItem('promosi_message');
             localStorage.removeItem('promosi_email_message');

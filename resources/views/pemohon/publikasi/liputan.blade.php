@@ -25,11 +25,14 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Nomor Handphone <span class="text-red-500">*</span> :</label>
-                        <input type="text" name="nomor_handphone" placeholder="Masukkan nomor handphone"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
-                            id="nomor_handphone">
+                        <label class="font-semibold text-lg">
+                            Nomor Handphone <span class="text-red-500">*</span> :
+                        </label>
+                        <input type="text" name="nomor_handphone" id="nomor_handphone"
+                            class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
+                            placeholder="+6281234567890" inputmode="numeric" maxlength="16">
                     </div>
+
 
                     <div>
                         <label class="font-semibold text-lg">Email :</label>
@@ -45,7 +48,8 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tempat Pelaksanaan <span class="text-red-500">*</span> :</label>
+                        <label class="font-semibold text-lg">Tempat Pelaksanaan <span class="text-red-500">*</span>
+                            :</label>
                         <input type="text" name="tempat" placeholder="Masukkan tempat pelaksanaan"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
                     </div>
@@ -61,6 +65,14 @@
                         <label class="font-semibold text-lg">Waktu <span class="text-red-500">*</span> :</label>
                         <input type="time" name="waktu" placeholder="Pilih waktu acara"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black">
+                    </div>
+
+                    <div>
+                        <label class="font-semibold text-lg">Rundown dan TOR <span class="text-red-500">*</span> :</label>
+                        <input type="file" name="file_liputan[]" multiple
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none bg-white text-black"
+                            accept=".pdf">
+                        <small class="text-white">Format file berupa .pdf (Max 15MB).</small>
                     </div>
 
                     <div>
@@ -81,18 +93,11 @@
                             <option value="">Pilih Sub Unit</option>
                         </select>
                     </div>
-
-                    <div>
-                        <label class="font-semibold text-lg">Rundown dan TOR <span class="text-red-500">*</span> :</label>
-                        <input type="file" name="file_liputan[]" multiple
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none bg-white text-black"
-                            accept=".pdf">
-                        <small class="text-white">Format file berupa .pdf (Max 2048 MB).</small>
-                    </div>
                 </div>
 
                 <div>
-                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media?<span class="text-red-500">*</span></label>
+                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media?<span
+                            class="text-red-500">*</span></label>
                     <div class="flex items-center space-x-6 mt-2 text-[#FFCC29]">
                         <label class="flex items-center"><input type="radio" name="wartawan" value="Ya"
                                 class="mr-2"> Ya</label>
@@ -107,16 +112,16 @@
 
                     <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[#FFCC29]">
                         <label class="flex items-center">
-                            <input type="checkbox" name="output[]" value="artikel" class="mr-2"> Artikel
+                            <input type="checkbox" name="output[]" value="media internal" class="mr-2"> Media Internal
                         </label>
                         <label class="flex items-center">
                             <input type="checkbox" name="output[]" value="foto" class="mr-2"> Foto
                         </label>
                         <label class="flex items-center">
-                            <input type="checkbox" name="output[]" value="video" class="mr-2"> Video
+                            <input type="checkbox" name="output[]" value="media external" class="mr-2"> Media External
                         </label>
                         <label class="flex items-center">
-                            <input type="checkbox" name="output[]" value="koran" class="mr-2"> Koran
+                            <input type="checkbox" name="output[]" value="video" class="mr-2"> Video
                         </label>
                     </div>
                 </div>
@@ -353,7 +358,7 @@
 
                         Swal.fire({
                             icon: 'info',
-                            title: 'Sedang mengirim...',
+                            title: 'Permohonan Anda sedang diproses...',
                             text: 'Mohon tunggu sebentar',
                             allowOutsideClick: false,
                             didOpen: () => {
@@ -394,14 +399,38 @@
     </script>
 
     <script>
-        document.getElementById('nomor_handphone').addEventListener('input', function() {
+        const input = document.getElementById('nomor_handphone');
+
+        input.addEventListener('input', function() {
             let value = this.value;
 
+            // Jika dimulai dengan 0, ubah ke +62
             if (value.startsWith('0')) {
-                this.value = '+62' + value.substring(2);
-            } else if (value.startsWith('0') || value.startsWith('+62')) {
-                this.value = value.replace(/^0/, '+62');
+                value = '+62' + value.substring(1);
+            }
+
+            // Jika tidak dimulai dengan +62, tambahkan +62
+            if (!value.startsWith('+62')) {
+                value = '+62';
+            }
+
+            // Ambil hanya angka setelah +62 dan hapus karakter non-digit
+            let numberPart = value.substring(3).replace(/[^0-9]/g, '');
+
+            // Maksimal 13 digit setelah +62
+            numberPart = numberPart.substring(0, 13);
+
+            // Gabungkan ulang
+            this.value = '+62' + numberPart;
+        });
+
+        // Cegah penghapusan awalan +62
+        input.addEventListener('keydown', function(e) {
+            if (this.selectionStart <= 3 && ['Backspace', 'Delete'].includes(e.key)) {
+                e.preventDefault();
             }
         });
     </script>
+
+
 @endsection

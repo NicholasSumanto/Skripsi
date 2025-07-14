@@ -45,7 +45,7 @@
                 </div>
 
                 <p class="text-sm text-gray-600 text-center">
-                    Untuk permohonan liputan atau promosi event di UKDW, silahkan login menggunakan akun Gmail dengan domain
+                    Untuk permohonan liputan atau promosi acara di UKDW, silahkan login menggunakan akun Gmail dengan domain
                     <span class="font-semibold">ukdw.ac.id</span>.
                 </p>
             </div>

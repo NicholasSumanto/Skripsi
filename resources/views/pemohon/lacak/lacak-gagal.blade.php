@@ -5,13 +5,13 @@
 @section('content')
     <main class="container mx-auto px-4 py-16">
         <h1 class="text-4xl font-bold text-center text-[#1E285F] mb-10 leading-tight">
-            Lacak Status<br>Publikasi Kegiatan
+            Lacak Status Publikasi
         </h1>
         <div class="max-w-5xl mx-auto bg-white rounded-lg">
 
-            {{-- Form Input Kode Kegiatan --}}
+            {{-- Form Input Kode Publikasi--}}
             <section class="bg-[#C4C4C4] rounded-lg pt-6 pb-4 shadow-lg">
-                <h2 class="text-xl font-semibold text-black text-center mb-4 px-4">Kode Lacak Permintaan Publikasi</h2>
+                <h2 class="text-xl font-semibold text-black text-center mb-4 px-4">Kode Publikasi</h2>
                 <form class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 mx-2" method="GET"
                     action="{{ route('pemohon.lacak') }}">
                     <input id="kode_proses" name="kode_proses" type="text" placeholder="Masukkan kode"
@@ -29,7 +29,7 @@
                 <div class="flex items-center justify-center py-6 bg-white text-center px-4">
                     <div class="max-w-md border-4 border-solid border-red-500 p-4 rounded-lg shadow-lg">
                         <h1 class="text-xl font-semibold text-black mb-6">
-                            Kode Lacak Permintaan Publikasi Tidak Dapat Ditemukan
+                            Kode Publikasi Tidak Dapat Ditemukan
                         </h1>
 
                         <div class="flex justify-center mb-6">
@@ -43,10 +43,10 @@
                         </div>
 
                         <p class="text-black text-base mb-2">
-                            Mohon maaf, kode lacak yang Anda masukan tidak dapat ditemukan atau tidak valid.
+                            Mohon maaf, kode publikasi yang Anda masukan tidak dapat ditemukan atau tidak valid.
                         </p>
                         <p class="text-black text-base">
-                            Silakan coba cek kembali kode lacak atau hubungi staff Biro 4 jika masalah terus berlanjut.
+                            Silakan coba cek kembali kode publikasi atau hubungi staff Biro 4 jika masalah terus berlanjut.
                         </p>
                     </div>
                 </div>

@@ -5,13 +5,13 @@
 @section('content')
     <main class="container mx-auto px-4 py-16">
         <h1 class="text-4xl font-bold text-center text-[#1E285F] mb-10 leading-tight">
-            Lacak Status<br>Publikasi Kegiatan
+            Lacak Status Publikasi
         </h1>
         <div class="max-w-5xl mx-auto bg-white rounded-lg shadow-lg">
 
-            {{-- Form Input Kode Kegiatan --}}
+            {{-- Form Input Kode Publikasi --}}
             <section class="bg-[#C4C4C4] rounded-lg pt-6 pb-4">
-                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Lacak Publikasi</h2>
+                <h2 class="text-xl font-semibold text-black text-center mb-4">Kode Publikasi</h2>
                 <form class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 mx-2" method="GET"
                     action="{{ route('pemohon.lacak') }}">
                     <input id="kode_proses" name="kode_proses" type="text" placeholder="Masukkan kode"

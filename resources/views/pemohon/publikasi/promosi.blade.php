@@ -17,7 +17,7 @@
     <main class="flex-grow bg-gray-50 py-16 px-6">
         <h1 class="text-5xl font-bold mb-12 text-center" style="color: #1E285F;">Permohonan Publikasi<br>Promosi Acara</h1>
 
-        <div class="max-w-4xl mx-auto bg-gray-100 text-[#006034] rounded-xl shadow-xl p-10">
+        <div class="max-w-4xl mx-auto bg-gray-300 text-[#006034] rounded-xl shadow-xl p-10">
             <form id="form-promosi" class="space-y-6" enctype="multipart/form-data">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -27,10 +27,12 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Nomor Handphone <span class="text-red-500">*</span> :</label>
-                        <input type="text" name="nomor_handphone" placeholder="+62"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white"
-                            id="nomor_handphone">
+                        <label class="font-semibold text-lg">
+                            Nomor Handphone <span class="text-red-500">*</span> :
+                        </label>
+                        <input type="text" name="nomor_handphone" id="nomor_handphone"
+                            class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
+                            placeholder="+6281234567890" inputmode="numeric" maxlength="16">
                     </div>
 
                     <div>
@@ -88,19 +90,21 @@
                             <label class="block mb-1">Instagram Stories</label>
                             <input type="file" name="file_stories[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                            <small class="text-blue-500 block">Format : .jpg, .jpeg, .png, .mp4 <br>Bisa lebih dari 1 file <b>Max : 15MB</b></small>
+                            <small class="text-blue-500 block">Format : .jpg, .jpeg, .png, .mp4 <br>Bisa lebih dari 1 file
+                                <b>Max : 15MB</b></small>
                         </div>
                         <div>
                             <label class="block mb-1">Instagram Post</label>
                             <input type="file" name="file_poster[]" multiple accept=".jpg,.jpeg,.png,.mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                            <small class="text-blue-500 block">Format : .jpg, .jpeg, .png, .mp4 <br>Bisa lebih dari 1 file <b>Max : 15MB</b> </small>
+                            <small class="text-blue-500 block">Format : .jpg, .jpeg, .png, .mp4 <br>Bisa lebih dari 1 file
+                                <b>Max : 15MB</b> </small>
                         </div>
                         <div>
                             <label class="block mb-1">Videotron</label>
                             <input type="file" name="file_video[]" multiple accept=".mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                            <small class="text-blue-500 block">Format : .mp4 <br>Bisa lebih dari 1 file <b>Max : 15MB</b></small>
+                            <small class="text-blue-500 block">Format : .mp4 <br>Bisa lebih dari 1 file <b>Max :15MB</b><br>Durasi maksimal 15 detik*</small>
                         </div>
                     </div>
                 </div>
@@ -364,14 +368,37 @@
         });
     </script>
 
+
     <script>
-        document.getElementById('nomor_handphone').addEventListener('input', function() {
+        const input = document.getElementById('nomor_handphone');
+
+        input.addEventListener('input', function() {
             let value = this.value;
 
+            // Jika dimulai dengan 0, ubah ke +62
             if (value.startsWith('0')) {
-                this.value = '+62' + value.substring(2);
-            } else if (value.startsWith('0') || value.startsWith('+62')) {
-                this.value = value.replace(/^0/, '+62');
+                value = '+62' + value.substring(1);
+            }
+
+            // Jika tidak dimulai dengan +62, tambahkan +62
+            if (!value.startsWith('+62')) {
+                value = '+62';
+            }
+
+            // Ambil hanya angka setelah +62 dan hapus karakter non-digit
+            let numberPart = value.substring(3).replace(/[^0-9]/g, '');
+
+            // Maksimal 13 digit setelah +62
+            numberPart = numberPart.substring(0, 13);
+
+            // Gabungkan ulang
+            this.value = '+62' + numberPart;
+        });
+
+        // Cegah penghapusan awalan +62
+        input.addEventListener('keydown', function(e) {
+            if (this.selectionStart <= 3 && ['Backspace', 'Delete'].includes(e.key)) {
+                e.preventDefault();
             }
         });
     </script>

@@ -169,14 +169,14 @@ class StaffController extends Controller
                 'icon' => 'user',
             ],
             [
-                'title' => 'Permohonan Promosi diterima',
+                'title' => 'Permohonan Promosi (Dalam Proses)',
                 'iconColor' => 'blue',
                 'count' => $promosiCount,
                 'stat' => $promosiStat,
                 'icon' => 'megaphone',
             ],
             [
-                'title' => 'Permohonan Liputan diterima',
+                'title' => 'Permohonan Liputan (Dalam Proses)',
                 'iconColor' => 'green',
                 'count' => $liputanCount,
                 'stat' => $liputanStat,
@@ -286,7 +286,24 @@ class StaffController extends Controller
             $merged = $promosi->merge($liputan);
         }
 
-        $merged = $sort === 'asc' ? $merged->sortBy('tanggal') : $merged->sortByDesc('tanggal');
+        switch ($sort) {
+            case 'asc':
+                $merged = $merged->sortBy('tanggal'); // tanggal pelaksanaan
+                break;
+            case 'desc':
+                $merged = $merged->sortByDesc('tanggal'); // tanggal pelaksanaan
+                break;
+            case 'baru_diajukan':
+                $merged = $merged->sortByDesc('created_at'); // waktu permohonan masuk
+                break;
+            case 'lama_diajukan':
+                $merged = $merged->sortBy('created_at'); // waktu permohonan masuk
+                break;
+            default:
+                $merged = $merged->sortByDesc('tanggal'); // default fallback
+                break;
+        }
+
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $perPage = 4;

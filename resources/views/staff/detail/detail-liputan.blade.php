@@ -23,57 +23,45 @@
                     <div>
                         <label class="font-semibold text-lg">Nama Pemohon * :</label>
                         <input type="text" name="nama_pemohon" value="{{ $publikasi->nama_pemohon }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Nomor Handphone * :</label>
                         <input type="text" name="nomor_handphone" value="{{ $publikasi->nomor_handphone }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Email :</label>
-                        <input type="email" name="email" value="{{ $publikasi->email }}" readonly
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white">
+                        <input type="email" name="email" value="{{ $publikasi->email }}" disabled
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white">
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Judul * :</label>
                         <input type="text" name="judul" value="{{ $publikasi->judul }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Tempat Pelaksanaan * :</label>
                         <input type="text" name="tempat" value="{{ $publikasi->tempat }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Tanggal Acara * :</label>
                         <input type="date" name="tanggal"
                             value="{{ \Carbon\Carbon::parse($publikasi->tanggal)->format('Y-m-d') }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
                         <label class="font-semibold text-lg">Waktu * :</label>
                         <input type="time" name="waktu"
                             value="{{ \Carbon\Carbon::parse($publikasi->waktu)->format('H:i') }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
-                    </div>
-
-                    <div>
-                        <label class="font-semibold text-lg">Unit * :</label>
-                        <input type="text" name="unit" value="{{ $publikasi->nama_unit }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
-                    </div>
-
-                    <div>
-                        <label class="font-semibold text-lg">Sub Unit * :</label>
-                        <input type="text" name="sub_unit" value="{{ $publikasi->nama_sub_unit }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" readonly>
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
@@ -93,6 +81,18 @@
                                 <p class="text-white">Tidak ada file.</p>
                             @endif
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="font-semibold text-lg">Unit * :</label>
+                        <input type="text" name="unit" value="{{ $publikasi->nama_unit }}"
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
+                    </div>
+
+                    <div>
+                        <label class="font-semibold text-lg">Sub Unit * :</label>
+                        <input type="text" name="sub_unit" value="{{ $publikasi->nama_sub_unit }}"
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
                 </div>
 
@@ -132,13 +132,13 @@
 
                 <div>
                     <label class="font-semibold text-lg">Catatan :</label>
-                    <textarea name="catatan" class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black" rows="6"
-                        readonly>{{ $publikasi->catatan }}</textarea>
+                    <textarea name="catatan" class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" rows="6"
+                        disabled>{{ $publikasi->catatan }}</textarea>
                 </div>
 
                 @if ($publikasi->status === 'Diproses')
                     <div class="space-y-2">
-                        <label class="font-semibold text-lg text-yellow-400">Link Output * :</label>
+                        <label class="font-semibold text-lg text-yellow-400">Link Output<span class="text-red-500">*</span> :</label>
                         <div class="control-form space-y-2">
                             <div class="entry flex overflow-hidden rounded-lg border border-gray-300">
                                 <input type="text" name="link_output[]" class="flex-1 p-3 outline-none text-black"

@@ -3,11 +3,11 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
             <!-- Logo Section -->
             <div>
-                <img src="{{ asset('img/Duta_Wacana.png') }}" alt="UKDW Logo" class="h-10 mb-4">
+                <img src="{{ asset('img/Logo.png') }}" alt="UKDW Logo" class="h-10 mb-4">
                 <p class="text-sm">Jl. dr. Wahidin Sudirohusodo no. 5-25</p>
                 <p class="text-sm">Yogyakarta, Indonesia - 55224</p>
                 <p class="text-sm">Telp: +62274563929, Fax: +62274513235</p>
-                <p class="text-sm">email: humas@ukdw.ac.id</p>
+                <p class="text-sm">email: humas@staff.ukdw.ac.id</p>
             </div>
 
             <!-- Product Section -->

@@ -361,7 +361,7 @@
                     }).join('');
 
                     Swal.fire({
-                        title: '📎 Daftar Tautan',
+                        title: 'Daftar Tautan',
                         html: `
                             <ul class="text-left text-base text-gray-700 list-disc list-inside space-y-2">
                                 ${htmlList}

@@ -5,9 +5,10 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Header\IdentificationHeader;
+
 
 class StatusPublikasiMail extends Mailable
 {
@@ -27,22 +28,21 @@ class StatusPublikasiMail extends Mailable
         $this->urlLacak = route('umum.lacak', ['kode_proses' => $publikasi->id_proses_permohonan]);
     }
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
+    public function build()
     {
-        return new Envelope(subject: 'Progres Permohonan Publikasi');
-    }
+        return $this->view('email.proses-permohonan')
+            ->subject('Progres Permohonan Publikasi - ' . $this->publikasi->judul)
+            ->withSymfonyMessage(function (Email $message) {
+                $id = strtolower($this->publikasi->id_proses_permohonan);
+                // Jika kosong atau tidak valid, beri prefix huruf
+                $mailDomain = env('MAIL_DOMAIN_ID', 'staff.ukdw.ac.id');
+                $messageId = "{$id}@{$mailDomain}";
+                $message->getHeaders()->add(new IdentificationHeader('Message-ID', $messageId));
 
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(view: 'email.proses-permohonan');
+                $message->getHeaders()->addTextHeader('In-Reply-To', "<{$messageId}>");
+                $message->getHeaders()->addTextHeader('References', "<{$messageId}>");
+            });
     }
-
     /**
      * Get the attachments for the message.
      *
