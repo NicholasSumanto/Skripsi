@@ -422,42 +422,36 @@ class ApiController extends Controller
 
         $promosi = DB::table('promosi')
             ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereDate('promosi.tanggal', $inputDate)
             ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
             ->select('promosi.judul as nama', 'promosi.tempat', 'promosi.tanggal', 'proses_permohonan.status')
             ->get()
-            ->filter(function ($item) use ($inputDate) {
-                $eventDate = Carbon::parse($item->tanggal);
-                return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
-            })
             ->map(function ($item) use ($inputDate) {
                 return [
                     'nama' => $item->nama,
                     'tempat' => $item->tempat,
-                    'tanggal' => Carbon::parse($item->tanggal)->format('d/m/Y'),
+                    'tanggal' => Carbon::parse($item->tanggal)->format('d-m-Y'), 
                     'jenis' => 'Promosi',
                     'status' => $item->status,
-                    'hari_h' => Carbon::parse($item->tanggal)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
+                    'hari_h' => 'Hari Pelaksanaan: <br>',
                 ];
             });
 
         $liputan = DB::table('liputan')
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+            ->whereDate('liputan.waktu', $inputDate)
             ->whereIn('proses_permohonan.status', ['Diterima', 'Diproses'])
             ->select('liputan.judul as nama', 'liputan.tempat', 'liputan.waktu', 'proses_permohonan.status')
             ->get()
-            ->filter(function ($item) use ($inputDate) {
-                $eventDate = Carbon::parse($item->waktu);
-                return $eventDate->greaterThanOrEqualTo($inputDate) || $item->status === 'Diproses';
-            })
             ->map(function ($item) use ($inputDate) {
                 return [
                     'nama' => $item->nama,
                     'tempat' => $item->tempat,
-                    'tanggal' => Carbon::parse($item->waktu)->format('d/m/Y'),
+                    'tanggal' => Carbon::parse($item->waktu)->format('d-m-Y'),
                     'jam' => Carbon::parse($item->waktu)->format('H:i'),
                     'jenis' => 'Liputan',
                     'status' => $item->status,
-                    'hari_h' => Carbon::parse($item->waktu)->isSameDay($inputDate) ? 'Hari Pelaksanaan: <br>' : '',
+                    'hari_h' => 'Hari Pelaksanaan: <br>',
                 ];
             });
 
@@ -465,6 +459,7 @@ class ApiController extends Controller
 
         return response()->json($data);
     }
+
 
 
     // Ambil data unit dan sub-unit untuk dropdown
@@ -884,13 +879,14 @@ class ApiController extends Controller
             ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
             ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereNotIn('proses_permohonan.status', ['Selesai', 'Batal'])
-            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul as nama', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan', 'promosi.created_at as tanggal_dibuat')
+            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan', 'promosi.created_at as tanggal_dibuat')
             ->get()
             ->map(
                 fn($item) => [
                     'id' => $item->id,
                     'tanggal' => $item->tanggal,
-                    'nama' => $item->nama,
+                    'judul' => $item->judul,
+                    'namaPemohon' => $item->nama_pemohon,
                     'status' => $item->status,
                     'unit' => $item->unit,
                     'subUnit' => $item->subUnit,
@@ -906,13 +902,14 @@ class ApiController extends Controller
             ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereNotIn('proses_permohonan.status', ['Selesai', 'Batal'])
-            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul as nama', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan', 'liputan.created_at as tanggal_dibuat')
+            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan', 'liputan.created_at as tanggal_dibuat')
             ->get()
             ->map(
                 fn($item) => [
                     'id' => $item->id,
                     'tanggal' => $item->tanggal,
-                    'nama' => $item->nama,
+                    'judul' => $item->judul,
+                    'namaPemohon' => $item->nama_pemohon,
                     'status' => $item->status,
                     'unit' => $item->unit,
                     'subUnit' => $item->subUnit,
@@ -942,13 +939,13 @@ class ApiController extends Controller
             ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
             ->when($proses, fn($q) => $q->where('proses_permohonan.status', $proses))
-            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul as nama', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan')
+            ->select('promosi.id_proses_permohonan as id', 'promosi.tanggal', 'promosi.judul', 'promosi.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'promosi.id_proses_permohonan', 'promosi.tautan_promosi as tautan')
             ->get()
             ->map(
                 fn($item) => [
                     'id' => $item->id,
                     'tanggal' => $item->tanggal,
-                    'nama' => $item->nama,
+                    'judul' => $item->judul,
                     'status' => $item->status,
                     'unit' => $item->unit,
                     'subUnit' => $item->subUnit,
@@ -964,13 +961,13 @@ class ApiController extends Controller
             ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
             ->whereIn('proses_permohonan.status', ['Selesai', 'Batal'])
             ->when($proses, fn($q) => $q->where('proses_permohonan.status', $proses))
-            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul as nama', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan')
+            ->select('liputan.id_proses_permohonan as id', 'liputan.tanggal', 'liputan.judul', 'liputan.nama_pemohon', 'proses_permohonan.status', 'unit.nama_unit as unit', 'sub_unit.nama_sub_unit as subUnit', 'liputan.id_proses_permohonan', 'liputan.tautan_liputan as tautan')
             ->get()
             ->map(
                 fn($item) => [
                     'id' => $item->id,
                     'tanggal' => $item->tanggal,
-                    'nama' => $item->nama,
+                    'judul' => $item->judul,
                     'status' => $item->status,
                     'unit' => $item->unit,
                     'subUnit' => $item->subUnit,

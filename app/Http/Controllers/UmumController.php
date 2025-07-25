@@ -44,14 +44,13 @@ class UmumController extends Controller
     {
         // Cari apakah publikasi atau permohonan dengan token ini
         $split = explode('-', $token);
-        $after15minutes = Carbon::now()->subMinutes(16);
 
         try {
             if ($split[0] === 'PROMO') {
                 $promosi = Promosi::where('id_verifikasi_publikasi', $token)->first();
                 $tanggalDiajukan = Promosi::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
 
-                if ($promosi && $tanggalDiajukan->created_at < $after15minutes) {
+                if ($promosi) {
                     if ($promosi->id_proses_permohonan) {
                         $data = [
                             'status' => 'success',
@@ -76,14 +75,14 @@ class UmumController extends Controller
                             'publikasi' => 'Promosi',
                             'id_proses_permohonan' => $key,
                         ];
-                    }
 
-                    $emailController = new EmailController();
-                    $emailController->kodeProsesPublikasi('Promosi', $promosi->judul, $promosi->id_proses_permohonan ?? $key);
-                    $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
+                        $emailController = new EmailController();
+                        $emailController->kodeProsesPublikasi('Promosi', $promosi->judul, $promosi->id_proses_permohonan ?? $key);
+                        $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
 
-                    if ($response->getStatusCode() !== 200) {
-                        return $response;
+                        if ($response->getStatusCode() !== 200) {
+                            return $response;
+                        }
                     }
                 } else {
                     $data = [
@@ -97,7 +96,7 @@ class UmumController extends Controller
                 $tanggalDiajukan = Liputan::where('id_verifikasi_publikasi', $token)->select('created_at')->first();
 
                 if ($liputan) {
-                    if ($liputan->id_proses_permohonan && $tanggalDiajukan->created_at < $after15minutes) {
+                    if ($liputan->id_proses_permohonan) {
                         $data = [
                             'status' => 'success',
                             'publikasi' => 'Liputan',
@@ -122,14 +121,14 @@ class UmumController extends Controller
                             'publikasi' => 'Liputan',
                             'id_proses_permohonan' => $key,
                         ];
-                    }
 
-                    $emailController = new EmailController();
-                    $emailController->kodeProsesPublikasi('Liputan', $liputan->judul, $liputan->id_proses_permohonan ?? $key);
-                    $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
+                        $emailController = new EmailController();
+                        $emailController->kodeProsesPublikasi('Liputan', $liputan->judul, $liputan->id_proses_permohonan ?? $key);
+                        $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
 
-                    if ($response->getStatusCode() !== 200) {
-                        return $response;
+                        if ($response->getStatusCode() !== 200) {
+                            return $response;
+                        }
                     }
                 } else {
                     $data = [
@@ -153,16 +152,16 @@ class UmumController extends Controller
         }
     }
 
-    public function verifikasiHalaman()
-    {
-        return view('email.verifikasi-publikasi')->with([
-            'namaPemohon' => 'Dummy Pemohon',
-            'jenisPermohonan' => 'Dummy Permohonan',
-            'urlVerifikasi' => 'Dummy Kode Verifikasi',
-            'waktu' => Carbon::now()->translatedFormat('l, d F Y H:i:s'),
-            'urlLogo' => asset('img/Duta_Wacana.png')
-        ]);
-    }
+    // public function verifikasiHalaman()
+    // {
+    //     return view('email.verifikasi-publikasi')->with([
+    //         'namaPemohon' => 'Dummy Pemohon',
+    //         'jenisPermohonan' => 'Dummy Permohonan',
+    //         'urlVerifikasi' => 'Dummy Kode Verifikasi',
+    //         'waktu' => Carbon::now()->translatedFormat('l, d F Y H:i:s'),
+    //         'urlLogo' => asset('img/Duta_Wacana.png')
+    //     ]);
+    // }
 
     public function lacak(Request $request)
     {

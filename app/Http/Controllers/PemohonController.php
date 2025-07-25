@@ -204,14 +204,14 @@ class PemohonController extends Controller
                             'publikasi' => 'Promosi',
                             'id_proses_permohonan' => $key,
                         ];
-                    }
 
-                    $emailController = new EmailController();
-                    $emailController->kodeProsesPublikasi('Promosi', $promosi->judul, $promosi->id_proses_permohonan ?? $key);
-                    $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
+                        $emailController = new EmailController();
+                        $emailController->kodeProsesPublikasi('Promosi', $promosi->judul, $promosi->id_proses_permohonan ?? $key);
+                        $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
 
-                    if ($response->getStatusCode() !== 200) {
-                        return $response;
+                        if ($response->getStatusCode() !== 200) {
+                            return $response;
+                        }
                     }
                 } else {
                     $data = [
@@ -250,14 +250,14 @@ class PemohonController extends Controller
                             'publikasi' => 'Liputan',
                             'id_proses_permohonan' => $key,
                         ];
-                    }
 
-                    $emailController = new EmailController();
-                    $emailController->kodeProsesPublikasi('Liputan', $liputan->judul, $liputan->id_proses_permohonan ?? $key);
-                    $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
+                        $emailController = new EmailController();
+                        $emailController->kodeProsesPublikasi('Liputan', $liputan->judul, $liputan->id_proses_permohonan ?? $key);
+                        $response = $emailController->kirimEmailStatus($liputan->id_proses_permohonan ?? $key);
 
-                    if ($response->getStatusCode() !== 200) {
-                        return $response;
+                        if ($response->getStatusCode() !== 200) {
+                            return $response;
+                        }
                     }
                 } else {
                     $data = [

@@ -239,36 +239,37 @@
                     </div>
                 @endif
 
-                <div class="flex justify-between mt-6">
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-between gap-4 mt-6">
                     <a href="{{ route('staff.home') }}" id="btn-kembali"
-                        class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 text-center">
                         Kembali
                     </a>
-                    {{-- Tombol --}}
-                    <div class="mt-auto flex flex-col sm:flex-row items-center md:justify-end justify-center space-x-2">
+
+                    <div class="flex flex-col sm:flex-row gap-2 sm:justify-end justify-center">
                         @if ($publikasi->status === 'Diajukan')
                             <a href="#"
-                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras"
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras text-center"
                                 data-terima="{{ $publikasi->id_proses_permohonan }}">Diterima</a>
                         @elseif ($publikasi->status === 'Diterima')
                             <a href="#"
-                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300btn-extras"
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras text-center"
                                 data-diproses="{{ $publikasi->id_proses_permohonan }}">Diproses</a>
                         @elseif ($publikasi->status === 'Diproses')
                             <a href="{{ route('staff.home') }}" id="btn-selesai"
-                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 text-center">
                                 Selesai
                             </a>
                         @endif
+
                         @if ($publikasi->status === 'Diajukan' || $publikasi->status === 'Diterima')
                             <a id="btn-batal" href="#"
-                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 text-center"
                                 data-batal="{{ $publikasi->id_proses_permohonan }}">
                                 Batal
                             </a>
                         @else
                             <span
-                                class="bg-gray-400 text-white font-semibold py-3 px-8 rounded-lg cursor-not-allowed opacity-70">
+                                class="bg-gray-400 text-white font-semibold py-3 px-8 rounded-lg cursor-not-allowed opacity-70 text-center">
                                 Batal
                             </span>
                         @endif
@@ -542,7 +543,7 @@
                                         }
                                     });
                                 },
-                               success: function(res) {
+                                success: function(res) {
                                     Swal.close();
                                     Swal.fire({
                                         icon: 'success',

@@ -22,6 +22,13 @@
             color: white !important;
             font-weight: bold !important;
         }
+
+        #calendar {
+            padding: 24px;
+            margin: 24px 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 @endsection
 
@@ -31,7 +38,7 @@
 
             <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Agenda Publikasi</h1>
 
-            <div id="calendar" class="w-full min-h-[400px] p-0 mb-6"></div>
+            <div id="calendar" class="w-full min-h-[600px] p-0 mb-6"></div>
             <hr class="h-px my-3 bg-gray-800 border-0 dark:bg-gray-700 w-full">
             <p class="text-sm text-gray-600 w-full">
                 <span class="font-semibold mb-2 block">Keterangan :</span>
@@ -47,7 +54,6 @@
 @endsection
 
 @section('script')
-    <!-- JS Addon -->
     <script src="{{ asset('js/calendar_v2.core.js') }}" defer></script>
     <script>
         $(document).ready(function() {
@@ -74,7 +80,6 @@
                         const jenisUnik = [...new Set(jenisList)];
 
                         let modifier = '';
-
                         if (jenisUnik.length > 1) {
                             modifier = 'bg-ungu';
                         } else {
@@ -89,10 +94,10 @@
                     const calendar = new VanillaCalendar('#calendar', {
                         settings: {
                             selection: {
-                                day: 'single',
+                                day: 'single'
                             },
                             visibility: {
-                                daysOutside: false,
+                                daysOutside: false
                             }
                         },
                         popups: popups,
@@ -116,108 +121,113 @@
                                             title: 'Loading',
                                             text: 'Memuat Jadwal...',
                                             allowOutsideClick: false,
-                                            didOpen: () => {
-                                                Swal.showLoading();
-                                            }
+                                            didOpen: () => Swal
+                                                .showLoading()
                                         });
                                     },
                                     success: function(data) {
-                                        if (data.length === 0) {
+                                        // Filter data yang hanya sesuai dengan tanggal terpilih
+                                        const selectedDateParts = selectedDate
+                                            .split('-');
+                                        const formattedSelectedDate =
+                                            `${selectedDateParts[2]}-${selectedDateParts[1]}-${selectedDateParts[0]}`;
+
+                                        const filteredData = data.filter(item =>
+                                            item.tanggal ===
+                                            formattedSelectedDate);
+
+                                        if (filteredData.length === 0) {
                                             Swal.fire({
                                                 icon: 'info',
                                                 title: 'Tidak ada jadwal',
                                                 text: `Tidak ada kegiatan pada tanggal ${selectedDate}.`
                                             });
-                                        } else {
-                                            const dateParts = selectedDate.split(
-                                                '-');
-                                            const formattedDate =
-                                                `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-
-                                            let htmlContent =
-                                                `<div style="text-align:left; max-height:400px; overflow-y:auto;">`;
-
-                                            const liputanList = data.filter(item =>
-                                                item.jenis === 'Liputan');
-                                            const promosiList = data.filter(item =>
-                                                item.jenis === 'Promosi');
-
-                                            function renderSection(judul, list) {
-                                                if (list.length === 0) return '';
-
-                                                const backgroundColor = judul ===
-                                                    'Liputan' ? '#d0f0c0' :
-                                                    '#fff9c4';
-                                                const textColor = judul ===
-                                                    'Liputan' ? '#256029' :
-                                                    '#8a6d00';
-
-                                                let sectionHTML = `
-                                                    <h3 style="
-                                                        font-size: 20px;
-                                                        font-weight: 700;
-                                                        margin: 20px 0 15px;
-                                                        color: ${textColor};
-                                                        text-align: center;
-                                                        background-color: ${backgroundColor};
-                                                        padding: 8px 0;
-                                                        border-radius: 6px;
-                                                        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-                                                    ">${judul}</h3>
-                                                `;
-
-                                                list.forEach(item => {
-                                                    const statusClass = item
-                                                        .status ===
-                                                        'Diproses' ?
-                                                        'text-yellow-600' :
-                                                        'text-red-600';
-                                                    const hariPelaksanaan =
-                                                        item
-                                                        .hariPelaksanaan ??
-                                                        'text-green-500';
-
-                                                    sectionHTML += `
-                                                        <div style="
-                                                            border: 1px solid #e0e0e0;
-                                                            border-radius: 8px;
-                                                            padding: 12px 16px;
-                                                            margin-bottom: 12px;
-                                                            background-color: #f8f9fa;
-                                                            box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
-                                                        ">
-                                                            <div class="font-bold text-2xl">
-                                                                <span class="${hariPelaksanaan}">${item.hari_h}</span>${item.nama}
-                                                            </div>
-                                                            <div class="${statusClass} text-sm mt-1 font-semibold text-xl">
-                                                                ${item.status}
-                                                            </div>
-                                                            <div style="margin-top: 6px;">
-                                                                <strong>Tempat:</strong> ${item.tempat}<br>
-                                                                ${item.tanggal ? `<strong>Tanggal:</strong> ${item.tanggal}` : ''}
-                                                                ${item.jam ? ` - ${item.jam}` : ''}
-                                                            </div>
-                                                        </div>
-                                                    `;
-                                                });
-
-                                                return sectionHTML;
-                                            }
-
-                                            htmlContent += renderSection('Liputan',
-                                                liputanList);
-                                            htmlContent += renderSection('Promosi',
-                                                promosiList);
-                                            htmlContent += `</div>`;
-
-                                            Swal.fire({
-                                                title: `Jadwal Tanggal ${formattedDate}`,
-                                                html: htmlContent,
-                                                width: 700,
-                                                confirmButtonText: 'Tutup',
-                                                confirmButtonColor: '#6c757d',
-                                            });
+                                            return;
                                         }
+
+                                        const dateParts = selectedDate.split('-');
+                                        const formattedDate =
+                                            `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+                                        const liputanList = filteredData.filter(
+                                            item => item.jenis === 'Liputan');
+                                        const promosiList = filteredData.filter(
+                                            item => item.jenis === 'Promosi');
+
+                                        let htmlContent =
+                                            `<div style="text-align:left; max-height:400px; overflow-y:auto;">`;
+
+                                        function renderSection(judul, list) {
+                                            if (list.length === 0) return '';
+
+                                            const backgroundColor = judul ===
+                                                'Liputan' ? '#d0f0c0' : '#fff9c4';
+                                            const textColor = judul === 'Liputan' ?
+                                                '#256029' : '#8a6d00';
+
+                                            let sectionHTML = `
+                                                <h3 style="
+                                                    font-size: 20px;
+                                                    font-weight: 700;
+                                                    margin: 20px 0 15px;
+                                                    color: ${textColor};
+                                                    text-align: center;
+                                                    background-color: ${backgroundColor};
+                                                    padding: 8px 0;
+                                                    border-radius: 6px;
+                                                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                                                ">${judul}</h3>
+                                            `;
+
+                                            list.forEach(item => {
+                                                const statusClass = item
+                                                    .status === 'Diproses' ?
+                                                    'text-yellow-600' :
+                                                    'text-red-600';
+                                                const hariPelaksanaan = item
+                                                    .hariPelaksanaan ??
+                                                    'text-green-500';
+
+                                                sectionHTML += `
+                                                    <div style="
+                                                        border: 1px solid #e0e0e0;
+                                                        border-radius: 8px;
+                                                        padding: 12px 16px;
+                                                        margin-bottom: 12px;
+                                                        background-color: #f8f9fa;
+                                                        box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
+                                                    ">
+                                                        <div class="font-bold text-2xl">
+                                                            ${item.nama}
+                                                        </div>
+                                                        <div class="${statusClass} text-sm mt-1 font-semibold text-xl">
+                                                            ${item.status}
+                                                        </div>
+                                                        <div style="margin-top: 6px;">
+                                                            <strong>Tempat:</strong> ${item.tempat}<br>
+                                                            <strong>Tanggal:</strong> ${item.tanggal}
+                                                            ${item.jam ? ` - ${item.jam}` : ''}
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            });
+
+                                            return sectionHTML;
+                                        }
+
+                                        htmlContent += renderSection('Liputan',
+                                            liputanList);
+                                        htmlContent += renderSection('Promosi',
+                                            promosiList);
+                                        htmlContent += `</div>`;
+
+                                        Swal.fire({
+                                            title: `Jadwal Tanggal ${formattedDate}`,
+                                            html: htmlContent,
+                                            width: 700,
+                                            confirmButtonText: 'Tutup',
+                                            confirmButtonColor: '#6c757d',
+                                        });
                                     },
                                     error: function(xhr) {
                                         let message =
@@ -228,7 +238,7 @@
                                             message = Object.values(xhr.responseJSON
                                                 .errors).flat().join('\n');
                                         }
-                                        alert.fire({
+                                        Swal.fire({
                                             icon: 'error',
                                             title: 'Gagal',
                                             text: message,
@@ -249,7 +259,7 @@
                     } else if (xhr.responseJSON?.errors) {
                         message = Object.values(xhr.responseJSON.errors).flat().join('\n');
                     }
-                    alert.fire({
+                    Swal.fire({
                         icon: 'error',
                         title: 'Gagal',
                         text: message,

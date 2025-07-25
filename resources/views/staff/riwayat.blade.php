@@ -33,7 +33,7 @@
                     </select>
 
                     <!-- Search -->
-                    <input type="text" x-model="search" placeholder="Cari nama publikasi..."
+                    <input type="text" x-model="search" placeholder="Cari judul publikasi..."
                         class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900 w-full md:w-auto">
 
                     <!-- Tombol Reset -->
@@ -77,9 +77,8 @@
                         <tr>
                             <th class="border border-gray-300 py-2 px-2">Kode</th>
                             <th class="border border-gray-300 py-2 px-2">Jenis</th>
-                            <th class="border border-gray-300 py-2 px-2">Tanggal</th>
-                            <th class="border border-gray-300 py-2 px-2">Nama Publikasi</th>
-                            <th class="border border-gray-300 py-2 px-2">Unit</th>
+                            <th class="border border-gray-300 py-2 px-2">Tanggal Pelaksanaan</th>
+                            <th class="border border-gray-300 py-2 px-2">Judul Publikasi</th>
                             <th class="border border-gray-300 py-2 px-2">Sub Unit</th>
                             <th class="border border-gray-300 py-2 px-2">Status</th>
                             <th class="border border-gray-300 py-2 px-2">Tautan</th>
@@ -92,8 +91,7 @@
                                 <td class="border border-gray-300 py-2 px-2" x-text="item.kode"></td>
                                 <td class="border border-gray-300 py-2 px-2" x-text="item.jenis"></td>
                                 <td class="border border-gray-300 py-2 px-2" x-text="item.tanggal"></td>
-                                <td class="border border-gray-300 py-2 px-2" x-text="item.nama"></td>
-                                <td class="border border-gray-300 py-2 px-2" x-text="item.unit"></td>
+                                <td class="border border-gray-300 py-2 px-2" x-text="item.judul"></td>
                                 <td class="border border-gray-300 py-2 px-2" x-text="item.subUnit"></td>
                                 <td class="border border-gray-300 py-2 px-2 text-center">
                                     <span class="text-sm font-semibold px-2 py-1 rounded-full"
@@ -106,9 +104,14 @@
                                         x-text="item.status">
                                     </span>
                                 </td>
-                                <td class="border border-gray-300 py-2 px-2 text-blue-500 underline text-center">
-                                    <button @click="openLinkModal(item.tautan)"
-                                        class="underline text-blue-500">Lihat</button>
+                                <td class="border border-gray-300 py-2 px-2 text-center">
+                                    <template x-if="item.status !== 'Batal'">
+                                        <button @click="openLinkModal(item.tautan)"
+                                            class="underline text-blue-500">Lihat</button>
+                                    </template>
+                                    <template x-if="item.status === 'Batal'">
+                                        <span class="text-gray-400">-</span>
+                                    </template>
                                 </td>
                                 <td class="border border-gray-300 py-2 px-2 text-center">
                                     <a :href="`{{ route('staff.detail-riwayat', ':id') }}`.replace(':id', item.kode)"
@@ -189,8 +192,7 @@
                             id: item.id,
                             kode: item.id_proses_permohonan,
                             tanggal: item.tanggal,
-                            nama: item.nama,
-                            unit: item.unit,
+                            judul: item.judul,
                             subUnit: item.subUnit,
                             status: item.status,
                             jenis: item.jenis,
@@ -204,7 +206,7 @@
                 get filteredData() {
                     let filtered = this.originalData.filter(item => {
                         return (
-                            (this.search === '' || item.nama.toLowerCase().includes(this.search
+                            (this.search === '' || item.judul.toLowerCase().includes(this.search
                                 .toLowerCase())) &&
                             (this.selectedJenis === '' || item.jenis === this.selectedJenis) &&
                             (this.selectedStatus === '' || item.status === this.selectedStatus) &&

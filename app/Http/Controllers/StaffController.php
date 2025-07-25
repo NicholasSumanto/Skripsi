@@ -213,7 +213,7 @@ class StaffController extends Controller
             })
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
-                    $q->where('promosi.judul', 'like', "%$search%")->orWhere('promosi.nama_pemohon', 'like', "%$search%");
+                    $q->where('promosi.judul', 'like', "%$search%")->orWhere('promosi.nama_pemohon', 'like', "%$search%")->orWhere('sub_unit.nama_sub_unit', 'like', "%$search%");
                 });
             })
 
@@ -250,7 +250,7 @@ class StaffController extends Controller
             })
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
-                    $q->where('liputan.judul', 'like', "%$search%")->orWhere('liputan.nama_pemohon', 'like', "%$search%");
+                    $q->where('liputan.judul', 'like', "%$search%")->orWhere('liputan.nama_pemohon', 'like', "%$search%")->orWhere('sub_unit.nama_sub_unit', 'like', "%$search%");
                 });
             })
 

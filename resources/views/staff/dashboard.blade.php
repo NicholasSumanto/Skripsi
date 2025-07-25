@@ -150,43 +150,47 @@
                 Publikasi Terbaru</h1>
             <div x-data="publikasi()">
                 <div class="overflow-x-auto">
-                    <table class="w-full border text-sm text-center">
-                        <thead class="bg-gray-200 text-green-700">
+                    <table class="w-full text-sm text-center bg-white rounded-lg overflow-hidden shadow">
+                        <thead class="bg-[#0B4D1E] text-[#FFC107] font-semibold">
                             <tr>
-                                <th class="border py-2 px-1">Kode</th>
-                                <th class="border py-2 px-1">Jenis</th>
-                                <th class="border py-2 px-1">Tanggal</th>
-                                <th class="border py-2 px-1">Nama Publikasi</th>
-                                <th class="border py-2 px-1">Unit</th>
-                                <th class="border py-2 px-1">Sub Unit</th>
-                                <th class="border py-2 px-1">Status</th>
-                                <th class="border py-2 px-1">Detail</th>
+                                <th class="py-4 px-5">Kode</th>
+                                <th class="py-4 px-5">Jenis</th>
+                                <th class="py-4 px-5">Tanggal</th>
+                                <th class="py-4 px-5">Judul Publikasi</th>
+                                <th class="py-4 px-5">Nama Pemohon</th>
+                                <th class="py-4 px-5">Sub Unit</th>
+                                <th class="py-4 px-5">Status</th>
+                                <th class="py-4 px-5">Detail</th>
                             </tr>
                         </thead>
                         <tbody>
                             <template x-for="item in paginatedData" :key="item.id">
-                                <tr class="bg-gray-100">
-                                    <td class="border py-2 px-1" x-text="item.kode"></td>
-                                    <td class="border py-2 px-1" x-text="item.jenis"></td>
-                                    <td class="border py-2 px-1" x-text="item.tanggal"></td>
-                                    <td class="border py-2 px-1" x-text="item.nama"></td>
-                                    <td class="border py-2 px-1" x-text="item.unit"></td>
-                                    <td class="border py-2 px-1" x-text="item.subUnit"></td>
-                                    <td class="border py-2 px-1 text-center">
-                                        <span class="text-sm font-semibold px-2 py-1 rounded-full"
+                                <tr class="border-b text-black hover:bg-blue-100"
+                                    :class="{
+                                        'bg-yellow-100': item.jenis === 'Promosi',
+                                        'bg-green-100': item.jenis === 'Liputan'
+                                    }">
+                                    <td class="py-3 px-5" x-text="item.kode"></td>
+                                    <td class="py-3 px-5" x-text="item.jenis"></td>
+                                    <td class="py-3 px-5" x-text="item.tanggal"></td>
+                                    <td class="py-3 px-5" x-text="item.judul"></td>
+                                    <td class="py-3 px-5" x-text="item.namaPemohon"></td>
+                                    <td class="py-3 px-5" x-text="item.subUnit"></td>
+                                    <td class="py-3 px-5">
+                                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium"
                                             :class="{
-                                                'bg-green-100 text-green-700': item.status === 'Selesai',
-                                                'bg-red-100 text-red-700': item.status === 'Batal',
-                                                'bg-yellow-100 text-yellow-700': item.status !== 'Selesai' && item
-                                                    .status !== 'Batal'
+                                                'bg-yellow-200 text-yellow-800': item.status === 'Diajukan',
+                                                'bg-green-200 text-green-800': item.status === 'Diterima',
+                                                'bg-blue-200 text-blue-800': item.status === 'Diproses',
+                                                'bg-gray-200 text-gray-800': item.status === 'Selesai',
+                                                'bg-red-200 text-red-800': item.status === 'Batal'
                                             }"
                                             x-text="item.status">
                                         </span>
                                     </td>
-                                    <td class="border py-2 px-1">
+                                    <td class="py-3 px-5">
                                         <a :href="`{{ route('staff.detail-publikasi', ':id') }}`.replace(':id', item.kode)"
-                                            class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-900"
-                                            rel="noopener">
+                                            class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-md font-semibold">
                                             Detail
                                         </a>
                                     </td>
@@ -195,17 +199,13 @@
 
                             <template x-if="paginatedData.length === 0">
                                 <tr>
-                                    <td colspan="8" class="text-center py-4 text-gray-500">Data tidak ditemukan.</td>
-                                </tr>
-                            </template>
-
-                            <template x-for="item in paginatedData" :key="item.id">
-                                <tr class="bg-gray-100">
-                                    ...
+                                    <td colspan="8" class="text-center py-6 text-gray-500">Tidak ada permohonan
+                                        publikasi ditemukan.</td>
                                 </tr>
                             </template>
                         </tbody>
                     </table>
+
                 </div>
                 <div class="flex justify-end mt-4 mb-2">
                     <a href="{{ route('staff.home') }}" class="text-blue-700 hover:underline font-semibold">
@@ -357,7 +357,7 @@
                                                             box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
                                                         ">
                                                             <div class="font-bold text-2xl">
-                                                                <span class="${hariPelaksanaan}">${item.hari_h}</span>${item.nama}
+                                                                ${item.nama}
                                                             </div>
                                                             <div class="${statusClass} text-sm mt-1 font-semibold text-xl">
                                                                 ${item.status}
@@ -492,7 +492,8 @@
                             id: item.id,
                             kode: item.id_proses_permohonan,
                             tanggal: item.tanggal,
-                            nama: item.nama,
+                            judul: item.judul,
+                            namaPemohon: item.namaPemohon,
                             unit: item.unit,
                             subUnit: item.subUnit,
                             status: item.status,

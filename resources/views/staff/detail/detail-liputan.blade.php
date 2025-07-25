@@ -75,13 +75,13 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="font-semibold text-lg">Nama Pemohon * :</label>
+                        <label class="font-semibold text-lg">Nama Pemohon :</label>
                         <input type="text" name="nama_pemohon" value="{{ $publikasi->nama_pemohon }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Nomor Handphone * :</label>
+                        <label class="font-semibold text-lg">Nomor Handphone :</label>
                         <input type="text" name="nomor_handphone" value="{{ $publikasi->nomor_handphone }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
@@ -93,33 +93,33 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Judul * :</label>
+                        <label class="font-semibold text-lg">Judul :</label>
                         <input type="text" name="judul" value="{{ $publikasi->judul }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tempat Pelaksanaan * :</label>
+                        <label class="font-semibold text-lg">Tempat Pelaksanaan :</label>
                         <input type="text" name="tempat" value="{{ $publikasi->tempat }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Tanggal Acara * :</label>
+                        <label class="font-semibold text-lg">Tanggal Acara :</label>
                         <input type="date" name="tanggal"
                             value="{{ \Carbon\Carbon::parse($publikasi->tanggal)->format('Y-m-d') }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Waktu * :</label>
+                        <label class="font-semibold text-lg">Waktu :</label>
                         <input type="time" name="waktu"
                             value="{{ \Carbon\Carbon::parse($publikasi->waktu)->format('H:i') }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Rundown dan TOR * :</label>
+                        <label class="font-semibold text-lg">Rundown dan TOR :</label>
                         <div class="mt-2">
                             @php
                                 $file = json_decode($publikasi->file_liputan, true);
@@ -138,20 +138,20 @@
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Unit * :</label>
+                        <label class="font-semibold text-lg">Unit :</label>
                         <input type="text" name="unit" value="{{ $publikasi->nama_unit }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
 
                     <div>
-                        <label class="font-semibold text-lg">Sub Unit * :</label>
+                        <label class="font-semibold text-lg">Sub Unit :</label>
                         <input type="text" name="sub_unit" value="{{ $publikasi->nama_sub_unit }}"
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
                     </div>
                 </div>
 
                 <div>
-                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media? *</label>
+                    <label class="font-semibold text-lg">Apakah memerlukan wartawan atau media? </label>
                     <div class="mt-2">
                         @if ($publikasi->wartawan == 'Ya')
                             <span class="inline-block bg-green-500 text-white font-semibold py-2 px-4 rounded-full">
@@ -166,7 +166,7 @@
                 </div>
 
                 <div>
-                    <label class="font-semibold text-lg">Output * :</label>
+                    <label class="font-semibold text-lg">Output :</label>
                     <div class="flex flex-wrap gap-2 mt-2">
                         @php
                             $outputList = json_decode($publikasi->output, true);
@@ -207,36 +207,37 @@
                     </div>
                 @endif
 
-                <div class="flex justify-between mt-6">
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-between gap-4 mt-6">
                     <a href="{{ route('staff.home') }}" id="btn-kembali"
-                        class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 text-center">
                         Kembali
                     </a>
-                    {{-- Tombol --}}
-                    <div class="mt-auto flex flex-col sm:flex-row items-center md:justify-end justify-center space-x-2">
+
+                    <div class="flex flex-col sm:flex-row gap-2 sm:justify-end justify-center">
                         @if ($publikasi->status === 'Diajukan')
                             <a href="#"
-                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras"
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras text-center"
                                 data-terima="{{ $publikasi->id_proses_permohonan }}">Diterima</a>
                         @elseif ($publikasi->status === 'Diterima')
                             <a href="#"
-                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras"
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras text-center"
                                 data-diproses="{{ $publikasi->id_proses_permohonan }}">Diproses</a>
                         @elseif ($publikasi->status === 'Diproses')
                             <a href="{{ route('staff.home') }}" id="btn-selesai"
-                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 text-center">
                                 Selesai
                             </a>
                         @endif
+
                         @if ($publikasi->status === 'Diajukan' || $publikasi->status === 'Diterima')
                             <a id="btn-batal" href="#"
-                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 text-center"
                                 data-batal="{{ $publikasi->id_proses_permohonan }}">
                                 Batal
                             </a>
                         @else
                             <span
-                                class="bg-gray-400 text-white font-semibold py-3 px-8 rounded-lg cursor-not-allowed opacity-70">
+                                class="bg-gray-400 text-white font-semibold py-3 px-8 rounded-lg cursor-not-allowed opacity-70 text-center">
                                 Batal
                             </span>
                         @endif

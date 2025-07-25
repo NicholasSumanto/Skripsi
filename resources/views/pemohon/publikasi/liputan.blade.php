@@ -30,7 +30,8 @@
                         </label>
                         <input type="text" name="nomor_handphone" id="nomor_handphone"
                             class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
-                            placeholder="contoh: 081234567890" inputmode="numeric" pattern="^(\+62|0)[0-9]{8,13}$" maxlength="15" required>
+                            placeholder="contoh: 081234567890" inputmode="numeric" pattern="^(\+62|0)[0-9]{8,14}$"
+                            maxlength="14" required>
                         <p id="hp-error" class="text-red-600 text-sm mt-1 hidden">Nomor HP tidak valid</p>
                     </div>
 
@@ -402,6 +403,7 @@
     </script>
     <script>
         const input = document.getElementById('nomor_handphone');
+        const errorText = document.getElementById('hp-error');
 
         input.addEventListener('input', function() {
             // Hanya izinkan angka dan tanda +
@@ -411,7 +413,19 @@
             if (this.value.includes('+')) {
                 this.value = '+' + this.value.replace(/\+/g, '').trim();
             }
+
+            // Hapus karakter selain angka untuk menghitung panjang angka saja
+            const numberOnly = this.value.replace(/\D/g, '');
+
+            // Validasi panjang 9-14 digit
+            if (numberOnly.length < 9 || numberOnly.length > 14) {
+                errorText.classList.remove('hidden');
+                errorText.textContent = 'Nomor HP harus memiliki panjang antara 9 hingga 14 digit.';
+            } else {
+                errorText.classList.add('hidden');
+            }
         });
     </script>
+
 
 @endsection
