@@ -132,13 +132,14 @@
 
                 <div>
                     <label class="font-semibold text-lg">Catatan :</label>
-                    <textarea name="catatan" class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" rows="6"
-                        disabled>{{ $publikasi->catatan }}</textarea>
+                    <textarea name="catatan" class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white"
+                        rows="6" disabled>{{ $publikasi->catatan }}</textarea>
                 </div>
 
                 @if ($publikasi->status === 'Diproses')
                     <div class="space-y-2">
-                        <label class="font-semibold text-lg text-yellow-400">Link Output<span class="text-red-500">*</span> :</label>
+                        <label class="font-semibold text-lg text-yellow-400">Link Output<span class="text-red-500">*</span>
+                            :</label>
                         <div class="control-form space-y-2">
                             <div class="entry flex overflow-hidden rounded-lg border border-gray-300">
                                 <input type="text" name="link_output[]" class="flex-1 p-3 outline-none text-black"
@@ -157,12 +158,26 @@
                         class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
                         Kembali
                     </a>
-                    @if ($publikasi->status === 'Diproses')
-                        <a id="btn-selesai"
-                            class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
-                            Selesai
-                        </a>
-                    @endif
+                    {{-- Tombol --}}
+                    <div class="mt-auto flex flex-col sm:flex-row items-center md:justify-end justify-center space-x-2">
+                        @if ($publikasi->status === 'Diajukan')
+                            <a href="#"
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras"
+                                data-terima="{{ $publikasi->id_proses_permohonan }}">Diterima</a>
+                        @elseif ($publikasi->status === 'Diterima')
+                            <a href="#"
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 btn-extras"
+                                data-diproses="{{ $publikasi->id_proses_permohonan }}">Diproses</a>
+                        @elseif ($publikasi->status === 'Diproses')
+                            <a id="btn-selesai"
+                                class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
+                                Selesai
+                            </a>
+                        @endif
+                        <a id="btn-batal"
+                            class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+                            data-batal="{{ $publikasi->id_proses_permohonan }}">Batal</a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -170,7 +185,230 @@
 @endsection
 
 @section('script')
-    @if ($publikasi->status === 'Diproses')
+    @if ($publikasi->status !== 'Diproses')
+        <script>
+            $(document).ready(function() {
+                // Konfirmasi pembatalan
+                $('[data-batal]').on('click', function(e) {
+                    e.preventDefault();
+                    const id_proses_permohonan = $(this).data('batal');
+
+                    Swal.fire({
+                        title: 'Batalkan Permohonan?',
+                        html: `
+                        <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p><br>
+                        <p>Mohon jelaskan alasan Anda agar pemohon dapat memahami keputusan tersebut.</p>
+                        <p class="font-semibold text-left text-lg mt-4">
+                        Alasan Pembatalan <span class="text-red-500">*</span> :
+                        </p>
+                        <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-2" placeholder="Contoh: Jadwal Publikasi berubah, publikasi tidak diperlukan lagi" required></textarea>
+                        `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Batalkan',
+                        cancelButtonText: 'Tidak',
+                        preConfirm: () => {
+                            const keterangan = document.getElementById('alasanBatal').value.trim();
+                            if (!keterangan) {
+                                Swal.showValidationMessage('Alasan pembatalan wajib diisi');
+                            }
+                            return keterangan;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const keterangan = result.value;
+
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ route('staff.api.delete.publikasi') }}",
+                                headers: {
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                data: {
+                                    id_proses_permohonan: id_proses_permohonan,
+                                    keterangan: keterangan
+                                },
+                                beforeSend: function() {
+                                    $('[data-batal]').text('Proses Batal Berlangsung').attr(
+                                        'disabled', true);
+                                    $(this).text('Membatalkan...').attr('disabled', true);
+
+                                    $('#btn-kembali').text('Membatalkan...').attr(
+                                        'disabled', true);
+                                    $('.btn-extras').text('Membatalkan...').attr('disabled',
+                                        true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+                                },
+                                success: function(res) {
+                                    localStorage.setItem('batalkan_message', res.message);
+                                    window.location.href = "{{ route('staff.home') }}";
+                                },
+                                error: function(err) {
+                                    $('#btn-batal').text('Batal').attr('disabled', false);
+                                    $('btn-kembali').text('Kembali').attr('disabled',
+                                    false);
+                                    $('.btn-extras').text('Kembali').attr('disabled',
+                                    false);
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: err.responseJSON.error ?? err
+                                            .responseJSON.message,
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Konfirmasi terima
+                $('[data-terima]').on('click', function(e) {
+                    e.preventDefault();
+                    const id_proses_permohonan = $(this).data('terima');
+
+                    Swal.fire({
+                        title: 'Terima Permohonan?',
+                        html: `Anda menerima permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#088404',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Terima',
+                        cancelButtonText: 'Tidak'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ route('staff.api.update.status-publikasi') }}",
+                                headers: {
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                data: {
+                                    id_proses_permohonan: id_proses_permohonan,
+                                    jenis_proses: 'Diterima',
+                                },
+                                beforeSend: function() {
+                                    $('[data-terima]').text('Proses Terima Berlangsung')
+                                        .attr(
+                                            'disabled', true);
+                                    $(this).text('Menerima...').attr('disabled', true);
+
+                                    $('#btn-kembali').text('Menerima...').attr('disabled',
+                                        true);
+                                    $('#btn-batal').text('Menerima...').attr('disabled',
+                                        true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+                                },
+                                success: function(res) {
+                                    localStorage.setItem('terima_message', res.message);
+                                    window.location.href = "{{ route('staff.home') }}";
+                                },
+                                error: function(err) {
+                                    $('[data-terima]').text('Terima').attr(
+                                        'disabled', false);
+                                    $('#btn-batal').text('Batal').attr('disabled', false);
+                                    $('#btn-kembali').text('Kembali').attr('disabled',
+                                        false);
+
+                                    alert.fire({
+                                        icon: 'error',
+                                        title: err.responseJSON.error ?? err
+                                            .responseJSON.message,
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Konfirmasi diproses
+                $('[data-diproses]').on('click', function(e) {
+                    e.preventDefault();
+                    const id_proses_permohonan = $(this).data('diproses');
+
+                    Swal.fire({
+                        title: 'Proses Permohonan?',
+                        html: `Anda memproses permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#088404',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Proses',
+                        cancelButtonText: 'Tidak'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ route('staff.api.update.status-publikasi') }}",
+                                headers: {
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                data: {
+                                    id_proses_permohonan: id_proses_permohonan,
+                                    jenis_proses: 'Diproses',
+                                },
+                                beforeSend: function() {
+                                    $('[data-diproses]').text('Proses Berlangsung')
+                                        .attr(
+                                            'disabled', true);
+                                    $(this).text('Memproses...').attr('disabled', true);
+
+                                    $('#btn-kembali').text('Memproses...').attr('disabled',
+                                        true);
+                                    $('#btn-batal').text('Memproses...').attr('disabled',
+                                        true);
+
+                                    Swal.fire({
+                                        title: 'Loading',
+                                        text: 'Permintaan Anda sedang diproses...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+                                },
+                                success: function(res) {
+                                    localStorage.setItem('diproses_message', res.message);
+                                    window.location.href = "{{ route('staff.home') }}";
+                                },
+                                error: function(err) {
+                                    $('[data-diproses]').text('Diproses').attr(
+                                        'disabled', false);
+                                    $('#btn-batal').text('Batal').attr('disabled', false);
+                                    $('#btn-kembali').text('Kembali').attr('disabled',
+                                        false);
+
+                                    alert.fire({
+                                        icon: 'error',
+                                        title: err.responseJSON.error ?? err
+                                            .responseJSON.message,
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+    @elseif ($publikasi->status === 'Diproses')
         <script>
             $(document).ready(function() {
                 function updateButtonState() {
@@ -285,7 +523,9 @@
                                 beforeSend: function() {
                                     $('#btn-selesai').text('Mengirim...').attr('disabled',
                                         true);
-                                    $('btn-kembali').text('Mengirim...').attr('disabled',
+                                    $('#btn-kembali').text('Mengirim...').attr('disabled',
+                                        true);
+                                    $('#btn-batal').text('Mengirim...').attr('disabled',
                                         true);
 
                                     Swal.fire({
@@ -307,6 +547,8 @@
                                         false);
                                     $('#btn-kembali').text('Kembali').attr('disabled',
                                         false);
+                                    $('#btn-batal').text('Batal').attr('disabled', false);
+
                                     alert.fire({
                                         icon: 'error',
                                         title: err.responseJSON?.error ?? err

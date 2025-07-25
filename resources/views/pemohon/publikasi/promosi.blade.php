@@ -32,7 +32,8 @@
                         </label>
                         <input type="text" name="nomor_handphone" id="nomor_handphone"
                             class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
-                            placeholder="+6281234567890" inputmode="numeric" maxlength="16">
+                            placeholder="contoh: 081234567890" inputmode="numeric" pattern="^(\+62|0)[0-9]{8,13}$" maxlength="15" required>
+                        <p id="hp-error" class="text-red-600 text-sm mt-1 hidden">Nomor HP tidak valid</p>
                     </div>
 
                     <div>
@@ -104,7 +105,8 @@
                             <label class="block mb-1">Videotron</label>
                             <input type="file" name="file_video[]" multiple accept=".mp4"
                                 class="w-full rounded-lg p-3 border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#006034] focus:outline-none text-[#006034] bg-white">
-                            <small class="text-blue-500 block">Format : .mp4 <br>Bisa lebih dari 1 file <b>Max :15MB</b><br>Durasi maksimal 15 detik*</small>
+                            <small class="text-blue-500 block">Format : .mp4 <br>Bisa lebih dari 1 file <b>Max
+                                    :15MB</b><br>Durasi maksimal 15 detik*</small>
                         </div>
                     </div>
                 </div>
@@ -368,37 +370,16 @@
         });
     </script>
 
-
     <script>
         const input = document.getElementById('nomor_handphone');
 
         input.addEventListener('input', function() {
-            let value = this.value;
+            // Hanya izinkan angka dan tanda +
+            this.value = this.value.replace(/[^0-9+]/g, '');
 
-            // Jika dimulai dengan 0, ubah ke +62
-            if (value.startsWith('0')) {
-                value = '+62' + value.substring(1);
-            }
-
-            // Jika tidak dimulai dengan +62, tambahkan +62
-            if (!value.startsWith('+62')) {
-                value = '+62';
-            }
-
-            // Ambil hanya angka setelah +62 dan hapus karakter non-digit
-            let numberPart = value.substring(3).replace(/[^0-9]/g, '');
-
-            // Maksimal 13 digit setelah +62
-            numberPart = numberPart.substring(0, 13);
-
-            // Gabungkan ulang
-            this.value = '+62' + numberPart;
-        });
-
-        // Cegah penghapusan awalan +62
-        input.addEventListener('keydown', function(e) {
-            if (this.selectionStart <= 3 && ['Backspace', 'Delete'].includes(e.key)) {
-                e.preventDefault();
+            // Pastikan tanda + hanya di depan (jika ada)
+            if (this.value.includes('+')) {
+                this.value = '+' + this.value.replace(/\+/g, '').trim();
             }
         });
     </script>

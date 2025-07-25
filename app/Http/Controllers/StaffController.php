@@ -195,8 +195,6 @@ class StaffController extends Controller
     }
 
 
-
-
     public function home(Request $request)
     {
         $sort = $request->input('sort', 'asc');
@@ -288,19 +286,19 @@ class StaffController extends Controller
 
         switch ($sort) {
             case 'asc':
-                $merged = $merged->sortBy('tanggal'); // tanggal pelaksanaan
+                $merged = $merged->sortBy('tanggal');
                 break;
             case 'desc':
-                $merged = $merged->sortByDesc('tanggal'); // tanggal pelaksanaan
+                $merged = $merged->sortByDesc('tanggal');
                 break;
             case 'baru_diajukan':
-                $merged = $merged->sortByDesc('created_at'); // waktu permohonan masuk
+                $merged = $merged->sortByDesc('created_at');
                 break;
             case 'lama_diajukan':
-                $merged = $merged->sortBy('created_at'); // waktu permohonan masuk
+                $merged = $merged->sortBy('created_at');
                 break;
             default:
-                $merged = $merged->sortByDesc('tanggal'); // default fallback
+                $merged = $merged->sortByDesc('tanggal');
                 break;
         }
 

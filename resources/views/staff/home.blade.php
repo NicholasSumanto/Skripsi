@@ -54,8 +54,8 @@
 
         </form>
 
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {{-- CARD --}}
+        {{-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             @forelse ($publikasi as $item)
                 @php
                     $isPromosi = $item['jenis'] === 'Publikasi Promosi';
@@ -69,7 +69,6 @@
                     <div
                         class="rounded-xl p-4 shadow {{ $bgClass }} flex flex-col h-full transition transform hover:scale-[1.02] duration-300">
 
-                        {{-- Label --}}
                         <div class="flex flex-col sm:relative mb-4">
                             <div class="sm:absolute sm:top-0 sm:left-0 mb-2 sm:mb-0">
                                 <span
@@ -79,12 +78,10 @@
                             </div>
                         </div>
 
-                        {{-- Judul --}}
                         <div class="text-center mb-3 mt-2 md:mt-3 mx-8">
                             <h2 class="font-bold text-xl mb-2">{{ $item['judul'] }}</h2>
                         </div>
 
-                        {{-- Tabel --}}
                         <section class="bg-primary rounded-lg pb-6">
                             <div class="overflow-x-auto pb-4">
                                 <table class="w-full bg-[#0B4D1E] text-sm text-center rounded-t-lg">
@@ -109,7 +106,6 @@
                                 </table>
                             </div>
 
-                            {{-- Status --}}
                             <h2 class="text-lg font-semibold mb-6 text-white text-center md:text-left px-6">
                                 Status Permohonan Publikasi
                             </h2>
@@ -164,7 +160,6 @@
                             </div>
                         </section>
 
-                        {{-- Tombol --}}
                         <div class="mt-auto pt-4 flex flex-col sm:flex-row items-center md:justify-end justify-center">
                             @if ($item['status'] === 'Diajukan')
                                 <a href="#"
@@ -189,9 +184,57 @@
                     Belum ada data publikasi yang tersedia.
                 </div>
             @endforelse
-        </div>
+        </div> --}}
 
-
+        {{-- TABLE --}}
+        <table class="w-full text-sm text-center bg-white rounded-lg overflow-hidden shadow">
+            <thead class="bg-[#0B4D1E] text-[#FFC107] font-semibold">
+                <tr>
+                    <th class="py-4 px-5">Kode</th>
+                    <th class="py-4 px-5">Jenis</th>
+                    <th class="py-4 px-5">Tanggal</th>
+                    <th class="py-4 px-5">Nama Publikasi</th>
+                    <th class="py-4 px-5">Nama Pemohon</th>
+                    <th class="py-4 px-5">Sub Unit</th>
+                    <th class="py-4 px-5">Status</th>
+                    <th class="py-4 px-5">Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($publikasi as $item)
+                    <tr class="border-b text-black hover:bg-gray-100">
+                        <td class="py-3 px-5">{{ $item['id_proses_permohonan'] }}</td>
+                        <td class="py-3 px-5">{{ $item['jenis'] }}</td>
+                        <td class="py-3 px-5">{{ $item['tanggal'] }}</td>
+                        <td class="py-3 px-5">{{ $item['judul'] }}</td>
+                        <td class="py-3 px-5">{{ $item['nama_pemohon'] }}</td>
+                        <td class="py-3 px-5">{{ $item['nama_sub_unit'] }}</td>
+                        <td class="py-3 px-5">
+                            <span
+                                class="inline-block px-3 py-1 rounded-full text-sm font-medium
+                        {{ $item['status'] === 'Diajukan' ? 'bg-yellow-200 text-yellow-800' : '' }}
+                        {{ $item['status'] === 'Diterima' ? 'bg-green-200 text-green-800' : '' }}
+                        {{ $item['status'] === 'Diproses' ? 'bg-blue-200 text-blue-800' : '' }}
+                        {{ $item['status'] === 'Selesai' ? 'bg-gray-200 text-gray-800' : '' }}
+                        {{ $item['status'] === 'Batal' ? 'bg-red-200 text-red-800' : '' }}">
+                                {{ $item['status'] }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-5">
+                            <a href="{{ route('staff.detail-publikasi', $item['id_proses_permohonan']) }}"
+                                class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-md font-semibold">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center py-6 text-gray-500">Tidak ada permohonan publikasi ditemukan.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
 
         <!-- Pagination -->
         <div class="mt-8 flex flex-wrap justify-center space-x-1 sm:space-x-2 text-sm sm:text-base">
@@ -246,201 +289,4 @@
             @endif
         </div>
     </div>
-@endsection
-
-@section('script')
-    <script>
-        $(document).ready(function() {
-            // Konfirmasi pembatalan
-            $('[data-batal]').on('click', function(e) {
-                e.preventDefault();
-                const id_proses_permohonan = $(this).data('batal');
-
-                Swal.fire({
-                    title: 'Batalkan Permohonan?',
-                    html: `
-                        <p><span class="text-red-500 font-bold">Tindakan ini tidak dapat dibatalkan.</span></p><br>
-                        <p>Mohon jelaskan alasan Anda agar pemohon dapat memahami keputusan tersebut.</p>
-                        <p class="font-semibold text-left text-lg mt-4">
-                        Alasan Pembatalan <span class="text-red-500">*</span> :
-                        </p>
-                        <textarea id="alasanBatal" class="swal2-textarea m-0 w-full mt-2" placeholder="Contoh: Jadwal Publikasi berubah, publikasi tidak diperlukan lagi" required></textarea>
-                        `,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Batalkan',
-                    cancelButtonText: 'Tidak',
-                    preConfirm: () => {
-                        const keterangan = document.getElementById('alasanBatal').value.trim();
-                        if (!keterangan) {
-                            Swal.showValidationMessage('Alasan pembatalan wajib diisi');
-                        }
-                        return keterangan;
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const keterangan = result.value;
-
-                        $.ajax({
-                            type: "POST",
-                            url: "{{ route('staff.api.delete.publikasi') }}",
-                            headers: {
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                            },
-                            data: {
-                                id_proses_permohonan: id_proses_permohonan,
-                                keterangan: keterangan
-                            },
-                            beforeSend: function() {
-                                $('[data-batal]').text('Proses Batal Berlangsung').attr(
-                                    'disabled', true);
-                                $(this).text('Membatalkan...').attr('disabled', true);
-
-                                Swal.fire({
-                                    title: 'Loading',
-                                    text: 'Permintaan Anda sedang diproses...',
-                                    allowOutsideClick: false,
-                                    didOpen: () => {
-                                        Swal.showLoading();
-                                    }
-                                });
-                            },
-                            success: function(res) {
-                                localStorage.setItem('batalkan_message', res.message);
-                                location.reload();
-                            },
-                            error: function(err) {
-                                $('[data-batal]').text('Batal').attr('disabled', false);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: err.responseJSON.error ?? err
-                                        .responseJSON.message,
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Konfirmasi terima
-            $('[data-terima]').on('click', function(e) {
-                e.preventDefault();
-                const id_proses_permohonan = $(this).data('terima');
-
-                Swal.fire({
-                    title: 'Terima Permohonan?',
-                    html: `Anda menerima permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#088404',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Terima',
-                    cancelButtonText: 'Tidak'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "POST",
-                            url: "{{ route('staff.api.update.status-publikasi') }}",
-                            headers: {
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                            },
-                            data: {
-                                id_proses_permohonan: id_proses_permohonan,
-                                jenis_proses: 'Diterima',
-                            },
-                            beforeSend: function() {
-                                $('[data-terima]').text('Proses Terima Berlangsung')
-                                    .attr(
-                                        'disabled', true);
-                                $(this).text('Menerima...').attr('disabled', true);
-
-                                Swal.fire({
-                                    title: 'Loading',
-                                    text: 'Permintaan Anda sedang diproses...',
-                                    allowOutsideClick: false,
-                                    didOpen: () => {
-                                        Swal.showLoading();
-                                    }
-                                });
-                            },
-                            success: function(res) {
-                                localStorage.setItem('terima_message', res.message);
-                                location.reload();
-                            },
-                            error: function(err) {
-                                $('[data-terima]').text('Terima').attr(
-                                    'disabled', false);
-                                alert.fire({
-                                    icon: 'error',
-                                    title: err.responseJSON.error ?? err
-                                        .responseJSON.message,
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Konfirmasi diproses
-            $('[data-diproses]').on('click', function(e) {
-                e.preventDefault();
-                const id_proses_permohonan = $(this).data('diproses');
-
-                Swal.fire({
-                    title: 'Proses Permohonan?',
-                    html: `Anda memproses permohonan publikasi ini.<br><span class="text-red-500 font-bold">Tindakan ini tidak dapat diubah.</span>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#088404',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Proses',
-                    cancelButtonText: 'Tidak'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "POST",
-                            url: "{{ route('staff.api.update.status-publikasi') }}",
-                            headers: {
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                            },
-                            data: {
-                                id_proses_permohonan: id_proses_permohonan,
-                                jenis_proses: 'Diproses',
-                            },
-                            beforeSend: function() {
-                                $('[data-diproses]').text('Proses Berlangsung')
-                                    .attr(
-                                        'disabled', true);
-                                $(this).text('Memproses...').attr('disabled', true);
-
-                                Swal.fire({
-                                    title: 'Loading',
-                                    text: 'Permintaan Anda sedang diproses...',
-                                    allowOutsideClick: false,
-                                    didOpen: () => {
-                                        Swal.showLoading();
-                                    }
-                                });
-                            },
-                            success: function(res) {
-                                localStorage.setItem('diproses_message', res.message);
-                                location.reload();
-                            },
-                            error: function(err) {
-                                $('[data-diproses]').text('Diproses').attr(
-                                    'disabled', false);
-                                alert.fire({
-                                    icon: 'error',
-                                    title: err.responseJSON.error ?? err
-                                        .responseJSON.message,
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-        });
-    </script>
 @endsection

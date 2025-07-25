@@ -150,26 +150,25 @@
                     </div>
                 </div>
 
-                {{-- Tombol Batalkan --}}
-                @if ($isPemohon)
-    @php
-        $isDisabled = in_array($publikasi->status, ['Diproses', 'Selesai']);
-    @endphp
 
-    <div class="mt-8 text-right">
-        <button type="button"
-            class="text-sm font-semibold rounded-full px-6 py-2 shadow transition
-                {{ $isDisabled
-                    ? 'bg-gray-400 text-white cursor-not-allowed'
-                    : 'bg-red-600 hover:bg-red-700 text-white' }}"
-            id="btn-batalkan"
-            {{ $isDisabled ? 'disabled' : '' }}
-            title="{{ $isDisabled ? 'Permohonan tidak dapat dibatalkan karena sudah diproses/selesai' : '' }}"
-            data-id_proses_permohonan="{{ $publikasi->id_proses_permohonan }}">
-            Batalkan Publikasi
-        </button>
-    </div>
-@endif
+                {{-- Tombol Batalkan --}}
+                @if ($isPemohon && $publikasi->status !== 'Batal')
+                    @php
+                        $isDisabled = in_array($publikasi->status, ['Diproses', 'Selesai']);
+                    @endphp
+
+                    <div class="mt-8 text-right">
+                        <button type="button"
+                            class="text-sm font-semibold rounded-full px-6 py-2 shadow transition
+                {{ $isDisabled ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white' }}"
+                            id="btn-batalkan" {{ $isDisabled ? 'disabled' : '' }}
+                            title="{{ $isDisabled ? 'Permohonan tidak dapat dibatalkan karena sudah diproses/selesai' : '' }}"
+                            data-id_proses_permohonan="{{ $publikasi->id_proses_permohonan }}">
+                            Batalkan Publikasi
+                        </button>
+                    </div>
+                @endif
+
 
             </section>
         </div>
