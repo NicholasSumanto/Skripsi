@@ -193,7 +193,7 @@
                     <th class="py-4 px-5">Kode</th>
                     <th class="py-4 px-5">Jenis</th>
                     <th class="py-4 px-5">Tanggal</th>
-                    <th class="py-4 px-5">Nama Publikasi</th>
+                    <th class="py-4 px-5">Judul Publikasi</th>
                     <th class="py-4 px-5">Nama Pemohon</th>
                     <th class="py-4 px-5">Sub Unit</th>
                     <th class="py-4 px-5">Status</th>
@@ -202,7 +202,10 @@
             </thead>
             <tbody>
                 @forelse ($publikasi as $item)
-                    <tr class="border-b text-black hover:bg-gray-100">
+                    <tr
+                        class="border-b text-black hover:bg-blue-100
+                        {{ $item['jenis'] === 'Promosi' ? 'bg-yellow-100' : '' }}
+                        {{ $item['jenis'] === 'Liputan' ? 'bg-green-100' : '' }}">
                         <td class="py-3 px-5">{{ $item['id_proses_permohonan'] }}</td>
                         <td class="py-3 px-5">{{ $item['jenis'] }}</td>
                         <td class="py-3 px-5">{{ $item['tanggal'] }}</td>

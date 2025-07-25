@@ -226,7 +226,7 @@ class StaffController extends Controller
                     'tanggal' => $item->tanggal,
                     'judul' => $item->judul,
                     'nama_pemohon' => $item->nama_pemohon,
-                    'jenis' => 'Publikasi Promosi',
+                    'jenis' => 'Promosi',
                     'status' => $item->status,
                     'tanggal_diajukan' => $item->tanggal_diajukan,
                     'tanggal_diterima' => $item->tanggal_diterima ?? null,
@@ -263,7 +263,7 @@ class StaffController extends Controller
                     'tanggal' => $item->tanggal,
                     'judul' => $item->judul,
                     'nama_pemohon' => $item->nama_pemohon,
-                    'jenis' => 'Publikasi Liputan',
+                    'jenis' => 'Liputan',
                     'status' => $item->status,
                     'tanggal_diajukan' => $item->tanggal_diajukan,
                     'tanggal_diterima' => $item->tanggal_diterima ?? null,
@@ -304,7 +304,7 @@ class StaffController extends Controller
 
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 4;
+        $perPage =20;
         $currentItems = $merged->slice(($currentPage - 1) * $perPage, $perPage)->values();
         $publikasi = new LengthAwarePaginator($currentItems, $merged->count(), $perPage, $currentPage, [
             'path' => $request->url(),
@@ -325,11 +325,53 @@ class StaffController extends Controller
         $publikasi = null;
 
         if ($split === 'PROMOSI') {
-            $publikasi = DB::table('promosi')->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'promosi.google_id', '=', 'pengguna.google_id')->where('promosi.id_proses_permohonan', $id)->select('promosi.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')->first();
+            // $publikasi = DB::table('promosi')->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'promosi.google_id', '=', 'pengguna.google_id')->where('promosi.id_proses_permohonan', $id)->select('promosi.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')->first();
+
+            $publikasi = DB::table('promosi')
+                ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+                ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+                ->join('proses_permohonan', 'promosi.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+                ->join('pengguna', 'promosi.google_id', '=', 'pengguna.google_id')
+                ->where('promosi.id_proses_permohonan', $id)
+                ->select(
+                    'promosi.*',
+                    'proses_permohonan.status',
+                    'proses_permohonan.tanggal_diajukan',
+                    'proses_permohonan.tanggal_diterima',
+                    'proses_permohonan.tanggal_diproses',
+                    'proses_permohonan.tanggal_selesai',
+                    'proses_permohonan.tanggal_batal',
+                    'unit.nama_unit',
+                    'sub_unit.nama_sub_unit',
+                    'promosi.created_at',
+                    'pengguna.email'
+                )
+                ->first();
 
             return view('staff.detail.detail-promosi', compact('publikasi'));
         } elseif ($split === 'LIPUTAN') {
-            $publikasi = DB::table('liputan')->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')->where('liputan.id_proses_permohonan', $id)->select('liputan.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')->first();
+            // $publikasi = DB::table('liputan')->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')->where('liputan.id_proses_permohonan', $id)->select('liputan.*', 'pengguna.email', 'sub_unit.nama_sub_unit', 'unit.nama_unit', 'proses_permohonan.status')->first();
+
+            $publikasi = DB::table('liputan')
+                ->join('sub_unit', 'liputan.id_sub_unit', '=', 'sub_unit.id_sub_unit')
+                ->join('unit', 'sub_unit.id_unit', '=', 'unit.id_unit')
+                ->join('proses_permohonan', 'liputan.id_proses_permohonan', '=', 'proses_permohonan.id_proses_permohonan')
+                ->join('pengguna', 'liputan.google_id', '=', 'pengguna.google_id')
+                ->where('liputan.id_proses_permohonan', $id)
+                ->select(
+                    'liputan.*',
+                    'proses_permohonan.status',
+                    'proses_permohonan.tanggal_diajukan',
+                    'proses_permohonan.tanggal_diterima',
+                    'proses_permohonan.tanggal_diproses',
+                    'proses_permohonan.tanggal_selesai',
+                    'proses_permohonan.tanggal_batal',
+                    'unit.nama_unit',
+                    'sub_unit.nama_sub_unit',
+                    'liputan.created_at',
+                    'pengguna.email'
+                )
+                ->first();
 
             return view('staff.detail.detail-liputan', compact('publikasi'));
         }

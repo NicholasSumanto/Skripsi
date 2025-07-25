@@ -14,6 +14,60 @@
 
         <div class="max-w-4xl mx-auto bg-gray-300 text-[#006034] rounded-xl shadow-xl p-10">
             <form id="form-promosi-view" class="space-y-6">
+                <section class="bg-primary rounded-lg pb-6">
+                    <h2 class="text-lg font-semibold mb-6 text-white text-center md:text-left px-6 pt-2">
+                        Status Permohonan Publikasi
+                    </h2>
+
+                    @php
+                        $steps = [
+                            'Diajukan' => $publikasi->tanggal_diajukan,
+                            'Diterima' => $publikasi->tanggal_diterima,
+                            'Diproses' => $publikasi->tanggal_diproses,
+                            'Selesai' => $publikasi->tanggal_selesai,
+                        ];
+                        $activeStep = $publikasi->status;
+                        $stepReached = true;
+                    @endphp
+
+                    <div class="relative w-full max-w-4xl mx-auto px-4">
+                        <div class="hidden sm:block absolute top-7 left-[100px] right-[100px] h-2 bg-white z-0">
+                        </div>
+                        <div class="sm:hidden block absolute left-[47px] top-[0px] bottom-[30px] w-1 bg-white z-0">
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:justify-between gap-6 sm:gap-0 relative z-10">
+                            @foreach ($steps as $label => $date)
+                                @php
+                                    $isActive = $stepReached;
+                                    if ($label === $activeStep) {
+                                        $stepReached = false;
+                                    }
+                                @endphp
+                                <div
+                                    class="flex sm:flex-col flex-row sm:items-center items-start sm:w-1/4 w-full gap-4 sm:gap-0">
+                                    <div
+                                        class="w-16 h-16 mb-5 rounded-full flex items-center justify-center
+                                        {{ $isActive ? 'bg-[#00FF6A] text-white border-4 border-white' : 'bg-yellow-400 text-white border-4 border-white' }}">
+                                        <i class="{{ $isActive ? 'fas fa-check' : 'far fa-clock' }}"></i>
+                                    </div>
+                                    <div class="flex flex-col sm:items-center items-start text-white">
+                                        <span
+                                            class="text-lg font-semibold {{ $isActive ? 'text-white' : 'text-white/70' }}">
+                                            {{ $label }}
+                                        </span>
+                                        @if ($date)
+                                            <span class="text-sm text-white/70 mt-1 leading-tight text-left sm:text-center">
+                                                {!! str_replace(' ', '<br>', \Carbon\Carbon::parse($date)->translatedFormat('l, d/m/Y')) !!}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="font-semibold text-lg">Nama Pemohon :</label>
@@ -201,14 +255,23 @@
                                 class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300btn-extras"
                                 data-diproses="{{ $publikasi->id_proses_permohonan }}">Diproses</a>
                         @elseif ($publikasi->status === 'Diproses')
-                            <a id="btn-selesai"
+                            <a href="{{ route('staff.home') }}" id="btn-selesai"
                                 class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">
                                 Selesai
                             </a>
                         @endif
-                        <a id="btn-batal"
-                            class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
-                            data-batal="{{ $publikasi->id_proses_permohonan }}">Batal</a>
+                        @if ($publikasi->status === 'Diajukan' || $publikasi->status === 'Diterima')
+                            <a id="btn-batal" href="#"
+                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+                                data-batal="{{ $publikasi->id_proses_permohonan }}">
+                                Batal
+                            </a>
+                        @else
+                            <span
+                                class="bg-gray-400 text-white font-semibold py-3 px-8 rounded-lg cursor-not-allowed opacity-70">
+                                Batal
+                            </span>
+                        @endif
                     </div>
                 </div>
             </form>
@@ -404,8 +467,16 @@
                                     });
                                 },
                                 success: function(res) {
-                                    localStorage.setItem('terima_message', res.message);
-                                    window.location.href = "{{ route('staff.home') }}";
+                                    Swal.close();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil!',
+                                        text: res.message,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        location.reload();
+                                    });
                                 },
                                 error: function(err) {
                                     $('[data-terima]').text('Terima').attr(
@@ -471,9 +542,17 @@
                                         }
                                     });
                                 },
-                                success: function(res) {
-                                    localStorage.setItem('diproses_message', res.message);
-                                    window.location.href = "{{ route('staff.home') }}";
+                               success: function(res) {
+                                    Swal.close();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil!',
+                                        text: res.message,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        location.reload();
+                                    });
                                 },
                                 error: function(err) {
                                     $('[data-diproses]').text('Diproses').attr(
