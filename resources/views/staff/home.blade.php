@@ -188,11 +188,11 @@
 
         {{-- TABLE --}}
         {{-- TABLE RESPONSIVE --}}
-        <div class="w-full overflow-x-auto sm:overflow-visible">
-            <table class="min-w-max w-full text-sm text-center bg-white rounded-lg overflow-hidden shadow">
+        <div class="w-full overflow-x-auto">
+            <table class="min-w-[800px] w-full text-sm text-center bg-white rounded-lg overflow-hidden shadow">
                 <thead class="bg-[#0B4D1E] text-[#FFC107] font-semibold">
                     <tr>
-                        <th class="py-4 px-5">Kode</th>
+                        <th class="py-4 px-5 w-20 whitespace-nowrap">Kode</th>
                         <th class="py-4 px-5">Jenis</th>
                         <th class="py-4 px-5 whitespace-nowrap">Tanggal Pelaksanaan</th>
                         <th class="py-4 px-5">Judul Publikasi</th>
@@ -206,9 +206,9 @@
                     @forelse ($publikasi as $item)
                         <tr
                             class="border-b text-black hover:bg-blue-100
-                            {{ $item['jenis'] === 'Promosi' ? 'bg-yellow-100' : '' }}
-                            {{ $item['jenis'] === 'Liputan' ? 'bg-green-100' : '' }}">
-                            <td class="py-3 px-5">{{ $item['id_proses_permohonan'] }}</td>
+                    {{ $item['jenis'] === 'Promosi' ? 'bg-yellow-100' : '' }}
+                    {{ $item['jenis'] === 'Liputan' ? 'bg-green-100' : '' }}">
+                            <td class="py-3 px-5 w-20 whitespace-nowrap">{{ $item['id_proses_permohonan'] }}</td>
                             <td class="py-3 px-5">{{ $item['jenis'] }}</td>
                             <td class="py-3 px-5 whitespace-nowrap">{{ $item['tanggal'] }}</td>
                             <td class="py-3 px-5">{{ $item['judul'] }}</td>
@@ -217,11 +217,11 @@
                             <td class="py-3 px-5">
                                 <span
                                     class="inline-block px-3 py-1 rounded-full text-sm font-medium
-                            {{ $item['status'] === 'Diajukan' ? 'bg-yellow-200 text-yellow-800' : '' }}
-                            {{ $item['status'] === 'Diterima' ? 'bg-green-200 text-green-800' : '' }}
-                            {{ $item['status'] === 'Diproses' ? 'bg-blue-200 text-blue-800' : '' }}
-                            {{ $item['status'] === 'Selesai' ? 'bg-gray-200 text-gray-800' : '' }}
-                            {{ $item['status'] === 'Batal' ? 'bg-red-200 text-red-800' : '' }}">
+                    {{ $item['status'] === 'Diajukan' ? 'bg-yellow-200 text-yellow-800' : '' }}
+                    {{ $item['status'] === 'Diterima' ? 'bg-green-200 text-green-800' : '' }}
+                    {{ $item['status'] === 'Diproses' ? 'bg-blue-200 text-blue-800' : '' }}
+                    {{ $item['status'] === 'Selesai' ? 'bg-gray-200 text-gray-800' : '' }}
+                    {{ $item['status'] === 'Batal' ? 'bg-red-200 text-red-800' : '' }}">
                                     {{ $item['status'] }}
                                 </span>
                             </td>
@@ -242,7 +242,6 @@
                 </tbody>
             </table>
         </div>
-
 
         <!-- Pagination -->
         <div class="mt-8 flex flex-wrap justify-center space-x-1 sm:space-x-2 text-sm sm:text-base">

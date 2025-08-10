@@ -169,14 +169,14 @@ class StaffController extends Controller
                 'icon' => 'user',
             ],
             [
-                'title' => 'Permohonan Promosi (Dalam Proses)',
+                'title' => 'Permohonan Promosi (Diajukan)',
                 'iconColor' => 'blue',
                 'count' => $promosiCount,
                 'stat' => $promosiStat,
                 'icon' => 'megaphone',
             ],
             [
-                'title' => 'Permohonan Liputan (Dalam Proses)',
+                'title' => 'Permohonan Liputan (Diajukan)',
                 'iconColor' => 'green',
                 'count' => $liputanCount,
                 'stat' => $liputanStat,

@@ -30,9 +30,8 @@
                         </label>
                         <input type="text" name="nomor_handphone" id="nomor_handphone"
                             class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#FFCC29] focus:outline-none text-black"
-                            placeholder="contoh: 081234567890" inputmode="numeric" pattern="^(\+62|0)[0-9]{8,14}$"
-                            maxlength="14" required>
-                        <p id="hp-error" class="text-red-600 text-sm mt-1 hidden">Nomor HP tidak valid</p>
+                            placeholder="contoh: 081234567890" maxlength="14" required>
+                        <p id="hp-error" class="text-red-600 text-sm mt-1 hidden"></p>
                     </div>
 
                     <div>
@@ -405,27 +404,25 @@
         const input = document.getElementById('nomor_handphone');
         const errorText = document.getElementById('hp-error');
 
-        input.addEventListener('input', function() {
-            // Hanya izinkan angka dan tanda +
-            this.value = this.value.replace(/[^0-9+]/g, '');
+        // Hanya format lokal: 0 + 9-14 digit angka
+        const phoneRegex = /^0[0-9]{8,13}$/;
 
-            // Pastikan tanda + hanya di depan (jika ada)
-            if (this.value.includes('+')) {
-                this.value = '+' + this.value.replace(/\+/g, '').trim();
+        input.addEventListener('input', function() {
+            // Hanya izinkan angka
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            // Maksimal 14 karakter (0 + 13 digit)
+            if (this.value.length > 14) {
+                this.value = this.value.slice(0, 14);
             }
 
-            // Hapus karakter selain angka untuk menghitung panjang angka saja
-            const numberOnly = this.value.replace(/\D/g, '');
-
-            // Validasi panjang 9-14 digit
-            if (numberOnly.length < 9 || numberOnly.length > 14) {
+            // Cek validasi regex
+            if (!phoneRegex.test(this.value)) {
                 errorText.classList.remove('hidden');
-                errorText.textContent = 'Nomor HP harus memiliki panjang antara 9 hingga 14 digit.';
+                errorText.textContent = 'Nomor HP harus diawali 0 dan memiliki total 9-14 digit angka.';
             } else {
                 errorText.classList.add('hidden');
             }
         });
     </script>
-
-
 @endsection

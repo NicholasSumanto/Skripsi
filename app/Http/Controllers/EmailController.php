@@ -70,7 +70,10 @@ class EmailController extends Controller
 
             if ($publikasi) {
                 Mail::to($publikasi->email)->send(new StatusPublikasiMail($publikasi));
-                $staffEmails = Pengguna::where('role', 'staff')->pluck('email');
+                $staffEmails = Pengguna::where('role', 'staff')
+                    ->where('email', '!=', $publikasi->email)
+                    ->pluck('email');
+
                 foreach ($staffEmails as $email) {
                     Mail::to($email)->send(new StatusPublikasiMail($publikasi));
                 }

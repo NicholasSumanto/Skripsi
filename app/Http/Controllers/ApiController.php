@@ -109,8 +109,6 @@ class ApiController extends Controller
                 'nama_pemohon' => 'required|string|max:255',
                 'nomor_handphone' => [
                     'required',
-                    'min:10',
-                    'max:15',
                     'regex:/^(\+62|0)[0-9]{8,13}$/'
                 ],
                 'tempat' => 'required|string',
@@ -265,10 +263,9 @@ class ApiController extends Controller
                 'nama_pemohon' => 'required|string|max:255',
                 'nomor_handphone' => [
                     'required',
-                    'min:10',
-                    'max:15',
                     'regex:/^(\+62|0)[0-9]{8,13}$/'
                 ],
+
 
                 'tempat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
@@ -430,7 +427,7 @@ class ApiController extends Controller
                 return [
                     'nama' => $item->nama,
                     'tempat' => $item->tempat,
-                    'tanggal' => Carbon::parse($item->tanggal)->format('d-m-Y'), 
+                    'tanggal' => Carbon::parse($item->tanggal)->format('d-m-Y'),
                     'jenis' => 'Promosi',
                     'status' => $item->status,
                     'hari_h' => 'Hari Pelaksanaan: <br>',
