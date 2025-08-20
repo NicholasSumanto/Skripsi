@@ -201,6 +201,8 @@ class StaffController extends Controller
         $pub = $request->input('pub');
         $proses = $request->input('proses');
         $search = $request->input('search');
+        $from = $request->input('from');
+        $to = $request->input('to');
 
         $promosi = DB::table('promosi')
             ->join('sub_unit', 'promosi.id_sub_unit', '=', 'sub_unit.id_sub_unit')
@@ -216,7 +218,12 @@ class StaffController extends Controller
                     $q->where('promosi.judul', 'like', "%$search%")->orWhere('promosi.nama_pemohon', 'like', "%$search%")->orWhere('sub_unit.nama_sub_unit', 'like', "%$search%");
                 });
             })
-
+            ->when($from, function ($query, $from) {
+                return $query->whereDate('promosi.tanggal', '>=', Carbon::parse($from));
+            })
+            ->when($to, function ($query, $to) {
+                return $query->whereDate('promosi.tanggal', '<=', Carbon::parse($to));
+            })
             ->select('promosi.id_promosi as id', 'promosi.id_proses_permohonan', 'promosi.tanggal', 'promosi.judul', 'promosi.nama_pemohon', 'proses_permohonan.status', 'proses_permohonan.tanggal_diajukan', 'proses_permohonan.tanggal_diterima', 'proses_permohonan.tanggal_diproses', 'proses_permohonan.tanggal_selesai', 'proses_permohonan.tanggal_batal', 'unit.nama_unit', 'sub_unit.nama_sub_unit', 'promosi.created_at')
             ->get()
             ->map(function ($item) {
@@ -253,7 +260,12 @@ class StaffController extends Controller
                     $q->where('liputan.judul', 'like', "%$search%")->orWhere('liputan.nama_pemohon', 'like', "%$search%")->orWhere('sub_unit.nama_sub_unit', 'like', "%$search%");
                 });
             })
-
+            ->when($from, function ($query, $from) {
+                return $query->whereDate('liputan.tanggal', '>=', Carbon::parse($from));
+            })
+            ->when($to, function ($query, $to) {
+                return $query->whereDate('liputan.tanggal', '<=', Carbon::parse($to));
+            })
             ->select('liputan.id_liputan as id', 'liputan.id_proses_permohonan', 'liputan.tanggal', 'liputan.judul', 'liputan.nama_pemohon', 'proses_permohonan.status', 'proses_permohonan.tanggal_diajukan', 'proses_permohonan.tanggal_diterima', 'proses_permohonan.tanggal_diproses', 'proses_permohonan.tanggal_selesai', 'proses_permohonan.tanggal_batal', 'unit.nama_unit', 'sub_unit.nama_sub_unit', 'liputan.created_at')
             ->get()
             ->map(function ($item) {

@@ -2,55 +2,80 @@
 @section('title', 'Home Staff')
 
 @section('content')
-    <div class="container mx-auto px-4 py-6">
+    <div class="p-6 bg-white rounded shadow relative">
         <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Permintaan Publikasi</h1>
 
         <!-- Sorting Filter -->
-        <form method="GET" action="{{ route('staff.home') }}"
-            class="mb-4 flex flex-wrap items-center gap-2 md:justify-start justify-center">
+        <form method="GET" action="{{ route('staff.home') }}" class="mb-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 flex-1 min-w-[300px]">
 
-            <label for="sort" class="text-lg font-semibold text-green-700">Sortir :</label>
-            <select name="sort" id="sort" onchange="this.form.submit()"
-                class="form-select bg-[#f3f4f6] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#1a237e] focus:outline-none max-w-[200px]">
-                <option value="">-- Semua Urutan --</option>
-                <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Tanggal Terdekat (Jadwal)</option>
-                <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Tanggal Terjauh (Jadwal)</option>
-                <option value="baru_diajukan" {{ request('sort') == 'baru_diajukan' ? 'selected' : '' }}>Terbaru Diajukan
-                </option>
-                <option value="lama_diajukan" {{ request('sort') == 'lama_diajukan' ? 'selected' : '' }}>Terlama Diajukan
-                </option>
-            </select>
+                <label for="sort" class="text-lg font-semibold text-green-700">Sortir :</label>
+                <select name="sort" id="sort" onchange="this.form.submit()"
+                    class="form-select bg-[#f3f4f6] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#1a237e] focus:outline-none max-w-[200px]">
+                    <option value="">-- Semua Urutan --</option>
+                    <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Tanggal Terdekat (Jadwal)
+                    </option>
+                    <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Tanggal Terjauh (Jadwal)
+                    </option>
+                    <option value="baru_diajukan" {{ request('sort') == 'baru_diajukan' ? 'selected' : '' }}>Terbaru
+                        Diajukan
+                    </option>
+                    <option value="lama_diajukan" {{ request('sort') == 'lama_diajukan' ? 'selected' : '' }}>Terlama
+                        Diajukan
+                    </option>
+                </select>
 
-            <select name="pub" id="pub" onchange="this.form.submit()"
-                class="form-select bg-[#f3f4f6] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#1a237e] focus:outline-none max-w-[200px]">
-                <option value="">-- Semua Jenis --</option>
-                <option value="liputan" {{ request('pub') == 'liputan' ? 'selected' : '' }}>Liputan</option>
-                <option value="promosi" {{ request('pub') == 'promosi' ? 'selected' : '' }}>Promosi</option>
-            </select>
+                <select name="pub" id="pub" onchange="this.form.submit()"
+                    class="form-select bg-[#f3f4f6] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#1a237e] focus:outline-none max-w-[200px]">
+                    <option value="">-- Semua Jenis --</option>
+                    <option value="liputan" {{ request('pub') == 'liputan' ? 'selected' : '' }}>Liputan</option>
+                    <option value="promosi" {{ request('pub') == 'promosi' ? 'selected' : '' }}>Promosi</option>
+                </select>
 
-            <select name="proses" id="proses" onchange="this.form.submit()"
-                class="form-select bg-[#f3f4f6] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#1a237e] focus:outline-none max-w-[200px]">
-                <option value="">-- Semua Status --</option>
-                <option value="diajukan" {{ request('proses') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
-                <option value="diterima" {{ request('proses') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                <option value="diproses" {{ request('proses') == 'diproses' ? 'selected' : '' }}>Diproses</option>
-            </select>
+                <select name="proses" id="proses" onchange="this.form.submit()"
+                    class="form-select bg-[#f3f4f6] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#1a237e] focus:outline-none max-w-[200px]">
+                    <option value="">-- Semua Status --</option>
+                    <option value="diajukan" {{ request('proses') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
+                    <option value="diterima" {{ request('proses') == 'diterima' ? 'selected' : '' }}>Diterima</option>
+                    <option value="diproses" {{ request('proses') == 'diproses' ? 'selected' : '' }}>Diproses</option>
+                </select>
 
-            <!-- Search bar -->
-            <input type="text" name="search" x-model="search" value="{{ request('search') }}"
-                placeholder="Cari publikasi..."
-                class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900 w-full md:w-auto">
+                <!-- Search bar -->
+                <input type="text" name="search" x-model="search" value="{{ request('search') }}"
+                    placeholder="Cari publikasi..."
+                    class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900 w-full md:w-auto">
 
-            <button type="submit"
-                class="px-4 py-2 rounded-md bg-green-700 text-white text-sm hover:bg-blue-800 transition">
-                Cari
-            </button>
+                <button type="submit"
+                    class="px-4 py-2 rounded-md bg-green-700 text-white text-sm hover:bg-blue-800 transition">
+                    Cari
+                </button>
 
-            <!-- Tombol Reset -->
-            <a href="{{ route('staff.home') }}"
-                class="px-4 py-2 rounded-md bg-yellow-400 text-black text-sm hover:bg-blue-800 hover:text-white transition">
-                Reset
-            </a>
+                <!-- Tombol Reset -->
+                <a href="{{ route('staff.home') }}"
+                    class="px-4 py-2 rounded-md bg-yellow-400 text-black text-sm hover:bg-blue-800 hover:text-white transition">
+                    Reset
+                </a>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto min-w-[280px] justify-end">
+
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Dari:</label>
+                        <input type="date" name="from" value="{{ request('from') }}"
+                            class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto"
+                            onchange="this.form.submit()">
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-3 sm:mt-0">
+                        <label class="text-sm text-gray-700 whitespace-nowrap w-[70px] text-right">Sampai:</label>
+                        <input type="date" name="to" value="{{ request('to') }}"
+                            class="form-input bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto"
+                            onchange="this.form.submit()">
+                    </div>
+                </div>
+            </div>
 
         </form>
 
@@ -189,7 +214,7 @@
         {{-- TABLE --}}
         {{-- TABLE RESPONSIVE --}}
         <div class="w-full overflow-x-auto">
-            <table class="min-w-[800px] w-full text-sm text-center bg-white rounded-lg overflow-hidden shadow">
+            <table class="min-w-[800px] w-full text-md text-center bg-white rounded-lg overflow-hidden shadow">
                 <thead class="bg-[#0B4D1E] text-[#FFC107] font-semibold">
                     <tr>
                         <th class="py-4 px-5 w-20 whitespace-nowrap">Kode</th>
@@ -205,23 +230,23 @@
                 <tbody>
                     @forelse ($publikasi as $item)
                         <tr
-                            class="border-b text-black hover:bg-blue-100
-                    {{ $item['jenis'] === 'Promosi' ? 'bg-yellow-100' : '' }}
-                    {{ $item['jenis'] === 'Liputan' ? 'bg-green-100' : '' }}">
-                            <td class="py-3 px-5 w-20 whitespace-nowrap">{{ $item['id_proses_permohonan'] }}</td>
+                            class="border-b text-black text-center hover:bg-blue-100
+                                {{ $item['jenis'] === 'Promosi' ? 'bg-yellow-100' : '' }}
+                                {{ $item['jenis'] === 'Liputan' ? 'bg-green-100' : '' }}">
+                            <td class="py-3 px-5 w-20 text-left whitespace-nowrap">{{ $item['id_proses_permohonan'] }}</td>
                             <td class="py-3 px-5">{{ $item['jenis'] }}</td>
-                            <td class="py-3 px-5 whitespace-nowrap">{{ $item['tanggal'] }}</td>
+                            <td class="py-3 px-5 whitespace-nowrap">{{ $item['tanggal'] ? \Carbon\Carbon::parse($item['tanggal'])->format('d-m-Y') : '' }}</td>
                             <td class="py-3 px-5">{{ $item['judul'] }}</td>
                             <td class="py-3 px-5">{{ $item['nama_pemohon'] }}</td>
                             <td class="py-3 px-5">{{ $item['nama_sub_unit'] }}</td>
                             <td class="py-3 px-5">
                                 <span
                                     class="inline-block px-3 py-1 rounded-full text-sm font-medium
-                    {{ $item['status'] === 'Diajukan' ? 'bg-yellow-200 text-yellow-800' : '' }}
-                    {{ $item['status'] === 'Diterima' ? 'bg-green-200 text-green-800' : '' }}
-                    {{ $item['status'] === 'Diproses' ? 'bg-blue-200 text-blue-800' : '' }}
-                    {{ $item['status'] === 'Selesai' ? 'bg-gray-200 text-gray-800' : '' }}
-                    {{ $item['status'] === 'Batal' ? 'bg-red-200 text-red-800' : '' }}">
+                                {{ $item['status'] === 'Diajukan' ? 'bg-yellow-200 text-yellow-800' : '' }}
+                                {{ $item['status'] === 'Diterima' ? 'bg-green-200 text-green-800' : '' }}
+                                {{ $item['status'] === 'Diproses' ? 'bg-blue-200 text-blue-800' : '' }}
+                                {{ $item['status'] === 'Selesai' ? 'bg-gray-200 text-gray-800' : '' }}
+                                {{ $item['status'] === 'Batal' ? 'bg-red-200 text-red-800' : '' }}">
                                     {{ $item['status'] }}
                                 </span>
                             </td>

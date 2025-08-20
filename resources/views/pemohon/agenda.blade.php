@@ -38,7 +38,7 @@
 
             <h1 class="text-3xl font-bold text-center mb-6 text-[#1a237e]">Agenda Publikasi</h1>
 
-            <div id="calendar" class="w-full min-h-[600px] p-0 mb-6"></div>
+            <div id="calendar" class="border border-gray-300  w-full min-h-[600px] p-0 mb-6"></div>
             <hr class="h-px my-3 bg-gray-800 border-0 dark:bg-gray-700 w-full">
             <p class="text-sm text-gray-600 w-full">
                 <span class="font-semibold mb-2 block">Keterangan :</span>
@@ -64,33 +64,26 @@
                 method: 'GET',
                 dataType: 'json',
                 success: function(tanggalList) {
+                    // Grupkan tanggal dan jenis
                     const groupedByTanggal = {};
-
                     tanggalList.forEach(item => {
-                        if (!groupedByTanggal[item.tanggal]) {
-                            groupedByTanggal[item.tanggal] = [];
-                        }
+                        groupedByTanggal[item.tanggal] = groupedByTanggal[item.tanggal] || [];
                         groupedByTanggal[item.tanggal].push(item.jenis);
                     });
 
+                    // Tentukan warna kalender
                     const popups = {};
-
-                    Object.keys(groupedByTanggal).forEach(tanggal => {
-                        const jenisList = groupedByTanggal[tanggal];
+                    Object.entries(groupedByTanggal).forEach(([tanggal, jenisList]) => {
                         const jenisUnik = [...new Set(jenisList)];
-
-                        let modifier = '';
-                        if (jenisUnik.length > 1) {
-                            modifier = 'bg-ungu';
-                        } else {
-                            modifier = jenisUnik[0] === 'Liputan' ? 'bg-hijau' : 'bg-kuning';
-                        }
-
+                        let modifier = jenisUnik.length > 1 ?
+                            'bg-ungu' :
+                            (jenisUnik[0] === 'Liputan' ? 'bg-hijau' : 'bg-kuning');
                         popups[tanggal] = {
                             modifier
                         };
                     });
 
+                    // Inisialisasi kalender
                     const calendar = new VanillaCalendar('#calendar', {
                         settings: {
                             selection: {
@@ -100,11 +93,15 @@
                                 daysOutside: false
                             }
                         },
-                        popups: popups,
+                        popups,
                         actions: {
                             clickDay(event, self) {
                                 const selectedDate = self.selectedDates[0];
                                 if (!selectedDate) return;
+
+                                const [year, month, day] = selectedDate.split('-');
+                                const formattedForCompare = `${day}-${month}-${year}`;
+                                const formattedForDisplay = `${day}-${month}-${year}`;
 
                                 $.ajax({
                                     url: `{{ route('api.get.jadwal-publikasi') }}`,
@@ -116,133 +113,105 @@
                                         tanggal: selectedDate
                                     },
                                     dataType: 'json',
-                                    beforeSend: function() {
+                                    beforeSend() {
                                         Swal.fire({
                                             title: 'Loading',
                                             text: 'Memuat Jadwal...',
                                             allowOutsideClick: false,
-                                            didOpen: () => Swal
-                                                .showLoading()
+                                            didOpen: () => Swal.showLoading()
                                         });
                                     },
-                                    success: function(data) {
-                                        // Filter data yang hanya sesuai dengan tanggal terpilih
-                                        const selectedDateParts = selectedDate
-                                            .split('-');
-                                        const formattedSelectedDate =
-                                            `${selectedDateParts[2]}-${selectedDateParts[1]}-${selectedDateParts[0]}`;
-
-                                        const filteredData = data.filter(item =>
-                                            item.tanggal ===
-                                            formattedSelectedDate);
+                                    success(data) {
+                                        const filteredData = data.filter(item => item
+                                            .tanggal === formattedForCompare);
 
                                         if (filteredData.length === 0) {
                                             Swal.fire({
                                                 icon: 'info',
                                                 title: 'Tidak ada jadwal',
-                                                text: `Tidak ada kegiatan pada tanggal ${selectedDate}.`
+                                                text: `Tidak ada kegiatan pada tanggal ${formattedForDisplay}.`
                                             });
                                             return;
                                         }
 
-                                        const dateParts = selectedDate.split('-');
-                                        const formattedDate =
-                                            `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-
-                                        const liputanList = filteredData.filter(
-                                            item => item.jenis === 'Liputan');
-                                        const promosiList = filteredData.filter(
-                                            item => item.jenis === 'Promosi');
-
-                                        let htmlContent =
-                                            `<div style="text-align:left; max-height:400px; overflow-y:auto;">`;
+                                        const liputanList = filteredData.filter(i => i
+                                            .jenis === 'Liputan');
+                                        const promosiList = filteredData.filter(i => i
+                                            .jenis === 'Promosi');
 
                                         function renderSection(judul, list) {
-                                            if (list.length === 0) return '';
-
-                                            const backgroundColor = judul ===
-                                                'Liputan' ? '#d0f0c0' : '#fff9c4';
-                                            const textColor = judul === 'Liputan' ?
+                                            if (!list.length) return '';
+                                            const bg = judul === 'Liputan' ? '#d0f0c0' :
+                                                '#fff9c4';
+                                            const color = judul === 'Liputan' ?
                                                 '#256029' : '#8a6d00';
 
-                                            let sectionHTML = `
-                                                <h3 style="
-                                                    font-size: 20px;
-                                                    font-weight: 700;
-                                                    margin: 20px 0 15px;
-                                                    color: ${textColor};
-                                                    text-align: center;
-                                                    background-color: ${backgroundColor};
-                                                    padding: 8px 0;
-                                                    border-radius: 6px;
-                                                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-                                                ">${judul}</h3>
-                                            `;
-
+                                            let html = `
+                                        <h3 style="
+                                            font-size: 20px;
+                                            font-weight: 700;
+                                            margin: 20px 0 15px;
+                                            color: ${color};
+                                            text-align: center;
+                                            background-color: ${bg};
+                                            padding: 8px 0;
+                                            border-radius: 6px;
+                                            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                                        ">${judul}</h3>
+                                    `;
                                             list.forEach(item => {
                                                 const statusClass = item
                                                     .status === 'Diproses' ?
                                                     'text-yellow-600' :
                                                     'text-red-600';
-                                                const hariPelaksanaan = item
-                                                    .hariPelaksanaan ??
-                                                    'text-green-500';
-
-                                                sectionHTML += `
-                                                    <div style="
-                                                        border: 1px solid #e0e0e0;
-                                                        border-radius: 8px;
-                                                        padding: 12px 16px;
-                                                        margin-bottom: 12px;
-                                                        background-color: #f8f9fa;
-                                                        box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
-                                                    ">
-                                                        <div class="font-bold text-2xl">
-                                                            ${item.nama}
-                                                        </div>
-                                                        <div class="${statusClass} text-sm mt-1 font-semibold text-xl">
-                                                            ${item.status}
-                                                        </div>
-                                                        <div style="margin-top: 6px;">
-                                                            <strong>Tempat:</strong> ${item.tempat}<br>
-                                                            <strong>Tanggal:</strong> ${item.tanggal}
-                                                            ${item.jam ? ` - ${item.jam}` : ''}
-                                                        </div>
-                                                    </div>
-                                                `;
+                                                html += `
+                                            <div style="
+                                                border: 1px solid #e0e0e0;
+                                                border-radius: 8px;
+                                                padding: 12px 16px;
+                                                margin-bottom: 12px;
+                                                background-color: #f8f9fa;
+                                                box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
+                                            ">
+                                                <div class="font-bold text-2xl">${item.nama}</div>
+                                                <div class="${statusClass} text-sm mt-1 font-semibold text-xl">${item.status}</div>
+                                                <div style="margin-top: 6px;">
+                                                    <strong>Tempat:</strong> ${item.tempat}<br>
+                                                    <strong>Tanggal:</strong> ${item.tanggal}
+                                                    ${item.jam ? ` - ${item.jam}` : ''}
+                                                </div>
+                                            </div>
+                                        `;
                                             });
-
-                                            return sectionHTML;
+                                            return html;
                                         }
 
-                                        htmlContent += renderSection('Liputan',
-                                            liputanList);
-                                        htmlContent += renderSection('Promosi',
-                                            promosiList);
-                                        htmlContent += `</div>`;
-
                                         Swal.fire({
-                                            title: `Jadwal Tanggal ${formattedDate}`,
-                                            html: htmlContent,
+                                            title: `Jadwal Tanggal ${formattedForDisplay}`,
+                                            html: `
+                                        <div style="text-align:left; max-height:400px; overflow-y:auto;">
+                                            ${renderSection('Liputan', liputanList)}
+                                            ${renderSection('Promosi', promosiList)}
+                                        </div>
+                                    `,
                                             width: 700,
                                             confirmButtonText: 'Tutup',
                                             confirmButtonColor: '#6c757d',
                                         });
                                     },
-                                    error: function(xhr) {
+                                    error(xhr) {
                                         let message =
                                             'Terjadi kesalahan. Silakan coba lagi.';
-                                        if (xhr.responseJSON?.error) {
-                                            message = xhr.responseJSON.error;
-                                        } else if (xhr.responseJSON?.errors) {
-                                            message = Object.values(xhr.responseJSON
-                                                .errors).flat().join('\n');
-                                        }
+                                        if (xhr.responseJSON?.error) message = xhr
+                                            .responseJSON.error;
+                                        else if (xhr.responseJSON?.errors) message =
+                                            Object.values(xhr.responseJSON.errors)
+                                            .flat().join('\n');
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Gagal',
                                             text: message,
-                                            timer: 7000,
+                                            timer: 7000
                                         });
                                     }
                                 });
@@ -252,18 +221,16 @@
 
                     calendar.init();
                 },
-                error: function(xhr) {
+                error(xhr) {
                     let message = 'Gagal mengambil daftar tanggal. Silakan coba lagi.';
-                    if (xhr.responseJSON?.error) {
-                        message = xhr.responseJSON.error;
-                    } else if (xhr.responseJSON?.errors) {
-                        message = Object.values(xhr.responseJSON.errors).flat().join('\n');
-                    }
+                    if (xhr.responseJSON?.error) message = xhr.responseJSON.error;
+                    else if (xhr.responseJSON?.errors) message = Object.values(xhr.responseJSON.errors)
+                        .flat().join('\n');
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal',
                         text: message,
-                        timer: 7000,
+                        timer: 7000
                     });
                 }
             });

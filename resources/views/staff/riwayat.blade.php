@@ -41,8 +41,6 @@
                         class="px-4 py-2 bg-yellow-400 text-black text-sm rounded-md whitespace-nowrap hover:bg-blue-800 hover:text-white transition">Reset</button>
                 </div>
 
-
-
                 <!-- Bagian range tanggal dan export -->
                 <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto min-w-[280px] justify-end">
 
@@ -191,7 +189,7 @@
                         this.originalData = data.map(item => ({
                             id: item.id,
                             kode: item.id_proses_permohonan,
-                            tanggal: item.tanggal,
+                            tanggal: item.tanggal ? item.tanggal.split('-').reverse().join('-') : '',
                             judul: item.judul,
                             subUnit: item.subUnit,
                             status: item.status,

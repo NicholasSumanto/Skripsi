@@ -52,9 +52,9 @@
 
                     <div>
                         <label class="font-semibold text-lg">Tanggal Acara :</label>
-                        <input type="date" name="tanggal"
-                            value="{{ \Carbon\Carbon::parse($publikasi->tanggal)->format('Y-m-d') }}"
-                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white" disabled>
+                        <input type="text" name="tanggal"
+                            value="{{ \Carbon\Carbon::parse($publikasi->tanggal)->format('d-m-Y') }}" disabled
+                            class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-black bg-white">
                     </div>
 
                     <div>

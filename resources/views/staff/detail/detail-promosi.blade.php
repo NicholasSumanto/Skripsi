@@ -101,7 +101,8 @@
 
                     <div>
                         <label class="font-semibold text-lg">Tanggal Acara :</label>
-                        <input type="date" name="tanggal" value="{{ $publikasi->tanggal }}" disabled
+                        <input type="text" name="tanggal"
+                            value="{{ \Carbon\Carbon::parse($publikasi->tanggal)->format('d-m-Y') }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white"
                             style="height: 50px;">
                     </div>
@@ -689,7 +690,7 @@
                                 beforeSend: function() {
                                     $('#btn-selesai').text('Mengirim...').attr('disabled',
                                         true);
-                                    $('`btn-kembali').text('Mengirim...').attr('disabled',
+                                    $('#btn-kembali').text('Mengirim...').attr('disabled',
                                         true);
                                     $('#btn-batal').text('Mengirim...').attr('disabled',
                                         true);

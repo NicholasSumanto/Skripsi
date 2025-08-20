@@ -47,7 +47,8 @@
 
                     <div>
                         <label class="font-semibold text-lg">Tanggal Acara :</label>
-                        <input type="date" name="tanggal" value="{{ $publikasi->tanggal }}" disabled
+                        <input type="text" name="tanggal"
+                            value="{{ \Carbon\Carbon::parse($publikasi->tanggal)->format('d-m-Y') }}" disabled
                             class="w-full rounded-lg p-3 border border-gray-300 shadow-sm text-[#006034] bg-white"
                             style="height: 50px;">
                     </div>
@@ -175,7 +176,8 @@
 
                 @if ($publikasi->status === 'Selesai')
                     <div class="space-y-2" id="output-form">
-                        <label class="font-semibold text-lg text-yellow-400">Link Output<span class="text-red-500">*</span> :</label>
+                        <label class="font-semibold text-lg text-yellow-400">Link Output<span class="text-red-500">*</span>
+                            :</label>
                         <div class="control-form space-y-2">
                             @php
                                 $linkOutput = json_decode($publikasi->link_output, true);
